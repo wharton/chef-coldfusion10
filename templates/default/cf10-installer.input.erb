@@ -1,0 +1,57 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Y
+3
+1
+<% unless node['cf10']['install']['documentation'] %>1
+<% end %><% unless node['cf10']['install']['solr'] %>2
+<% end %><% unless node['cf10']['install']['remote_admin'] %>3
+<% end %><% unless node['cf10']['install']['start_on_init'] %>4
+<% end %>5
+<% if node['cf10']['install']['remote_admin'] %><%= node['cf10']['install']['remote_admin_username'] %>
+<%= node['cf10']['install']['remote_admin_password'] %>
+<%= node['cf10']['install']['remote_admin_password'] %>
+<% end %><%= node['cf10']['install']['folder']%>
+Y
+2
+2
+
+2
+<%= node['cf10']['install']['admin_password']%>
+<%= node['cf10']['install']['admin_password']%>
+<%= node['cf10']['install']['rds']%>
+<% if node['cf10']['install']['rds'] == 'Y' %><%= node['cf10']['install']['rds_password']%>
+<%= node['cf10']['install']['rds_password']%>
+<% end %><%= node['cf10']['install']['server_updates']%>
+
+
