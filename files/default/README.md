@@ -5,6 +5,6 @@ ColdFusion 10
 -------------
 You must download the 32-bit linux ColdFusion 10 installer and place 
 it in this folder. This file is available form adobe.com, 
-http://labs.adobe.com/technologies/coldfusion10/.
+http://www.adobe.com/products/coldfusion-family.html.
 
-* coldfusion10_p1_linux32_021712.bin
+* ColdFusion_10_WWEJ_linux32.bin

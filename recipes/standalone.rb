@@ -32,8 +32,8 @@ template "#{Chef::Config[:file_cache_path]}/cf10-installer.input" do
 end
 
 # Move the CF 10 installer
-cookbook_file "#{Chef::Config[:file_cache_path]}/coldfusion10_p1_linux32_021712.bin" do
-  source "coldfusion10_p1_linux32_021712.bin"
+cookbook_file "#{Chef::Config[:file_cache_path]}/ColdFusion_10_WWEJ_linux32.bin" do
+  source "ColdFusion_10_WWEJ_linux32.bin"
   mode "0744"
   owner "root"
   group "root"
@@ -42,8 +42,8 @@ end
 
 # Run the CF 10 installer
 execute "cf10_installer" do
-  command "#{Chef::Config[:file_cache_path]}/coldfusion10_p1_linux32_021712.bin < #{Chef::Config[:file_cache_path]}/cf10-installer.input"
-  creates "#{node['cf10']['install']['folder']}/license.txt"
+  command "#{Chef::Config[:file_cache_path]}/ColdFusion_10_WWEJ_linux32.bin < #{Chef::Config[:file_cache_path]}/cf10-installer.input"
+  creates "#{node['cf10']['install']['folder']}/license.html"
   action :run
   user "root"
   cwd "#{Chef::Config[:file_cache_path]}"
@@ -59,4 +59,15 @@ service "coldfusion" do
   supports :restart => true
   action [ :enable, :start ]
 end
+
+# Template the server.xml file
+template "#{node['cf10']['install']['folder']}/cfusion/runtime/conf/server.xml" do
+  source "server.xml.erb"
+  mode "0777"
+  owner "vagrant"
+  group "root"
+  notifies :restart, "service[coldfusion]", :delayed
+end
+
+
 

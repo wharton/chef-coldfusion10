@@ -22,6 +22,7 @@ Attributes
 * `node['cf10']['install']['rds']` (Default is "Y")
 * `node['cf10']['install']['rds_password']` (Default is "vagrant")
 * `node['cf10']['install']['server_updates']` (Default is "Y")
+* `node['cf10']['webroot']` (Default is "/vagrant/wwwroot")
 
 Usage
 =====
