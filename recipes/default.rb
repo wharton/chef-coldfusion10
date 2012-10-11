@@ -17,4 +17,31 @@
 # limitations under the License.
 #
 
+# If Ubuntu 10.04 add the lucid-backports repo
+apt_repository "lucid-backports" do
+  uri "http://us.archive.ubuntu.com/ubuntu/"
+  distribution "lucid-backports"
+  components ["main","universe"]
+  deb_src true
+  action :add
+  only_if { node[:platform_version] == "10.04" }
+end
+
+execute "apt-get update" do
+	action :run
+	only_if { node[:platform_version] == "10.04" }
+end
+
+# Install libstdc++5
+package "libstdc++5" do
+  action :install
+end
+
+# Install the unzip package
+package "unzip" do
+  action :install
+end
+
 include_recipe "coldfusion10::standalone"
+include_recipe "coldfusion10::jvmconfig"
+include_recipe "coldfusion10::updates"

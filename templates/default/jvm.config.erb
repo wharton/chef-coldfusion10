@@ -1,0 +1,26 @@
+#
+# VM configuration
+#
+# Where to find JVM, if {java.home}/jre exists then that JVM is used
+# if not then it must be the path to the JRE itself
+
+java.home=<%=node['cf10']['java_home']%>/jre
+application.home=<%= node['cf10']['install_path'] %>/cfusion
+
+#
+# If no java.home is specified a VM is located by looking in these places in this
+# order:
+#
+#  1) ../runtime/jre
+#  2) registry (windows only)
+#  3) JAVA_HOME env var plus jre (ie $JAVA_HOME/jre)
+#  4) java.exe in path
+#
+
+# Arguments to VM
+java.args=-server -Xms256m -Xmx512m -XX:MaxPermSize=192m -XX:+UseParallelGC -Xbatch -Dcoldfusion.home={application.home} -Djava.security.egd=/dev/urandom -Djava.awt.headless=true -Dcoldfusion.rootDir={application.home} -Djava.security.policy={application.home}/lib/coldfusion.policy -Djava.security.auth.policy={application.home}/lib/neo_jaas.policy  -Dcoldfusion.classPath={application.home}/lib/updates,{application.home}/lib,{application.home}/lib/axis2,{application.home}/gateway/lib/,{application.home}/wwwroot/WEB-INF/cfform/jars,{application.home}/wwwroot/WEB-INF/flex/jars,{application.home}/lib/oosdk/lib,{application.home}/lib/oosdk/classes -Dcoldfusion.libPath={application.home}/lib -Dorg.apache.coyote.USE_CUSTOM_STATUS_MSG_IN_HEADER=true -Dcoldfusion.jsafe.defaultalgo=FIPS186Random
+
+# Comma separated list of shared library path
+java.library.path={application.home}/lib/international
+
+java.class.path={application.home}/lib/oosdk/lib,{application.home}/lib/oosdk/classes

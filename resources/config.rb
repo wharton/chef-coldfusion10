@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: coldfusion10
-# Recipe:: webroot
+# Resources:: config
 #
 # Copyright 2012, Nathan Mische
 #
@@ -17,20 +17,14 @@
 # limitations under the License.
 #
 
-# Create the webroot if it doesn't exist
-directory "#{node['cf10']['webroot']}" do
-  owner "vagrant"
-  group "vagrant"
-  mode "0755"
-  action :create
-  not_if { File.directory?("#{node['cf10']['webroot']}") }
+def initialize(*args)
+  super  
+  @action = :set
 end
 
-# Copy WEB-INF if necessary
-execute "cf_web_inf" do
-  command "cp #{node['cf10']['install']['folder']}/cfusion/wwwroot/WEB-INF #{node['cf10']['webroot']}/"
-  creates "#{node['cf10']['webroot']}/WEB-INF"
-  action :run
-  user "root"
-  notifies :restart, "service[coldfusion]", :delayed
-end
+actions :set, :bulk_set
+ 
+attribute :component,   :kind_of => String, :name_attribute => true
+attribute :property,    :kind_of => String
+attribute :args,     	:kind_of => Hash
+attribute :config,     	:kind_of => Hash
