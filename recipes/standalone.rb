@@ -24,6 +24,7 @@ template "#{Chef::Config['file_cache_path']}/cf10-installer.properties" do
   mode "0644"
   owner "root"
   group "root"
+  not_if { File.exists?("#{node['cf10']['install_path']}/license.html") }
 end
 
 
