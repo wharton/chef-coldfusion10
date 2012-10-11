@@ -76,13 +76,33 @@ def make_api_call(msg)
   last_mod = nil
   made_update = false
 
+  # Default protocol and port if no SSL
+  protocol = "http"
+  port = "8500"
+
+=begin
+  # Adjust port and protocol if using Tomcat
+  if node.recipe?("coldfusion10::tomcat")
+     protocol = "https"
+     port = "8443"
+  end
+
+  # Adjust port and protocol if using Apache
+  if node.recipe?("coldfusion10::apache")
+    protocol = "https"
+    port = "443"
+  end
+=end 
+
   # Get config state before attempted update
   before = Dir.glob("#{node['cf10']['install_path']}/cfusion/lib/neo-*.xml").map { |filename| checksum(filename) }
+
+  Chef::Log.debug("Making API call to #{protocol}://#{node['ipaddress']}:#{port}/CFIDE/administrator/configmanager/api/index.cfm")
 
   # Make API call
   hr = http_request "post_config" do
     action :nothing
-    url "http://#{node['ipaddress']}:8500/CFIDE/administrator/configmanager/api/index.cfm"
+    url "#{protocol}://#{node['ipaddress']}:#{port}/CFIDE/administrator/configmanager/api/index.cfm"
     message msg
     headers({"AUTHORIZATION" => "Basic #{Base64.encode64("admin:#{node['cf10']['admin_pw']}")}"})
   end

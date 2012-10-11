@@ -24,7 +24,7 @@ execute "start_cf_for_coldfusion10_configure" do
 end
 
 # Configure via Admin API
-coldfusion902_config "bulk" do
+coldfusion10_config "bulk" do
   action :bulk_set
   config node['cf10']['config_settings'].to_hash
   notifies :restart, "service[coldfusion]", :delayed
