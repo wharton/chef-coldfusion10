@@ -62,7 +62,7 @@ For Downlaods
 
 * `node['cf10']['standalone']['cf10_installer']['url']` - If defined, the installer will be downloaded from this location. If not defined you must download the CF10 installer from Adobe and place in the cookbook's `files/default` directory. (no default)
 * `node['cf10']['configmanager']['source']['url']` - Source for cf-configmanger (default: "https://github.com/downloads/nmische/cf-configmanager/configmanager.zip")
-* `nodevagrant default['cf10']['updates']` - A list of update URLs to download and install. (default: [ "http://download.macromedia.com/pub/coldfusion/10/cf10_mdt_updt.jar", "http://download.adobe.com/pub/adobe/coldfusion/hotfix_001.jar", "http://download.adobe.com/pub/adobe/coldfusion/hotfix_002.jar" ])
+* `node['cf10']['updates']` - A list of update URLs to download and install. (default: [ "http://download.macromedia.com/pub/coldfusion/10/cf10_mdt_updt.jar", "http://download.adobe.com/pub/adobe/coldfusion/hotfix_001.jar", "http://download.adobe.com/pub/adobe/coldfusion/hotfix_002.jar" ])
 
 Usage
 =====
