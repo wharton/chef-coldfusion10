@@ -2,13 +2,12 @@
 default['cf10']['install_path'] = "/opt/coldfusion10"
 # CF Admin password
 default['cf10']['admin_pw'] = "vagrant"
-# JRun Web root
+# Tomcat Web root
 default['cf10']['webroot'] = "/vagrant/wwwroot"
 # JVM
 default['cf10']['java_home'] = "#{node['cf10']['install_path']}" 
 # Configuration 
 default['cf10']['config_settings'] = {}
-
 # Download Locations
 # default['cf10']['standalone']['cf10_installer']['url'] = "http://example.com/ColdFusion_10_WWEJ_linux32.bin"
 default['cf10']['configmanager']['source']['url'] = "https://github.com/downloads/nmische/cf-configmanager/configmanager.zip"

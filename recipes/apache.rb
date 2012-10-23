@@ -44,6 +44,6 @@ end
 execute "wsconfig" do
   command "#{node['cf10']['install_path']}/cfusion/runtime/bin/wsconfig -ws Apache -dir #{node['apache']['dir']} -bin /usr/sbin/apache2 -script /usr/sbin/apache2ctl -v"
   action :run
-  not_if "grep 'jrun_module' #{node['apache']['dir']}/httpd.conf"
+  not_if "grep 'mod_jk' #{node['apache']['dir']}/httpd.conf"
   notifies :restart, "service[apache2]", :immediately
 end

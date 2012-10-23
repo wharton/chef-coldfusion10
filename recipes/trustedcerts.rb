@@ -21,8 +21,8 @@ if node.recipe?("java") && node['java']['install_flavor'] == "oracle"
   node['cf10']['java_home'] = node['java']['java_home']
 end
 
-# If using Apache import the snakeoil ssl cert
-if node.recipe?("coldfusion10::apache")
+# If using Apache on Ubuntu import the snakeoil ssl cert
+if node.recipe?("coldfusion10::apache") &&  node['platform'] == 'ubuntu'
 
   # Link the snakeoil cert
   link "#{node['cf10']['java_home']}/jre/lib/security/trusted-ssl-cert-snakeoil.pem" do

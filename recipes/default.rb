@@ -18,18 +18,22 @@
 #
 
 # If Ubuntu 10.04 add the lucid-backports repo
-apt_repository "lucid-backports" do
-  uri "http://us.archive.ubuntu.com/ubuntu/"
-  distribution "lucid-backports"
-  components ["main","universe"]
-  deb_src true
-  action :add
-  only_if { node[:platform_version] == "10.04" }
-end
+if node['platform'] == 'ubuntu'
+  
+  apt_repository "lucid-backports" do
+    uri "http://us.archive.ubuntu.com/ubuntu/"
+    distribution "lucid-backports"
+    components ["main","universe"]
+    deb_src true
+    action :add
+    only_if { node[:platform_version] == "10.04" }
+  end
 
-execute "apt-get update" do
-	action :run
-	only_if { node[:platform_version] == "10.04" }
+  execute "apt-get update" do
+  	action :run
+  	only_if { node[:platform_version] == "10.04" }
+  end
+
 end
 
 # Install libstdc++5
