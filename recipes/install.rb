@@ -20,7 +20,6 @@
 # Create the CF 10 properties file
 template "#{Chef::Config['file_cache_path']}/cf10-installer.properties" do
   source "cf10-installer.properties.erb"
-  action :create_if_missing
   mode "0644"
   owner "root"
   group "root"
