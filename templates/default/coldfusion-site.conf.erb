@@ -16,13 +16,13 @@
           #RedirectMatch ^/$ /apache2-default/
   </Directory>
 
-  ErrorLog /var/log/apache2/coldfusion-error.log 
+  ErrorLog <%= node['apache']['log_dir'] %>/coldfusion-error.log 
 
   # Possible values include: debug, info, notice, warn, error, crit,
   # alert, emerg.
   LogLevel warn
 
-  CustomLog /var/log/apache2/coldfusion-access.log combined
+  CustomLog <%= node['apache']['log_dir'] %>/coldfusion-access.log combined
   ServerSignature On
 
   Alias /CFIDE/ "<%= node['cf10']['install_path'] %>/cfusion/wwwroot/CFIDE/"
