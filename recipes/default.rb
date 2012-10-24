@@ -36,15 +36,23 @@ if node['platform'] == 'ubuntu'
 
 end
 
-# Install libstdc++5
-package "libstdc++5" do
-  action :install
+# Install some packages
+cf_pkgs = value_for_platform_family(
+  "debian" => {
+    "default" => ["libstdc++5","unzip"]
+  },
+  "rhel" => {
+    "default" => ["libstdc++","unzip"]
+  },
+  "default" => ["libstdc++5","unzip"]
+)
+
+cf_pkgs.each do |pkg|
+  package pkg do
+    action :install
+  end
 end
 
-# Install the unzip package
-package "unzip" do
-  action :install
-end
 
 # Do either a standalone or J2EE intstallation
 if node['cf10']['installer_type'].match("ear|war")
