@@ -22,9 +22,11 @@ case node['platform_family']
 when "rhel", "fedora", "arch"
   apache_conf_dir = "#{node['apache']['dir']}/conf"
   apache_conf_file = "#{apache_conf_dir}/httpd.conf"
+  apache_control = "/usr/sbin/apachectl"
 else
   apache_conf_dir = node['apache']['dir']
   apache_conf_file = "#{apache_conf_dir}/apache2.conf"
+  apache_control = "/usr/sbin/apache2ctl"
 end
 
 # Disable the default site
@@ -53,7 +55,7 @@ end
 # Run wsconfig
 execute "wsconfig" do
   command <<-COMMAND
-  #{node['cf10']['install_path']}/cfusion/runtime/bin/wsconfig -ws Apache -dir #{apache_conf_dir} -bin #{node['apache']['binary']} -script /usr/sbin/apache2ctl -v
+  #{node['cf10']['install_path']}/cfusion/runtime/bin/wsconfig -ws Apache -dir #{apache_conf_dir} -bin #{node['apache']['binary']} -script #{apache_control} -v
   mv #{apache_conf_file}.1 #{apache_conf_file}
   mv #{apache_conf_dir}/mod_jk.conf #{node['apache']['dir']}/conf.d/mod_jk.conf
   COMMAND
