@@ -53,7 +53,7 @@ end
 # Run wsconfig
 execute "wsconfig" do
   command <<-COMMAND
-  #{node['cf10']['install_path']}/cfusion/runtime/bin/wsconfig -ws Apache -dir #{apache_conf_dir} -bin #{node['apache']['binary']} -script /usr/sbin/apache2ctl -v"
+  #{node['cf10']['install_path']}/cfusion/runtime/bin/wsconfig -ws Apache -dir #{apache_conf_dir} -bin #{node['apache']['binary']} -script /usr/sbin/apache2ctl -v
   mv #{apache_conf_file}.1 #{apache_conf_file}
   mv #{apache_conf_dir}/mod_jk.conf #{node['apache']['dir']}/conf.d/mod_jk.conf
   COMMAND
