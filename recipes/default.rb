@@ -36,22 +36,19 @@ if node['platform'] == 'ubuntu'
 
 end
 
-# Install some packages
-cf_pkgs = value_for_platform_family(
-  "debian" => {
-    "default" => ["libstdc++5","unzip"]
-  },
-  "rhel" => {
-    "default" => ["libstdc++","unzip"]
-  },
+
+cf_pkgs = value_for_platform_family({
+  "debian" => ["libstdc++5","unzip"],
+  "rhel" => ["libstdc++","unzip"],
   "default" => ["libstdc++5","unzip"]
-)
+})
 
 cf_pkgs.each do |pkg|
   package pkg do
     action :install
   end
 end
+
 
 
 # Do either a standalone or J2EE intstallation
