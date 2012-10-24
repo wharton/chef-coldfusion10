@@ -21,11 +21,11 @@ Cookbooks
 Attributes
 ==========
 
-For ColdFusion
---------------
+For ColdFusion Installation
+---------------------------
 
 * `node['cf10']['install_path']` - ColdFusion installation path (default: "/opt/coldfusion10")
-* `node['cf10']['install']['admin_pw']` - ColdFusion administrator password (default: "vagrant")
+* `node['cf10']['admin_pw']` - ColdFusion administrator password (default: "vagrant")
 * `node['cf10']['webroot']` - The document root to use for either Apache or Tomcat (default: "/vagrant/wwwroot") 
 * `node['cf10']['java_home']` - Defaults to the JRE bundled with ColdFusion. Updated to system JAVA_HOME if the Java cookbook is used.
 
@@ -60,9 +60,12 @@ JSON datasource definition:
 For Downlaods
 -------------
 
-* `node['cf10']['standalone']['cf10_installer']['url']` - If defined, the installer will be downloaded from this location. If not defined you must download the CF10 installer from Adobe and place in the cookbook's `files/default` directory. (no default)
+* `node['cf10']['cf10_installer']['url']` - If defined, the installer will be downloaded from this location. If not defined you must download the CF10 installer from Adobe and place in the cookbook's `files/default` directory and set the `node['cf10']['cf10_installer']['file']` attribute. (no default)
+* `node['cf10']['cf10_installer']['file']` - If defined, a cookbook file with this name must be available in this cookbook's `files/default` directory. You may download the installer from adobe.com. If not defined you must provide an alternate download URL for CF10 installer by setting the `node['cf10']['cf10_installer']['url']` attribute. (no default)
 * `node['cf10']['configmanager']['source']['url']` - Source for cf-configmanger (default: "https://github.com/downloads/nmische/cf-configmanager/configmanager.zip")
 * `node['cf10']['updates']` - A list of update URLs to download and install. (default: [ "http://download.macromedia.com/pub/coldfusion/10/cf10_mdt_updt.jar", "http://download.adobe.com/pub/adobe/coldfusion/hotfix_001.jar", "http://download.adobe.com/pub/adobe/coldfusion/hotfix_002.jar" ])
+
+**NOTE:** You must set either the `node['cf10']['cf10_installer']['url']` or `node['cf10']['cf10_installer']['file']` attribute.
 
 Usage
 =====

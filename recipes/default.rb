@@ -49,7 +49,11 @@ cf_pkgs.each do |pkg|
   end
 end
 
-
+# Setup runtime user
+user node["cf10"]["runtimeuser"] do
+  system true
+  shell "/bin/false"
+end
 
 # Do either a standalone or J2EE intstallation
 if node['cf10']['installer_type'].match("ear|war")
