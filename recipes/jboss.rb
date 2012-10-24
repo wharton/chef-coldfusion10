@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: coldfusion10
-# Recipe:: j2ee
+# Recipe:: jboss
 #
 # Copyright 2012, NATHAN MISCHE
 #
@@ -17,9 +17,4 @@
 # limitations under the License.
 #
 
-if !node['cf10']['installer_type'].match("ear|war")
-  Chef::Application.fatal!("ColdFusion 10 installer type must be 'ear' or 'war' for J2EE installation!")
-end
-
-# Run the installer
-include_recipe "coldfusion10::install"
+# Deploy to JBoss 7.1
