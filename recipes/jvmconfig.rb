@@ -26,7 +26,7 @@ end
 template "#{node['cf10']['install_path']}/cfusion/bin/jvm.config" do
   source "jvm.config.erb"
   mode "0664"
-  owner "nobody"
-  group "bin"
+  owner node['cf10']['runtimeuser']
+  group node['cf10']['runtimeuser']
   notifies :restart, "service[coldfusion]", :delayed
 end

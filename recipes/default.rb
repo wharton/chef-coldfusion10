@@ -36,7 +36,7 @@ if node['platform'] == 'ubuntu'
 
 end
 
-
+# Install necessary packages
 cf_pkgs = value_for_platform_family({
   "debian" => ["libstdc++5","unzip"],
   "rhel" => ["libstdc++","unzip"],

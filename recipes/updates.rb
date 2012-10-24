@@ -41,15 +41,15 @@ node['cf10']['updates'].each do | update |
       source update
       action :create_if_missing
       mode "0744"
-      owner "nobody"
-      group "bin"
+      owner "root"
+      group "root"
     end
 
     # Run the installer
     execute "run_cf10_#{file_name.split('.').first}_installer" do
       command "#{node['cf10']['java_home']}/jre/bin/java -jar #{file_name} -i silent -f update-installer.properties"
       action :run
-      user "nobody"
+      user "root"
       cwd "#{Chef::Config['file_cache_path']}"
     end
 
