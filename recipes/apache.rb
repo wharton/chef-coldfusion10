@@ -29,10 +29,10 @@ web_app "coldfusion" do
 end
 
 # Link httpd.conf
-link "#{node['apache']['dir']}/conf.d/httpd" do
-  to "#{node['apache']['dir']}/httpd.conf"
-  notifies :restart, "service[apache2]", :delayed
-end
+# link "#{node['apache']['dir']}/conf.d/httpd" do
+#  to "#{node['apache']['dir']}/httpd.conf"
+#  notifies :restart, "service[apache2]", :delayed
+# end
 
 # Make sure CF is running
 execute "start_cf_for_coldfusion10_wsconfig" do
