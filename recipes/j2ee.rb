@@ -47,3 +47,15 @@ execute "Explode ColdFusion 10 WAR" do
   creates "#{node["cf10"]["install_path"]}/cfusion.ear/cfusion.war/CFIDE"
   action :run
 end
+
+execute "Explode RDS WAR" do
+  cwd "#{node["cf10"]["install_path"]}/cfusion.ear"
+  command <<-COMMAND
+    mkdir rds
+    unzip -q -d rds rds.war
+    rm -f rds.war
+    mv rds rds.war
+  COMMAND
+  creates "#{node["cf10"]["install_path"]}/cfusion.ear/rds.war/META-INF/MANIFEST.MF"
+  action :run
+end
