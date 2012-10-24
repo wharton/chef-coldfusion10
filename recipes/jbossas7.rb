@@ -2,7 +2,7 @@
 # Cookbook Name:: coldfusion10
 # Recipe:: jbossas7
 #
-# Copyright 2012, NATHAN MISCHE
+# Copyright 2012, NATHAN MISCHE, Brian Flad
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,5 +17,23 @@
 # limitations under the License.
 #
 
-# Deploy to JBoss 7.1
+service "jbossas" do
+  action :stop
+end
 
+link "#{node["jbossas7"]["home"]}/standalone/deployments/cfusion.ear" do
+  to "#{node["cf10"]["install_path"]}/cfusion.ear"
+end
+
+file "#{node["jbossas7"]["home"]}/standalone/deployments/cfusion.ear.dodeploy" do
+  action :create
+  owner "root"
+  group "root"
+  mode "0666"
+end
+
+# Needs much more tuning here!
+
+service "jbossas" do
+  action :start
+end
