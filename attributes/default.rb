@@ -52,8 +52,12 @@ default['cf10']['java_home'] = "#{node['cf10']['install_path']}"
 default['cf10']['config_settings'] = {}
 # CFIDE directory
 default['cf10']['cfide_dir'] = "#{node['cf10']['install_path']}/cfusion/wwwroot/CFIDE"
-
-
+# Apache SSL cert
+default['cf10']['apache_ssl_cert_file'] = "/etc/ssl/certs/ssl-cert-snakeoil.pem"
+# Apache SSL key
+default['cf10']['apache_ssl_cert_key_file'] = "/etc/ssl/private/ssl-cert-snakeoil.key"
+# Apache SSL chain
+# default['cf10']['apache_ssl_cert_chain_file'] = "/etc/ssl/private/ssl-cert-snakeoil.key"
 # CF config manager 
 default['cf10']['configmanager']['source']['url'] = "https://github.com/downloads/nmische/cf-configmanager/configmanager.zip"
 default['cf10']['configmanager']['api']['url'] = "http://localhost:8500//CFIDE/administrator/configmanager/api/index.cfm"
