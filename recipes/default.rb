@@ -46,6 +46,22 @@ package "unzip" do
   action :install
 end
 
-include_recipe "coldfusion10::standalone"
-include_recipe "coldfusion10::jvmconfig"
-include_recipe "coldfusion10::updates"
+# Do either a standalone or J2EE intstallation
+if node['cf10']['installer_type'].match("ear|war")
+
+  include_recipe "coldfusion10::j2ee"
+
+elsif node['cf10']['installer_type'].match("standalone")
+
+  include_recipe "coldfusion10::standalone"
+  include_recipe "coldfusion10::jvmconfig"
+  include_recipe "coldfusion10::updates"
+
+else
+
+  Chef::Application.fatal!("ColdFusion 10 installer type must be 'ear', 'war', or 'standalone'!")
+
+end
+
+
+

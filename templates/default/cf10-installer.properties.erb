@@ -1,8 +1,33 @@
-INSTALLER_UI=silent
-SILENT_LICENSE_MODE=developer
-SILENT_INSTALLER_TYPE=standalone
+#Silent properties for ColdFusion 10
+INSTALLER_UI=SILENT
+#Valid values are full/trial/developer 
+SILENT_LICENSE_MODE=<%= node['cf10']['license_mode'] %>
+SILENT_SERIAL_NUMBER=<%= node['cf10']['serial_number'] %>
+#Use when it is upgrade
+SILENT_PREV_SERIAL_NUMBER=<%= node['cf10']['prev_serial_number'] %>
+#Valid values are ear/war/standalone 
+SILENT_INSTALLER_TYPE=<%= node['cf10']['installer_type'] %>
+SILENT_INSTALL_ODBC=<%= node['cf10']['install_odbc'] %>
+SILENT_INSTALL_SAMPLES=<%= node['cf10']['install_samples'] %>
+SILENT_INSTALL_JNBRIDGE=<%= node['cf10']['install_jnbridge'] %>
+SILENT_INSTALL_ADMIN=<%= node['cf10']['install_admin'] %>
+SILENT_INSTALL_SOLR=<%= node['cf10']['install_solr'] %> 
 SILENT_INSTALL_FOLDER=<%= node['cf10']['install_path'] %>
-SILENT_CONFIGURE_SYSTEM_INIT=false
-SILENT_RUNTIMEUSER=nobody 
+#Enable secure profile, IP addresses from which Administrator can be accessed
+SILENT_ENABLE_SECURE_PROFILE=<%= node['cf10']['enable_secure_profile'] %>
+SILENT_ADMIN_IP=<%= node['cf10']['admin_ip'] %>
+SILENT_ADMIN_USERNAME=<%= node['cf10']['admin_username'] %>
 SILENT_ADMIN_PASSWORD=<%= node['cf10']['admin_pw'] %>
-SILENT_ENABLE_RDS=false
+SILENT_ENABLE_RDS=<%= node['cf10']['enable_rds'] %>
+#Provide password when enable RDS is true
+SILENT_RDS_PASSWORD=<%= node['cf10']['rds_password'] %>
+#Remote username/password
+SILENT_JETTY_USERNAME=<%= node['cf10']['jetty_username'] %>
+SILENT_JETTY_PASSWORD=<%= node['cf10']['jetty_pw'] %>
+#Context root for J2EE installation
+SILENT_CONTEXT_ROOT=<%= node['cf10']['context_root'] %>
+#Automatically check for serverupdates 
+SILENT_AUTO_ENABLE_UPDATES=<%= node['cf10']['auto_enable_updates'] %>
+#Migration (applicable to non-windows OSes only) 
+SILENT_MIGRATE_COLDFUSION=<%= node['cf10']['migrate_coldfusion'] %>
+SILENT_PREV_CF_MIGR_DIR=<%= node['cf10']['prev_cf_migr_dir'] %>

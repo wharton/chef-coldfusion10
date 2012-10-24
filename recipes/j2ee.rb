@@ -17,30 +17,9 @@
 # limitations under the License.
 #
 
-if !node['cf10']['installer_type'].match("standalone")
-  Chef::Application.fatal!("ColdFusion 10 installer type must be 'standalone' for standalone installation!")
+if !node['cf10']['installer_type'].match("ear|war")
+  Chef::Application.fatal!("ColdFusion 10 installer type must be 'ear' or 'war' for J2EE installation!")
 end
 
 # Run the installer
 include_recipe "coldfusion10::install"
-
-# Link the init script
-link "/etc/init.d/coldfusion" do
-  to "#{node['cf10']['install_path']}/cfusion/bin/coldfusion"
-end
-
-# Set up ColdFusion as a service
-service "coldfusion" do
-  supports :restart => true
-  action [ :enable, :start ]
-end
-
-# Create the webroot if it doesn't exist
-directory "#{node['cf10']['webroot']}" do
-  owner "vagrant"
-  group "vagrant"
-  mode "0755"
-  action :create
-  not_if { File.directory?("#{node['cf10']['webroot']}") }
-end
-
