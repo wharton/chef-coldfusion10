@@ -2,7 +2,7 @@
 # Cookbook Name:: coldfusion10
 # Recipe:: j2ee
 #
-# Copyright 2012, NATHAN MISCHE
+# Copyright 2012, NATHAN MISCHE, Brian Flad
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,3 +23,39 @@ end
 
 # Run the installer
 include_recipe "coldfusion10::install"
+
+execute "Explode ColdFusion 10 EAR" do
+  cwd node["cf10"]["install_path"]
+  command <<-COMMAND
+    mkdir cfusion
+    unzip -q -d cfusion cfusion.ear
+    rm -f cfusion.ear
+    mv cfusion cfusion.ear
+  COMMAND
+  creates "#{node["cf10"]["install_path"]}/cfusion.ear/cfusion.war"
+  action :run
+end
+
+execute "Explode ColdFusion 10 WAR" do
+  cwd "#{node["cf10"]["install_path"]}/cfusion.ear"
+  command <<-COMMAND
+    mkdir cfusion
+    unzip -q -d cfusion cfusion.war
+    rm -f cfusion.war
+    mv cfusion cfusion.war
+  COMMAND
+  creates "#{node["cf10"]["install_path"]}/cfusion.ear/cfusion.war/META-INF/MANIFEST.MF"
+  action :run
+end
+
+execute "Explode RDS WAR" do
+  cwd "#{node["cf10"]["install_path"]}/cfusion.ear"
+  command <<-COMMAND
+    mkdir rds
+    unzip -q -d rds rds.war
+    rm -f rds.war
+    mv rds rds.war
+  COMMAND
+  creates "#{node["cf10"]["install_path"]}/cfusion.ear/rds.war/META-INF/MANIFEST.MF"
+  action :run
+end

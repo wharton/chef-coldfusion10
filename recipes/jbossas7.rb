@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: coldfusion10
-# Recipe:: jboss
+# Recipe:: jbossas7
 #
 # Copyright 2012, NATHAN MISCHE
 #
@@ -18,3 +18,4 @@
 #
 
 # Deploy to JBoss 7.1
+

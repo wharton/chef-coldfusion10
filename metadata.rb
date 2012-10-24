@@ -11,10 +11,12 @@ end
 
 depends "apt"
 depends "apache2"
+depends "jbossas7"
 
 recipe "coldfusion10", "Includes the standalone, jvmconfig, and update recipes"
 recipe "coldfusion10::apache", "Configures ColdFusion to run behind the Apache httpd web server"
 recipe "coldfusion10::configure", "Sets ColdFusion configuration settings via the config LWRP"
+recipe "coldfusion10::jbossas7", "Deploys ColdFusion to JBoss AS 7"
 recipe "coldfusion10::jvmconfig", "Sets necessary JVM configuration"
 recipe "coldfusion10::standalone", "Installs ColdFusion 10 in standalone mode"
 recipe "coldfusion10::tomcat", "Enables SSL and changes webroot for built in Tomcat webserver"
