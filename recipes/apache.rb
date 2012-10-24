@@ -17,6 +17,16 @@
 # limitations under the License.
 #
 
+# Apache configuration variables
+case node['platform_family']
+when "rhel", "fedora", "arch"
+  apache_conf_dir = "#{node['apache']['dir']}/conf"
+  apache_conf_file = "#{apache_conf_dir}/httpd.conf"
+else
+  apache_conf_dir = node['apache']['dir']
+  apache_conf_file = "#{apache_conf_dir}/apache2.conf"
+end
+
 # Disable the default site
 apache_site "000-default" do
   enable false  
@@ -42,8 +52,12 @@ end
 
 # Run wsconfig
 execute "wsconfig" do
-  command "#{node['cf10']['install_path']}/cfusion/runtime/bin/wsconfig -ws Apache -dir #{node['apache']['dir']} -bin /usr/sbin/apache2 -script /usr/sbin/apache2ctl -v"
+  command <<-COMMAND
+  #{node['cf10']['install_path']}/cfusion/runtime/bin/wsconfig -ws Apache -dir #{apache_conf_dir} -bin #{node['apache']['binary']} -script /usr/sbin/apache2ctl -v"
+  mv #{apache_conf_file}.1 #{apache_conf_file}
+  mv #{apache_conf_dir}/mod_jk.conf #{node['apache']['dir']}/conf.d/mod_jk.conf
+  COMMAND
   action :run
-  not_if "grep 'mod_jk' #{node['apache']['dir']}/httpd.conf"
+  not_if { File.exists?("#{node['apache']['dir']}/conf.d/mod_jk.conf") }
   notifies :restart, "service[apache2]", :immediately
 end
