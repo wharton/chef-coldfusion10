@@ -2,7 +2,7 @@
 # Cookbook Name:: coldfusion10
 # Recipe:: j2ee
 #
-# Copyright 2012, NATHAN MISCHE
+# Copyright 2012, NATHAN MISCHE, Brian Flad
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
