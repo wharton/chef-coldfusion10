@@ -68,5 +68,5 @@ execute "run_cf10_installer" do
   creates "#{node['cf10']['installer']['install_folder']}/license.html"
   action :run
   user "root"
-  cwd "#{Chef::Config['file_cache_path']}"
+  cwd Chef::Config['file_cache_path']
 end

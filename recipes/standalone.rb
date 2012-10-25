@@ -36,11 +36,11 @@ service "coldfusion" do
 end
 
 # Create the webroot if it doesn't exist
-directory "#{node['cf10']['webroot']}" do
+directory node['cf10']['webroot'] do
   owner "vagrant"
   group "vagrant"
   mode "0755"
   action :create
-  not_if { File.directory?("#{node['cf10']['webroot']}") }
+  not_if { File.directory?(node['cf10']['webroot']) }
 end
 

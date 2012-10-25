@@ -1,3 +1,5 @@
+#chef-coldfusion10 [![Build Status](https://secure.travis-ci.org/wharton/chef-coldfusion10.png?branch=master)](http://travis-ci.org/wharton/chef-coldfusion10)
+
 Description
 ===========
 
@@ -29,28 +31,28 @@ The following attributes are under `node['cf10']['installer']`:
 
 * `['url']` - If defined, the installer will be downloaded from this location. If not defined you must download the CF10 installer from Adobe and place in the cookbook's `files/default` directory and set the `node['cf10']['installer']['file']` attribute. (no default)
 * `['file']` - If defined, a cookbook file with this name must be available in this cookbook's `files/default` directory. You may download the installer from adobe.com. If not defined you must provide an alternate download URL for CF10 installer by setting the `node['cf10']['installer']['url']` attribute. (no default)
-* `['license_mode']` - The license mode, valid values are full/trial/developer (default: "developer")
-* `['serial_number']` - If license mode is full, provide the serial number (default: "")
-* `['prev_serial_number']` - If an upgrade license, previous serial number (default: "") 
-* `['installer_type']` - The type of installation, valid values are ear/war/standalone (default: "standalone")
-* `['install_jnbridge']` - Install the .Net integration services, applies only to Windows systems with .Net framework installed (default: "false")
-* `['install_admin']` - Install the ColdFusion administrator application (default: "true")
-* `['install_solr']` - Install Apache Solr (default: "true")
-* `['install_folder']` - ColdFusion installation path (default: "/opt/coldfusion10")
-* `['enable_secure_profile']` - Enable secure profile, locking down the ColdFusion administrator (default: "false")
+
 * `['admin_ip']` - Secure profile IP addresses, IP addresses from which Administrator can be accessed (default: "")
 * `['admin_username']` - ColdFusion administrator username (default: "admin")
 * `['admin_password']` - ColdFusion administrator password (default: "vagrant")
+* `['auto_enable_updates']` - Enable auto updates (default: "false")
+* `['context_root']` - Context root for J2EE installation (default: "/cfusion")
 * `['enable_rds']` - Enable RDS (default: "false")
-* `['rds_password']` - Password if RDS is enabled (default: "vagrant")
+* `['enable_secure_profile']` - Enable secure profile, locking down the ColdFusion administrator (default: "false")
+* `['install_admin']` - Install the ColdFusion administrator application (default: "true")
+* `['install_folder']` - ColdFusion installation path (default: "/opt/coldfusion10")
+* `['install_jnbridge']` - Install the .Net integration services, applies only to Windows systems with .Net framework installed (default: "false")
+* `['install_solr']` - Install Apache Solr (default: "true")
+* `['installer_type']` - The type of installation, valid values are ear/war/standalone (default: "standalone")
+* `['license_mode']` - The license mode, valid values are full/trial/developer (default: "developer")
+* `['migrate_coldfusion']` - Migrate setting from a previous installation (default: "false")
 * `['jetty_username']` - Jetty useranme (default: "admin")
 * `['jetty_password']` - Jetty password (default: "vagrant")
-* `['context_root']` - Context root for J2EE installation (default: "/cfusion")
-* `['auto_enable_updates']` - Enable auto updates (default: "false")
-* `['migrate_coldfusion']` - Migrate setting from a previous installation (default: "false")
 * `['prev_cf_migr_dir']` - Where to migrate setting from (default: "")
-* `['runtimeuser']` - Runtime user (default: "nobody")
- 
+* `['prev_serial_number']` - If an upgrade license, previous serial number (default: "") 
+* `['rds_password']` - Password if RDS is enabled (default: "vagrant")
+* `['runtimeuser']` - Runtime user (default: "nobody") 
+* `['serial_number']` - If license mode is full, provide the serial number (default: "")
 
 For Web Server
 --------------
@@ -63,9 +65,8 @@ For Java
 --------
 The following attributes are under `node['cf10']['java']`:
 
-* `['home']` - Defaults to the JRE bundled with ColdFusion, updated to system JAVA_HOME if the Java cookbook is used. 
 * `['args']` - An array of arguments to be passed o the ColdFusion JVM. (default: [ "-Xms256m", "-Xmx512m", "-XX:MaxPermSize=192m", "-XX:+UseParallelGC" ])
-
+* `['home']` - Defaults to the JRE bundled with ColdFusion, updated to system JAVA_HOME if the Java cookbook is used. 
 
 For Configuration
 -----------------
