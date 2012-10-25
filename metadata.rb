@@ -1,3 +1,4 @@
+name             "coldfusion10"
 maintainer       "NATHAN MISCHE"
 maintainer_email "nmische@gmail.com"
 license          "Apache 2.0"
