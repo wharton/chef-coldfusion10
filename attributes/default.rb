@@ -48,6 +48,12 @@ default['cf10']['runtimeuser'] = "nobody"
 default['cf10']['webroot'] = "/vagrant/wwwroot"
 # JVM
 default['cf10']['java_home'] = "#{node['cf10']['install_path']}" 
+default['cf10']['java_args'] = %w{
+	-Xms256m
+  -Xmx512m
+  -XX:MaxPermSize=192m
+  -XX:+UseParallelGC
+}
 # Configuration 
 default['cf10']['config_settings'] = {}
 # CFIDE directory

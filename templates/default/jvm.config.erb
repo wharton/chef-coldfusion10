@@ -18,7 +18,7 @@ application.home=<%= node['cf10']['install_path'] %>/cfusion
 #
 
 # Arguments to VM
-java.args=-server -Xms256m -Xmx512m -XX:MaxPermSize=192m -XX:+UseParallelGC -Xbatch -Dcoldfusion.home={application.home} -Djava.security.egd=/dev/urandom -Djava.awt.headless=true -Dcoldfusion.rootDir={application.home} -Djava.security.policy={application.home}/lib/coldfusion.policy -Djava.security.auth.policy={application.home}/lib/neo_jaas.policy  -Dcoldfusion.classPath={application.home}/lib/updates,{application.home}/lib,{application.home}/lib/axis2,{application.home}/gateway/lib/,{application.home}/wwwroot/WEB-INF/cfform/jars,{application.home}/wwwroot/WEB-INF/flex/jars,{application.home}/lib/oosdk/lib,{application.home}/lib/oosdk/classes -Dcoldfusion.libPath={application.home}/lib -Dorg.apache.coyote.USE_CUSTOM_STATUS_MSG_IN_HEADER=true -Dcoldfusion.jsafe.defaultalgo=FIPS186Random
+java.args=-server <%= node['cf10']['java_args'].join(" ") %> -Xbatch -Dcoldfusion.home={application.home} -Djava.security.egd=/dev/urandom -Djava.awt.headless=true -Dcoldfusion.rootDir={application.home} -Djava.security.policy={application.home}/lib/coldfusion.policy -Djava.security.auth.policy={application.home}/lib/neo_jaas.policy  -Dcoldfusion.classPath={application.home}/lib/updates,{application.home}/lib,{application.home}/lib/axis2,{application.home}/gateway/lib/,{application.home}/wwwroot/WEB-INF/cfform/jars,{application.home}/wwwroot/WEB-INF/flex/jars,{application.home}/lib/oosdk/lib,{application.home}/lib/oosdk/classes -Dcoldfusion.libPath={application.home}/lib -Dorg.apache.coyote.USE_CUSTOM_STATUS_MSG_IN_HEADER=true -Dcoldfusion.jsafe.defaultalgo=FIPS186Random
 
 # Comma separated list of shared library path
 java.library.path={application.home}/lib/international
