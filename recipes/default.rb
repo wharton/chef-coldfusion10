@@ -26,12 +26,12 @@ if node['platform'] == 'ubuntu'
     components ["main","universe"]
     deb_src true
     action :add
-    only_if { node[:platform_version] == "10.04" }
+    only_if { node['platform_version'] == "10.04" }
   end
 
   execute "apt-get update" do
   	action :run
-  	only_if { node[:platform_version] == "10.04" }
+  	only_if { node['platform_version'] == "10.04" }
   end
 
 end
