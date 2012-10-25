@@ -1,3 +1,5 @@
+#chef-coldfusion10 [![Build Status](https://secure.travis-ci.org/wharton/chef-coldfusion10.png?branch=master)](http://travis-ci.org/wharton/chef-coldfusion10)
+
 Description
 ===========
 
