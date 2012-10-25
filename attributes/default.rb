@@ -8,9 +8,6 @@ default['cf10']['apache']['ssl_cert_file'] = "/etc/ssl/certs/ssl-cert-snakeoil.p
 default['cf10']['apache']['ssl_cert_key_file'] = "/etc/ssl/private/ssl-cert-snakeoil.key"
 default['cf10']['apache']['ssl_cert_chain_file'] = nil
 
-# CFIDE directory
-default['cf10']['cfide_dir'] = "#{node['cf10']['installer']['install_folder']}/cfusion/wwwroot/CFIDE"
-
 # Configuration 
 default['cf10']['config_settings'] = {}
 
@@ -64,6 +61,9 @@ default['cf10']['installer']['rds_password'] = "vagrant"
 default['cf10']['installer']['runtimeuser'] = "nobody"
 # CF serial number
 default['cf10']['installer']['serial_number'] = ""
+
+# CFIDE directory
+default['cf10']['cfide_dir'] = "#{node['cf10']['installer']['install_folder']}/cfusion/wwwroot/CFIDE"
 
 # JVM Settings
 default['cf10']['java']['args'] = %w{ 
