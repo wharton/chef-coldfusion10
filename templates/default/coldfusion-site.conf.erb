@@ -25,10 +25,10 @@
   CustomLog <%= node['apache']['log_dir'] %>/coldfusion-access.log combined
   ServerSignature On
 
-  Alias /CFIDE/ "<%= node['cf10']['install_path'] %>/cfusion/wwwroot/CFIDE/"
-  Alias /cfide/ "<%= node['cf10']['install_path'] %>/cfusion/wwwroot/CFIDE/"
+  Alias /CFIDE/ "<%= node['cf10']['installer']['install_folder'] %>/cfusion/wwwroot/CFIDE/"
+  Alias /cfide/ "<%= node['cf10']['installer']['install_folder'] %>/cfusion/wwwroot/CFIDE/"
 
-  <Directory "<%= node['cf10']['install_path']%>/cfusion/wwwroot/CFIDE">
+  <Directory "<%= node['cf10']['installer']['install_folder']%>/cfusion/wwwroot/CFIDE">
       Options Indexes MultiViews
       AllowOverride None
       Order allow,deny
@@ -66,10 +66,10 @@
   CustomLog <%= node['apache']['log_dir'] %>/coldfusion-access.log combined
   ServerSignature On
 
-  Alias /CFIDE/ "<%= node['cf10']['install_path'] %>/cfusion/wwwroot/CFIDE/"
-  Alias /cfide/ "<%= node['cf10']['install_path'] %>/cfusion/wwwroot/CFIDE/"
+  Alias /CFIDE/ "<%= node['cf10']['installer']['install_folder'] %>/cfusion/wwwroot/CFIDE/"
+  Alias /cfide/ "<%= node['cf10']['installer']['install_folder'] %>/cfusion/wwwroot/CFIDE/"
 
-  <Directory "<%= node['cf10']['install_path']%>/cfusion/wwwroot/CFIDE">
+  <Directory "<%= node['cf10']['installer']['install_folder']%>/cfusion/wwwroot/CFIDE">
       Options Indexes MultiViews
       AllowOverride None
       Order allow,deny
@@ -89,8 +89,8 @@
   #   SSLCertificateFile directive is needed.
 
 
-  SSLCertificateFile    <%= node['cf10']['apache_ssl_cert_file'] %>
-  SSLCertificateKeyFile <%= node['cf10']['apache_ssl_cert_key_file'] %>
+  SSLCertificateFile    <%= node['cf10']['apache']['ssl_cert_file'] %>
+  SSLCertificateKeyFile <%= node['cf10']['apache']['ssl_cert_key_file'] %>
 
   #   Server Certificate Chain:
   #   Point SSLCertificateChainFile at a file containing the
@@ -99,8 +99,8 @@
   #   the referenced file can be the same as SSLCertificateFile
   #   when the CA certificates are directly appended to the server
   #   certificate for convinience.
-  <% if node['cf10']['apache_ssl_cert_chain_file'] %>
-  SSLCertificateChainFile <%= node['cf10']['apache_ssl_cert_chain_file'] %>
+  <% if node['cf10']['apache']['ssl_cert_chain_file'] %>
+  SSLCertificateChainFile <%= node['cf10']['apache']['ssl_cert_chain_file'] %>
   <% end %>
   #SSLCertificateChainFile /etc/apache2/ssl.crt/server-ca.crt
 
