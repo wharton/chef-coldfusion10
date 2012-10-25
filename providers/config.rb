@@ -36,7 +36,6 @@ def initialize(*args)
     mode "0744"
     owner "root"
     group "root"
-    not_if { ::File.exists?("#{node['cf10']['installer']['install_folder']}/cfusion/wwwroot/CFIDE/administrator/configmanager") }
   end
 
   rf.run_action(:create_if_missing)
@@ -44,10 +43,9 @@ def initialize(*args)
   # Install the application
   e = execute "unzip #{Chef::Config['file_cache_path']}/configmanager.zip -d #{node['cf10']['installer']['install_folder']}/cfusion/wwwroot/CFIDE/administrator/configmanager" do
     action :nothing
-    not_if { ::File.exists?("#{node['cf10']['installer']['install_folder']}/cfusion/wwwroot/CFIDE/administrator/configmanager") }
   end
 
-  e.run_action(:run)
+  e.run_action(:run) unless ::File.exists?("#{node['cf10']['installer']['install_folder']}/cfusion/wwwroot/CFIDE/administrator/configmanager")
 
 end
 
