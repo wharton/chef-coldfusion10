@@ -31,7 +31,7 @@ def initialize(*args)
   
   # Download the config manager app
   rf = remote_file "#{Chef::Config['file_cache_path']}/configmanager.zip" do
-    source "#{node['cf10']['configmanager']['source_url']}"
+    source node['cf10']['configmanager']['source_url']
     action :nothing
     mode "0744"
     owner "root"
@@ -52,7 +52,7 @@ def initialize(*args)
 end
 
 action :set do
-  config = { "#{new_resource.component}" => { "#{new_resource.property}" => [ new_resource.args ] } } 
+  config = { new_resource.component => { new_resource.property => [ new_resource.args ] } } 
   if make_api_call(config) 
     new_resource.updated_by_last_action(true)
     Chef::Log.info("Updated ColdFusion #{new_resource.component} configuration.")

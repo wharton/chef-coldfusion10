@@ -54,7 +54,7 @@ default['cf10']['installer']['runtimeuser'] = "nobody"
 default['cf10']['webroot'] = "/vagrant/wwwroot"
 
 # JVM Settings
-default['cf10']['java']['home'] = "#{node['cf10']['installer']['install_folder']}" 
+default['cf10']['java']['home'] = node['cf10']['installer']['install_folder']
 default['cf10']['java']['args'] = %w{ 
   -Xms256m  
   -Xmx512m

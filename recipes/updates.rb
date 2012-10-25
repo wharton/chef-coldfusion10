@@ -49,7 +49,7 @@ node['cf10']['updates']['urls'].each do | update |
       command "#{node['cf10']['java']['home']}/jre/bin/java -jar #{file_name} -i silent -f update-installer.properties"
       action :run
       user "root"
-      cwd "#{Chef::Config['file_cache_path']}"
+      cwd Chef::Config['file_cache_path']
     end
 
   end 
