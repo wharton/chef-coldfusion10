@@ -22,7 +22,6 @@ updates_jars = node['cf10']['updates']['files']
 # Create the CF 10 update properties file
 template "#{Chef::Config['file_cache_path']}/update-installer.properties" do
   source "update-installer.properties.erb"
-  action :create_if_missing
   mode "0644"
   owner "root"
   group "root"
