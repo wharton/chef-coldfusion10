@@ -19,8 +19,8 @@
 
 # Generate a keystore
 execute "cf_keygen" do
-  command "#{node['cf10']['install_path']}/jre/bin/keytool -genkeypair -alias vagrant -dname \"cn=vagrant, ou=vagrant, o=vagrant, L=nowhere, ST=none, C=US\" -keyalg rsa -storepass vagrant -keystore #{node['cf10']['install_path']}/cfusion/runtime/conf/.keystore"
-  creates "#{node['cf10']['install_path']}/cfusion/runtime/conf/.keystore"
+  command "#{node['cf10']['installer']['install_folder']}/jre/bin/keytool -genkeypair -alias vagrant -dname \"cn=vagrant, ou=vagrant, o=vagrant, L=nowhere, ST=none, C=US\" -keyalg rsa -storepass vagrant -keystore #{node['cf10']['installer']['install_folder']}/cfusion/runtime/conf/.keystore"
+  creates "#{node['cf10']['installer']['install_folder']}/cfusion/runtime/conf/.keystore"
   action :run
   user "root"
   notifies :restart, "service[coldfusion]", :delayed
@@ -28,14 +28,14 @@ end
 
 # Set the permissions
 execute "cf_keystore_perms" do 
-  command "chown vagrant:root #{node['cf10']['install_path']}/cfusion/runtime/conf/.keystore"
+  command "chown vagrant:root #{node['cf10']['installer']['install_folder']}/cfusion/runtime/conf/.keystore"
   user "root"    
   action :run
 end
 
 # Copy WEB-INF if necessary
 execute "cf_web_inf" do
-  command "cp #{node['cf10']['install_path']}/cfusion/wwwroot/WEB-INF #{node['cf10']['webroot']}/"
+  command "cp #{node['cf10']['installer']['install_folder']}/cfusion/wwwroot/WEB-INF #{node['cf10']['webroot']}/"
   creates "#{node['cf10']['webroot']}/WEB-INF"
   action :run
   user "root"
@@ -43,7 +43,7 @@ execute "cf_web_inf" do
 end
 
 # Template the server.xml file
-template "#{node['cf10']['install_path']}/cfusion/runtime/conf/server.xml" do
+template "#{node['cf10']['installer']['install_folder']}/cfusion/runtime/conf/server.xml" do
   source "server.xml.erb"
   mode "0777"
   owner "vagrant"

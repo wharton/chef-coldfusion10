@@ -2,7 +2,7 @@
 # Cookbook Name:: coldfusion10
 # Recipe:: j2ee
 #
-# Copyright 2012, NATHAN MISCHE, Brian Flad
+# Copyright 2012, Nathan Mische, Brian Flad
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,45 +17,50 @@
 # limitations under the License.
 #
 
-if !node['cf10']['installer_type'].match("ear|war")
+if !node['cf10']['installer']['installer_type'].match("ear|war")
   Chef::Application.fatal!("ColdFusion 10 installer type must be 'ear' or 'war' for J2EE installation!")
 end
 
 # Run the installer
 include_recipe "coldfusion10::install"
 
-execute "Explode ColdFusion 10 EAR" do
-  cwd node["cf10"]["install_path"]
-  command <<-COMMAND
-    mkdir cfusion
-    unzip -q -d cfusion cfusion.ear
-    rm -f cfusion.ear
-    mv cfusion cfusion.ear
-  COMMAND
-  creates "#{node["cf10"]["install_path"]}/cfusion.ear/cfusion.war"
-  action :run
-end
+# Explode EAR
+if node['cf10']['installer']['installer_type'] == "ear"
 
-execute "Explode ColdFusion 10 WAR" do
-  cwd "#{node["cf10"]["install_path"]}/cfusion.ear"
-  command <<-COMMAND
-    mkdir cfusion
-    unzip -q -d cfusion cfusion.war
-    rm -f cfusion.war
-    mv cfusion cfusion.war
-  COMMAND
-  creates "#{node["cf10"]["install_path"]}/cfusion.ear/cfusion.war/META-INF/MANIFEST.MF"
-  action :run
-end
+  execute "Explode ColdFusion 10 EAR" do
+    cwd node["cf10"]["install_path"]
+    command <<-COMMAND
+      mkdir cfusion
+      unzip -q -d cfusion cfusion.ear
+      rm -f cfusion.ear
+      mv cfusion cfusion.ear
+    COMMAND
+    creates "#{node['cf10']['installer']['install_folder']}/cfusion.ear/cfusion.war"
+    action :run
+  end
 
-execute "Explode RDS WAR" do
-  cwd "#{node["cf10"]["install_path"]}/cfusion.ear"
-  command <<-COMMAND
-    mkdir rds
-    unzip -q -d rds rds.war
-    rm -f rds.war
-    mv rds rds.war
-  COMMAND
-  creates "#{node["cf10"]["install_path"]}/cfusion.ear/rds.war/META-INF/MANIFEST.MF"
-  action :run
-end
+  execute "Explode ColdFusion 10 WAR" do
+    cwd "#{node['cf10']['installer']['install_folder']}/cfusion.ear"
+    command <<-COMMAND
+      mkdir cfusion
+      unzip -q -d cfusion cfusion.war
+      rm -f cfusion.war
+      mv cfusion cfusion.war
+    COMMAND
+    creates "#{node['cf10']['installer']['install_folder']}/cfusion.ear/cfusion.war/META-INF/MANIFEST.MF"
+    action :run
+  end
+
+  execute "Explode RDS WAR" do
+    cwd "#{node['cf10']['installer']['install_folder']}/cfusion.ear"
+    command <<-COMMAND
+      mkdir rds
+      unzip -q -d rds rds.war
+      rm -f rds.war
+      mv rds rds.war
+    COMMAND
+    creates "#{node['cf10']['installer']['install_folder']}/cfusion.ear/rds.war/META-INF/MANIFEST.MF"
+    action :run
+  end
+
+end 

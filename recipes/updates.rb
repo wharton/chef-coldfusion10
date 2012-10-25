@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-updates_jars = ["hf1000-3332326.jar","chf10000001.jar","chf10000002.jar"]
+updates_jars = node['cf10']['updates']['files']
 
 # Create the CF 10 update properties file
 template "#{Chef::Config['file_cache_path']}/update-installer.properties" do
@@ -29,12 +29,12 @@ template "#{Chef::Config['file_cache_path']}/update-installer.properties" do
 end
 
 # Run updates 
-node['cf10']['updates'].each do | update |
+node['cf10']['updates']['urls'].each do | update |
 
   # Only apply an update if it or a later update doesn't exist 
-  if updates_jars.select { |x| File.exists?("#{node['cf10']['install_path']}/cfusion/lib/updates/#{x}") }.empty?
+  if updates_jars.select { |x| File.exists?("#{node['cf10']['installer']['install_folder']}/cfusion/lib/updates/#{x}") }.empty?
 
-     file_name = update.split('/').last
+    file_name = update.split('/').last
 
     # Download the update
     remote_file "#{Chef::Config['file_cache_path']}/#{file_name}" do
@@ -47,7 +47,7 @@ node['cf10']['updates'].each do | update |
 
     # Run the installer
     execute "run_cf10_#{file_name.split('.').first}_installer" do
-      command "#{node['cf10']['java_home']}/jre/bin/java -jar #{file_name} -i silent -f update-installer.properties"
+      command "#{node['cf10']['java']['home']}/jre/bin/java -jar #{file_name} -i silent -f update-installer.properties"
       action :run
       user "root"
       cwd "#{Chef::Config['file_cache_path']}"

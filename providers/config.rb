@@ -31,20 +31,20 @@ def initialize(*args)
   
   # Download the config manager app
   rf = remote_file "#{Chef::Config['file_cache_path']}/configmanager.zip" do
-    source "#{node['cf10']['configmanager']['source']['url']}"
+    source "#{node['cf10']['configmanager']['source_url']}"
     action :nothing
     mode "0744"
     owner "root"
     group "root"
-    not_if { ::File.exists?("#{node['cf10']['install_path']}/cfusion/wwwroot/CFIDE/administrator/configmanager") }
+    not_if { ::File.exists?("#{node['cf10']['installer']['install_folder']}/cfusion/wwwroot/CFIDE/administrator/configmanager") }
   end
 
   rf.run_action(:create_if_missing)
 
   # Install the application
-  e = execute "unzip #{Chef::Config['file_cache_path']}/configmanager.zip -d #{node['cf10']['install_path']}/cfusion/wwwroot/CFIDE/administrator/configmanager" do
+  e = execute "unzip #{Chef::Config['file_cache_path']}/configmanager.zip -d #{node['cf10']['installer']['install_folder']}/cfusion/wwwroot/CFIDE/administrator/configmanager" do
     action :nothing
-    not_if { ::File.exists?("#{node['cf10']['install_path']}/cfusion/wwwroot/CFIDE/administrator/configmanager") }
+    not_if { ::File.exists?("#{node['cf10']['installer']['install_folder']}/cfusion/wwwroot/CFIDE/administrator/configmanager") }
   end
 
   e.run_action(:run)
@@ -76,41 +76,23 @@ def make_api_call(msg)
   last_mod = nil
   made_update = false
 
-  # Default protocol and port if no SSL
-  protocol = "http"
-  port = "8500"
-
-=begin
-  # Adjust port and protocol if using Tomcat
-  if node.recipe?("coldfusion10::tomcat")
-     protocol = "https"
-     port = "8443"
-  end
-
-  # Adjust port and protocol if using Apache
-  if node.recipe?("coldfusion10::apache")
-    protocol = "https"
-    port = "443"
-  end
-=end 
-
   # Get config state before attempted update
-  before = Dir.glob("#{node['cf10']['install_path']}/cfusion/lib/neo-*.xml").map { |filename| checksum(filename) }
+  before = Dir.glob("#{node['cf10']['installer']['install_folder']}/cfusion/lib/neo-*.xml").map { |filename| checksum(filename) }
 
-  Chef::Log.debug("Making API call to #{protocol}://#{node['ipaddress']}:#{port}/CFIDE/administrator/configmanager/api/index.cfm")
+  Chef::Log.debug("Making API call to #{node['cf10']['configmanager']['api_url']}")
 
   # Make API call
   hr = http_request "post_config" do
     action :nothing
-    url "#{protocol}://#{node['ipaddress']}:#{port}/CFIDE/administrator/configmanager/api/index.cfm"
+    url node['cf10']['configmanager']['api_url']
     message msg
-    headers({"AUTHORIZATION" => "Basic #{Base64.encode64("admin:#{node['cf10']['admin_pw']}")}"})
+    headers({"AUTHORIZATION" => "Basic #{Base64.encode64("admin:#{node['cf10']['installer']['admin_password']}")}"})
   end
 
   hr.run_action(:post)
 
   # Get config state after attempted update
-  after = Dir.glob("#{node['cf10']['install_path']}/cfusion/lib/neo-*.xml").map { |filename| checksum(filename) }
+  after = Dir.glob("#{node['cf10']['installer']['install_folder']}/cfusion/lib/neo-*.xml").map { |filename| checksum(filename) }
 
   made_update = true if (after - before).length > 0 
 

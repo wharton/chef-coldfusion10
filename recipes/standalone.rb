@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-if !node['cf10']['installer_type'].match("standalone")
+if !node['cf10']['installer']['installer_type'].match("standalone")
   Chef::Application.fatal!("ColdFusion 10 installer type must be 'standalone' for standalone installation!")
 end
 
@@ -26,7 +26,7 @@ include_recipe "coldfusion10::install"
 
 # Link the init script
 link "/etc/init.d/coldfusion" do
-  to "#{node['cf10']['install_path']}/cfusion/bin/coldfusion"
+  to "#{node['cf10']['installer']['install_folder']}/cfusion/bin/coldfusion"
 end
 
 # Set up ColdFusion as a service
