@@ -17,18 +17,6 @@
 # limitations under the License.
 #
 
-# Apache configuration variables
-case node['platform_family']
-when "rhel", "fedora", "arch"
-  apache_conf_dir = "#{node['apache']['dir']}/conf"
-  apache_conf_file = "#{apache_conf_dir}/httpd.conf"
-  apache_control = "/usr/sbin/apachectl"
-else
-  apache_conf_dir = node['apache']['dir']
-  apache_conf_file = "#{apache_conf_dir}/apache2.conf"
-  apache_control = "/usr/sbin/apache2ctl"
-end
-
 # Disable the default site
 apache_site "000-default" do
   enable false  
@@ -48,12 +36,21 @@ end
 
 # Run wsconfig 
 execute "wsconfig" do
-  command <<-COMMAND
-  #{node['cf10']['installer']['install_folder']}/cfusion/runtime/bin/wsconfig -ws Apache -dir #{apache_conf_dir} -bin #{node['apache']['binary']} -script #{apache_control} -v
-  mv #{apache_conf_file}.1 #{apache_conf_file}
-  mv #{apache_conf_dir}/mod_jk.conf #{node['apache']['dir']}/conf.d/mod_jk.conf
-  COMMAND
+  case node['platform_family']
+    when "rhel", "fedora", "arch"
+      command <<-COMMAND
+      #{node['cf10']['installer']['install_folder']}/cfusion/runtime/bin/wsconfig -ws Apache -dir #{node['apache']['dir']}/conf -bin #{node['apache']['binary']} -script /usr/sbin/apachectl -v
+      mv #{node['apache']['dir']}/conf/httpd.conf.1 #{node['apache']['dir']}/conf/httpd.conf
+      mv #{node['apache']['dir']}/conf/mod_jk.conf #{node['apache']['dir']}/conf.d/mod_jk.conf
+      COMMAND
+    else
+      command <<-COMMAND
+      #{node['cf10']['installer']['install_folder']}/cfusion/runtime/bin/wsconfig -ws Apache -dir #{node['apache']['dir']} -bin #{node['apache']['binary']} -script /usr/sbin/apache2ctl -v
+      rm #{node['apache']['dir']}/httpd.conf -f
+      mv #{node['apache']['dir']}/mod_jk.conf #{node['apache']['dir']}/conf.d/mod_jk.conf
+      COMMAND
+    end
   action :run
   not_if { File.exists?("#{node['apache']['dir']}/conf.d/mod_jk.conf") }
-  notifies :restart, "service[apache2]", :immediately
 end
+
