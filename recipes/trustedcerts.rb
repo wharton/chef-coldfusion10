@@ -18,24 +18,26 @@
 #
 
 if node.recipe?("java") && node['java']['install_flavor'] == "oracle" 
-  node['cf10']['java_home'] = node['java']['java_home']
+  node['cf10']['java']['home'] = node['java']['java_home']
 end
 
-# If using Apache on Ubuntu import the snakeoil ssl cert
-if node.recipe?("coldfusion10::apache") &&  node['platform'] == 'ubuntu'
+# If using Apache import the ssl cert
+if node.recipe?("coldfusion10::apache")
 
-  # Link the snakeoil cert
-  link "#{node['cf10']['java_home']}/jre/lib/security/trusted-ssl-cert-snakeoil.pem" do
-    to "/etc/ssl/certs/ssl-cert-snakeoil.pem"
+  file_name = "trusted-" + node['cf10']['apache']['ssl_cert_file'].split('/').last
+
+  # Link the Apache cert
+  link "#{node['cf10']['java']['home']}/jre/lib/security/#{file_name}" do
+    to node['cf10']['apache']['ssl_cert_file']
   end
 
   # Import the cert
   execute "import_ssl-cert-snakeoil" do
-    command "#{node['cf10']['java_home']}/jre/bin/keytool -importcert -noprompt -trustcacerts -alias ApacheSnakeoilSSL -file /etc/ssl/certs/ssl-cert-snakeoil.pem -keystore cacerts -storepass changeit"
+    command "#{node['cf10']['java']['home']}/jre/bin/keytool -importcert -noprompt -trustcacerts -alias ApacheLocalhostCert -file #{node['cf10']['apache']['ssl_cert_file']} -keystore cacerts -storepass changeit"
     action :run
     user "root"
-    cwd "#{node['cf10']['java_home']}/jre/lib/security"
-    not_if "#{node['cf10']['java_home']}/jre/bin/keytool -list -alias ApacheSnakeoilSSL -keystore #{node['cf10']['java_home']}/jre/lib/security/cacerts -storepass changeit"
+    cwd "#{node['cf10']['java']['home']}/jre/lib/security"
+    not_if "#{node['cf10']['java']['home']}/jre/bin/keytool -list -alias ApacheLocalhostCert -keystore #{node['cf10']['java']['home']}/jre/lib/security/cacerts -storepass changeit"
     notifies :restart, "service[coldfusion]", :delayed
   end
 
@@ -46,20 +48,20 @@ if node.recipe?("coldfusion10::tomcat")
 
   # Export the cert
   execute "export_ssl-vagrant" do
-    command "#{node['cf10']['install_path']}/jre/bin/keytool -exportcert -alias vagrant -rfc -file #{node['cf10']['install_path']}/jre/lib/security/trusted-vagrant.pem -keystore .keystore -storepass vagrant"
+    command "#{node['cf10']['installer']['install_folder']}/jre/bin/keytool -exportcert -alias vagrant -rfc -file #{node['cf10']['installer']['install_folder']}/jre/lib/security/trusted-vagrant.pem -keystore .keystore -storepass vagrant"
     action :run
     user "root"
-    cwd "#{node['cf10']['install_path']}/cfusion/runtime/conf"
-    not_if { File.exists?("#{node['cf10']['install_path']}/jre/lib/security/trusted-vagrant.pem") }
+    cwd "#{node['cf10']['installer']['install_folder']}/cfusion/runtime/conf"
+    not_if { File.exists?("#{node['cf10']['installer']['install_folder']}/jre/lib/security/trusted-vagrant.pem") }
   end
 
   # Import the cert
   execute "import_ssl-vagrant" do
-    command "#{node['cf10']['install_path']}/jre/bin/keytool -importcert -noprompt -trustcacerts -alias vagrant -file vagrant.cer -keystore cacerts -storepass changeit"
+    command "#{node['cf10']['installer']['install_folder']}/jre/bin/keytool -importcert -noprompt -trustcacerts -alias vagrant -file vagrant.cer -keystore cacerts -storepass changeit"
     action :run
     user "root"
-    cwd "#{node['cf10']['install_path']}/jre/lib/security"
-    not_if "#{node['cf10']['install_path']}/jre/bin/keytool -list -alias vagrant -keystore #{node['cf10']['install_path']}/jre/lib/security/cacerts -storepass changeit"
+    cwd "#{node['cf10']['installer']['install_folder']}/jre/lib/security"
+    not_if "#{node['cf10']['installer']['install_folder']}/jre/bin/keytool -list -alias vagrant -keystore #{node['cf10']['installer']['install_folder']}/jre/lib/security/cacerts -storepass changeit"
     notifies :restart, "service[coldfusion]", :delayed
   end
 
@@ -73,7 +75,7 @@ trusted_certs.each do |certalias|
   cert = data_bag_item("trusted_certs", certalias)
 
   # Template the cert
-  template "#{node['cf10']['java_home']}/jre/lib/security/trusted-#{certalias}.pem" do
+  template "#{node['cf10']['java']['home']}/jre/lib/security/trusted-#{certalias}.pem" do
     mode "0644"
     owner "root"
     group "root"
@@ -85,11 +87,11 @@ trusted_certs.each do |certalias|
 
   # Import the cert
   execute "import_trusted-#{certalias}" do
-    command "#{node['cf10']['java_home']}/jre/bin/keytool -importcert -noprompt -trustcacerts -alias #{certalias} -file trusted-#{certalias}.pem -keystore cacerts -storepass changeit"
+    command "#{node['cf10']['java']['home']}/jre/bin/keytool -importcert -noprompt -trustcacerts -alias #{certalias} -file trusted-#{certalias}.pem -keystore cacerts -storepass changeit"
     action :run
     user "root"
-    cwd "#{node['cf10']['java_home']}/jre/lib/security"
-    not_if "#{node['cf10']['java_home']}/jre/bin/keytool -list -alias #{certalias} -keystore #{node['cf10']['java_home']}/jre/lib/security/cacerts -storepass changeit"
+    cwd "#{node['cf10']['java']['home']}/jre/lib/security"
+    not_if "#{node['cf10']['java']['home']}/jre/bin/keytool -list -alias #{certalias} -keystore #{node['cf10']['java']['home']}/jre/lib/security/cacerts -storepass changeit"
     notifies :restart, "service[coldfusion]", :delayed
   end
 

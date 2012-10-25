@@ -98,7 +98,7 @@
     <Connector port="8443" protocol="HTTP/1.1" SSLEnabled="true"
                maxThreads="150" scheme="https" secure="true"
                clientAuth="false" sslProtocol="TLS" 
-               keystoreFile="<%= node['cf10']['install_path'] %>/cfusion/runtime/conf/.keystore" 
+               keystoreFile="<%= node['cf10']['installer']['install_folder'] %>/cfusion/runtime/conf/.keystore" 
                keystorePass="vagrant" keyAlias="vagrant"/>
 
     <!-- Define an AJP 1.3 Connector on port 8009 -->
@@ -156,8 +156,8 @@
         docBaseN must be an absolute path to a directory. -->
         <!-- <Context path="/" docBase="<cf_home>\wwwroot" WorkDir="<cf_home>\runtime\conf\Catalina\localhost\tmp" ></Context>  -->
         <Context path="/" docBase="<%= node['cf10']['webroot'] %>" 
-                 WorkDir="<%= node['cf10']['install_path'] %>/runtime/conf/Catalina/localhost/tmp" 
-                 aliases="/CFIDE=<%= node['cf10']['install_path'] %>/cfusion/wwwroot/CFIDE,/cfide=<%= node['cf10']['install_path'] %>/cfusion/wwwroot/CFIDE">
+                 WorkDir="<%= node['cf10']['installer']['install_folder'] %>/runtime/conf/Catalina/localhost/tmp" 
+                 aliases="/CFIDE=<%= node['cf10']['installer']['install_folder'] %>/cfusion/wwwroot/CFIDE,/cfide=<%= node['cf10']['installer']['install_folder'] %>/cfusion/wwwroot/CFIDE">
         </Context>
 
       </Host>

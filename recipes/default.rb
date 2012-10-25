@@ -50,17 +50,17 @@ cf_pkgs.each do |pkg|
 end
 
 # Setup runtime user
-user node["cf10"]["runtimeuser"] do
+user node['cf10']['installer']['runtimeuser'] do
   system true
   shell "/bin/false"
 end
 
 # Do either a standalone or J2EE intstallation
-if node['cf10']['installer_type'].match("ear|war")
+if node['cf10']['installer']['installer_type'].match("ear|war")
 
   include_recipe "coldfusion10::j2ee"
 
-elsif node['cf10']['installer_type'].match("standalone")
+elsif node['cf10']['installer']['installer_type'].match("standalone")
 
   include_recipe "coldfusion10::standalone"
   include_recipe "coldfusion10::jvmconfig"

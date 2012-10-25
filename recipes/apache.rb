@@ -40,22 +40,16 @@ web_app "coldfusion" do
   template "coldfusion-site.conf.erb"
 end
 
-# Link httpd.conf
-# link "#{node['apache']['dir']}/conf.d/httpd" do
-#  to "#{node['apache']['dir']}/httpd.conf"
-#  notifies :restart, "service[apache2]", :delayed
-# end
-
 # Make sure CF is running
 execute "start_cf_for_coldfusion10_wsconfig" do
   command "/bin/true"
   notifies :start, "service[coldfusion]", :immediately
 end
 
-# Run wsconfig
+# Run wsconfig 
 execute "wsconfig" do
   command <<-COMMAND
-  #{node['cf10']['install_path']}/cfusion/runtime/bin/wsconfig -ws Apache -dir #{apache_conf_dir} -bin #{node['apache']['binary']} -script #{apache_control} -v
+  #{node['cf10']['installer']['install_folder']}/cfusion/runtime/bin/wsconfig -ws Apache -dir #{apache_conf_dir} -bin #{node['apache']['binary']} -script #{apache_control} -v
   mv #{apache_conf_file}.1 #{apache_conf_file}
   mv #{apache_conf_dir}/mod_jk.conf #{node['apache']['dir']}/conf.d/mod_jk.conf
   COMMAND

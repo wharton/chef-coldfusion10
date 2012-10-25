@@ -21,11 +21,11 @@ service "jbossas" do
   action :stop
 end
 
-link "#{node["jbossas7"]["home"]}/standalone/deployments/cfusion.ear" do
-  to "#{node["cf10"]["install_path"]}/cfusion.ear"
+link "#{node['jbossas7']['home']}/standalone/deployments/cfusion.ear" do
+  to "#{node['cf10']['installer']['install_folder']}/cfusion.ear"
 end
 
-file "#{node["jbossas7"]["home"]}/standalone/deployments/cfusion.ear.dodeploy" do
+file "#{node['jbossas7']['home']}/standalone/deployments/cfusion.ear.dodeploy" do
   action :create
   owner "root"
   group "root"

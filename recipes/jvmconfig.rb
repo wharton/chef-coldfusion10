@@ -19,14 +19,14 @@
 
 
 if node.recipe?("java") && node['java']['install_flavor'] == "oracle" 
-  node['cf10']['java_home'] = node['java']['java_home']
+  node['cf10']['java']['home'] = node['java']['java_home']
 end
   
 # Customize the jvm config
-template "#{node['cf10']['install_path']}/cfusion/bin/jvm.config" do
+template "#{node['cf10']['installer']['install_folder']}/cfusion/bin/jvm.config" do
   source "jvm.config.erb"
   mode "0664"
-  owner node['cf10']['runtimeuser']
-  group node['cf10']['runtimeuser']
+  owner node['cf10']['installer']['runtimeuser']
+  group node['cf10']['installer']['runtimeuser']
   notifies :restart, "service[coldfusion]", :delayed
 end
