@@ -19,18 +19,18 @@
 
 deployments_dir="#{node['jbossas7']['home']}/standalone/deployments"
 
-unless File::exists?("#{deployments_dir}/cfusion.ear") && File::exists?("#{deployments_dir}/cfusion.ear.deployed")
-  Chef::Log.info("Deploying ColdFusion EAR to JBoss AS 7")
+unless File::exists?("#{deployments_dir}/cfusion.war") && File::exists?("#{deployments_dir}/cfusion.war.deployed")
+  Chef::Log.info("Deploying ColdFusion WAR to JBoss AS 7")
 
 	service "jbossas" do
     action :stop
   end
 
-  link "#{node['jbossas7']['home']}/standalone/deployments/cfusion.ear" do
-    to "#{node['cf10']['installer']['install_folder']}/cfusion.ear"
+  link "#{deployments_dir}/cfusion.war" do
+    to "#{node['cf10']['installer']['install_folder']}/cfusion.ear/cfusion.war"
   end
 
-  file "#{node['jbossas7']['home']}/standalone/deployments/cfusion.ear.dodeploy" do
+  file "#{deployments_dir}/cfusion.war.dodeploy" do
     action :create
     owner "root"
     group "root"
@@ -43,5 +43,5 @@ unless File::exists?("#{deployments_dir}/cfusion.ear") && File::exists?("#{deplo
     action :start
   end
 else
-  Chef::Log.info("Skipping deployment of ColdFusion EAR to JBoss AS 7... already deployed.")
+  Chef::Log.info("Skipping deployment of ColdFusion WAR to JBoss AS 7... already deployed.")
 end
