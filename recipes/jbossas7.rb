@@ -26,6 +26,12 @@ unless File::exists?("#{deployments_dir}/cfusion.war") && File::exists?("#{deplo
     action :stop
   end
 
+  execute "Fixing ColdFusion permissions for deployment" do
+    command "chown -R jboss #{node['cf10']['installer']['install_folder']}/cfusion.ear"
+    action :run
+  end
+  
+
   link "#{deployments_dir}/cfusion.war" do
     to "#{node['cf10']['installer']['install_folder']}/cfusion.ear/cfusion.war"
   end
