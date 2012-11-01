@@ -27,11 +27,7 @@ unless File::exists?("#{deployments_dir}/cfusion.war") && File::exists?("#{deplo
   end
 
   execute "Disabling default-host virtual-server welcome-root" do
-    command <<-COMMAND
-      #{node['jbossas7']['home']}/bin/jboss-cli.sh -c \
-        --commands "/subsystem=web/virtual-server=default-host/:write-attribute(name=enable-welcome-root,value=false)" \
-        --commands "/:reload"
-    COMMAND
+    command "( echo '/subsystem=web/virtual-server=default-host/:write-attribute(name=enable-welcome-root,value=false)'; echo '/:reload' ) | #{node['jbossas7']['home']}/bin/jboss-cli.sh -c"
     action :run
   end
 
