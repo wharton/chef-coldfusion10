@@ -28,7 +28,7 @@ include_recipe "coldfusion10::install"
 if node['cf10']['installer']['installer_type'] == "ear"
 
   execute "Explode ColdFusion 10 EAR" do
-    cwd node["cf10"]["install_path"]
+    cwd node['cf10']['installer']['install_folder']
     command <<-COMMAND
       mkdir cfusion
       unzip -q -d cfusion cfusion.ear
