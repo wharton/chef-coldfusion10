@@ -19,7 +19,7 @@
 
 deployments_dir="#{node['jbossas7']['home']}/standalone/deployments"
 
-unless File.exists("#{deployments_dir}/cfusion.ear") && File.exists("#{deployments_dir}/cfusion.ear.deployed")
+unless File::exists("#{deployments_dir}/cfusion.ear") && File::exists("#{deployments_dir}/cfusion.ear.deployed")
 	service "jbossas" do
     action :stop
   end
