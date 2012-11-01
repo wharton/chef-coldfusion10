@@ -26,12 +26,20 @@ unless File::exists?("#{deployments_dir}/cfusion.war") && File::exists?("#{deplo
     action :stop
   end
 
+  execute "Disabling default-host virtual-server welcome-root" do
+    command <<-COMMAND
+      #{node['jbossas7']['home']}/bin/jboss-cli.sh -c \
+        --commands "/subsystem=web/virtual-server=default-host/:write-attribute(name=enable-welcome-root,value=false)" \
+        --commands "/:reload"
+    COMMAND
+    action :run
+  end
+
   execute "Fixing ColdFusion permissions for deployment" do
     command "chown -R jboss #{node['cf10']['installer']['install_folder']}/cfusion.ear"
     action :run
   end
   
-
   link "#{deployments_dir}/cfusion.war" do
     to "#{node['cf10']['installer']['install_folder']}/cfusion.ear/cfusion.war"
   end
