@@ -20,6 +20,8 @@
 deployments_dir="#{node['jbossas7']['home']}/standalone/deployments"
 
 unless File::exists?("#{deployments_dir}/cfusion.ear") && File::exists?("#{deployments_dir}/cfusion.ear.deployed")
+  Chef::Log.info("Deploying ColdFusion EAR to JBoss AS 7")
+
 	service "jbossas" do
     action :stop
   end
@@ -40,4 +42,6 @@ unless File::exists?("#{deployments_dir}/cfusion.ear") && File::exists?("#{deplo
   service "jbossas" do
     action :start
   end
+else
+  Chef::Log.info("Skipping deployment of ColdFusion EAR to JBoss AS 7... already deployed.")
 end
