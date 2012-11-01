@@ -17,23 +17,27 @@
 # limitations under the License.
 #
 
-service "jbossas" do
-  action :stop
-end
+deployments_dir="#{node['jbossas7']['home']}/standalone/deployments"
 
-link "#{node['jbossas7']['home']}/standalone/deployments/cfusion.ear" do
-  to "#{node['cf10']['installer']['install_folder']}/cfusion.ear"
-end
+unless File.exists("#{deployments_dir}/cfusion.ear") && File.exists("#{deployments_dir}/cfusion.ear.deployed")
+	service "jbossas" do
+    action :stop
+  end
 
-file "#{node['jbossas7']['home']}/standalone/deployments/cfusion.ear.dodeploy" do
-  action :create
-  owner "root"
-  group "root"
-  mode "0666"
-end
+  link "#{node['jbossas7']['home']}/standalone/deployments/cfusion.ear" do
+    to "#{node['cf10']['installer']['install_folder']}/cfusion.ear"
+  end
 
-# Needs much more tuning here!
+  file "#{node['jbossas7']['home']}/standalone/deployments/cfusion.ear.dodeploy" do
+    action :create
+    owner "root"
+    group "root"
+    mode "0666"
+  end
 
-service "jbossas" do
-  action :start
+  # Needs much more tuning here!
+
+  service "jbossas" do
+    action :start
+  end
 end
