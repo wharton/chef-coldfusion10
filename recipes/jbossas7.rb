@@ -17,23 +17,41 @@
 # limitations under the License.
 #
 
-service "jbossas" do
-  action :stop
-end
+deployments_dir="#{node['jbossas7']['home']}/standalone/deployments"
 
-link "#{node['jbossas7']['home']}/standalone/deployments/cfusion.ear" do
-  to "#{node['cf10']['installer']['install_folder']}/cfusion.ear"
-end
+unless File::exists?("#{deployments_dir}/cfusion.war") && File::exists?("#{deployments_dir}/cfusion.war.deployed")
+  Chef::Log.info("Deploying ColdFusion WAR to JBoss AS 7")
 
-file "#{node['jbossas7']['home']}/standalone/deployments/cfusion.ear.dodeploy" do
-  action :create
-  owner "root"
-  group "root"
-  mode "0666"
-end
+	service "jbossas" do
+    action :stop
+  end
 
-# Needs much more tuning here!
+  execute "Disabling default-host virtual-server welcome-root" do
+    command "( echo '/subsystem=web/virtual-server=default-host/:write-attribute(name=enable-welcome-root,value=false)'; echo '/:reload' ) | #{node['jbossas7']['home']}/bin/jboss-cli.sh -c"
+    action :run
+  end
 
-service "jbossas" do
-  action :start
+  execute "Fixing ColdFusion permissions for deployment" do
+    command "chown -R jboss #{node['cf10']['installer']['install_folder']}/cfusion.ear"
+    action :run
+  end
+  
+  link "#{deployments_dir}/cfusion.war" do
+    to "#{node['cf10']['installer']['install_folder']}/cfusion.ear/cfusion.war"
+  end
+
+  file "#{deployments_dir}/cfusion.war.dodeploy" do
+    action :create
+    owner "root"
+    group "root"
+    mode "0666"
+  end
+
+  # Needs much more tuning here!
+
+  service "jbossas" do
+    action :start
+  end
+else
+  Chef::Log.info("Skipping deployment of ColdFusion WAR to JBoss AS 7... already deployed.")
 end
