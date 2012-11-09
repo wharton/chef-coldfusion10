@@ -65,6 +65,9 @@ default['cf10']['installer']['serial_number'] = ""
 # CFIDE directory
 default['cf10']['cfide_dir'] = "#{node['cf10']['installer']['install_folder']}/cfusion/wwwroot/CFIDE"
 
+# Config directory
+default['cf10']['config_dir'] = "#{node['cf10']['installer']['install_folder']}/cfusion/lib"
+
 # JVM Settings
 default['cf10']['java']['args'] = %w{ 
   -Xms256m  

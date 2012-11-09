@@ -38,14 +38,14 @@ def initialize(*args)
     group "root"
   end
 
-  rf.run_action(:create_if_missing)
+  rf.run_action(:create_if_missing) unless ::File.exists?("#{node['cf10']['cfide_dir']}/administrator/configmanager")
 
   # Install the application
-  e = execute "unzip #{Chef::Config['file_cache_path']}/configmanager.zip -d #{node['cf10']['installer']['install_folder']}/cfusion/wwwroot/CFIDE/administrator/configmanager" do
+  e = execute "unzip #{Chef::Config['file_cache_path']}/configmanager.zip -d #{node['cf10']['cfide_dir']}/administrator/configmanager" do
     action :nothing
   end
 
-  e.run_action(:run) unless ::File.exists?("#{node['cf10']['installer']['install_folder']}/cfusion/wwwroot/CFIDE/administrator/configmanager")
+  e.run_action(:run) unless ::File.exists?("#{node['cf10']['cfide_dir']}/administrator/configmanager")
 
 end
 
@@ -75,7 +75,7 @@ def make_api_call(msg)
   made_update = false
 
   # Get config state before attempted update
-  before = Dir.glob("#{node['cf10']['installer']['install_folder']}/cfusion/lib/neo-*.xml").map { |filename| checksum(filename) }
+  before = Dir.glob("#{node['cf10']['config_dir']}/neo-*.xml").map { |filename| checksum(filename) }
 
   Chef::Log.debug("Making API call to #{node['cf10']['configmanager']['api_url']}")
 
@@ -90,7 +90,7 @@ def make_api_call(msg)
   hr.run_action(:post)
 
   # Get config state after attempted update
-  after = Dir.glob("#{node['cf10']['installer']['install_folder']}/cfusion/lib/neo-*.xml").map { |filename| checksum(filename) }
+  after = Dir.glob("#{node['cf10']['config_dir']}/neo-*.xml").map { |filename| checksum(filename) }
 
   made_update = true if (after - before).length > 0 
 
