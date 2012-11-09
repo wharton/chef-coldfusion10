@@ -3,7 +3,7 @@
 Description
 ===========
 
-Installs ColdFusion 10 developer edition in standalone server mode.
+Installs ColdFusion 10.
 
 Requirements
 ============
