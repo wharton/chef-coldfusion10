@@ -24,15 +24,6 @@ end
 # Run the installer
 include_recipe "coldfusion10::install"
 
-# Clean up permissions
-%w{ Mail stubs tmpCache }.each do |dir|
-  execute "set_#{dir}_owner" do
-    command "chown -R #{node['cf10']['installer']['runtimeuser']} #{node['cf10']['installer']['install_folder']}/cfusion/#{dir}"    
-    action :run
-    not_if "stat -c %U #{node['cf10']['installer']['install_folder']}/cfusion/#{dir} == #{node['cf10']['installer']['runtimeuser']}"
-  end
-end
-
 # Link the init script
 link "/etc/init.d/coldfusion" do
   to "#{node['cf10']['installer']['install_folder']}/cfusion/bin/coldfusion"

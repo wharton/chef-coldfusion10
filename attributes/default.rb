@@ -82,11 +82,13 @@ default['cf10']['updates']['urls'] = %w{
   http://download.macromedia.com/pub/coldfusion/10/cf10_mdt_updt.jar 
   http://download.adobe.com/pub/adobe/coldfusion/hotfix_001.jar
   http://download.adobe.com/pub/adobe/coldfusion/hotfix_002.jar
+  http://download.adobe.com/pub/adobe/coldfusion/hotfix_004.jar
 }
 default['cf10']['updates']['files'] = %w{ 
   hf1000-3332326.jar
   chf10000001.jar
   chf10000002.jar
+  chf10000004.jar
 }
 
 # Tomcat or Apache web root
