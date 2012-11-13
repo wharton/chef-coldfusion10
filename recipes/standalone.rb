@@ -25,7 +25,7 @@ end
 include_recipe "coldfusion10::install"
 
 # Clean up permissions
-%w{ Mail stubs tmpCache }.each do |dir| {
+%w{ Mail stubs tmpCache }.each do |dir|
   execute "set_#{dir}_owner" do
     command "chown -R #{node['cf10']['installer']['runtimeuser']} #{node['cf10']['installer']['install_folder']}/cfusion/#{dir}"    
     action :run
