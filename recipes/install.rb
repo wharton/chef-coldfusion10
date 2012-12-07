@@ -17,12 +17,22 @@
 # limitations under the License.
 #
 
+
+# Set up install folder with correct permissions
+directory node['cf10']['installer']['install_folder'] do
+  owner node['cf10']['installer']['runtimeuser']
+  group node['cf10']['installer']['runtimeuser']
+  mode 00755
+  action :create
+  not_if { File.exists?("#{node['cf10']['installer']['install_folder']}/license.html") }
+end
+
 # Create the CF 10 properties file
 template "#{Chef::Config['file_cache_path']}/cf10-installer.properties" do
   source "cf10-installer.properties.erb"
   mode "0644"
-  owner "root"
-  group "root"
+  owner node['cf10']['installer']['runtimeuser']
+  group node['cf10']['installer']['runtimeuser']
   not_if { File.exists?("#{node['cf10']['installer']['install_folder']}/license.html") }
 end
 
@@ -36,8 +46,8 @@ if node['cf10']['installer'] && node['cf10']['installer']['url']
     source node['cf10']['installer']['url']
     action :create_if_missing
     mode "0744"
-    owner "root"
-    group "root"
+    owner node['cf10']['installer']['runtimeuser']
+    group node['cf10']['installer']['runtimeuser']
     not_if { File.exists?("#{node['cf10']['installer']['install_folder']}/license.html") }
   end
 
@@ -50,8 +60,8 @@ elsif node['cf10']['installer'] && node['cf10']['installer']['file']
   cookbook_file "#{Chef::Config['file_cache_path']}/#{file_name}" do
     source file_name
     mode "0744"
-    owner "root"
-    group "root"
+    owner node['cf10']['installer']['runtimeuser']
+    group node['cf10']['installer']['runtimeuser']
     not_if { File.exists?("#{node['cf10']['installer']['install_folder']}/license.html") }
   end
 
@@ -67,6 +77,6 @@ execute "run_cf10_installer" do
   command "#{Chef::Config['file_cache_path']}/#{file_name} -f #{Chef::Config['file_cache_path']}/cf10-installer.properties"
   creates "#{node['cf10']['installer']['install_folder']}/license.html"
   action :run
-  user "root"
+  user node['cf10']['installer']['runtimeuser']
   cwd Chef::Config['file_cache_path']
 end

@@ -24,16 +24,17 @@ end
 # If using Apache import the ssl cert
 if node.recipe?("coldfusion10::apache")
 
-  file_name = "trusted-" + node['cf10']['apache']['ssl_cert_file'].split('/').last
+  cert_file = node['cf10']['apache']['ssl_cert_chain_file'] ? node['cf10']['apache']['ssl_cert_chain_file'] : node['cf10']['apache']['ssl_cert_file']
+  file_name = "trusted-" + cert_file.split('/').last
 
   # Link the Apache cert
   link "#{node['cf10']['java']['home']}/jre/lib/security/#{file_name}" do
-    to node['cf10']['apache']['ssl_cert_file']
+    to cert_file
   end
 
   # Import the cert
-  execute "import_ssl-cert-snakeoil" do
-    command "#{node['cf10']['java']['home']}/jre/bin/keytool -importcert -noprompt -trustcacerts -alias ApacheLocalhostCert -file #{node['cf10']['apache']['ssl_cert_file']} -keystore cacerts -storepass changeit"
+  execute "import_ssl_apache" do
+    command "#{node['cf10']['java']['home']}/jre/bin/keytool -importcert -noprompt -trustcacerts -alias ApacheLocalhostCert -file #{cert_file} -keystore cacerts -storepass changeit"
     action :run
     user "root"
     cwd "#{node['cf10']['java']['home']}/jre/lib/security"
@@ -43,25 +44,25 @@ if node.recipe?("coldfusion10::apache")
 
 end
 
-# If using Tomcat import the vagrant ssl cert
+# If using Tomcat import the tomcat ssl cert
 if node.recipe?("coldfusion10::tomcat")
 
   # Export the cert
-  execute "export_ssl-vagrant" do
-    command "#{node['cf10']['installer']['install_folder']}/jre/bin/keytool -exportcert -alias vagrant -rfc -file #{node['cf10']['installer']['install_folder']}/jre/lib/security/trusted-vagrant.pem -keystore .keystore -storepass vagrant"
+  execute "export_ssl_tomcat" do
+    command "#{node['cf10']['installer']['install_folder']}/jre/bin/keytool -exportcert -alias tomcat -rfc -file #{node['cf10']['installer']['install_folder']}/jre/lib/security/trusted-tomcat.pem -keystore .keystore -storepass changeit"
     action :run
     user "root"
     cwd "#{node['cf10']['installer']['install_folder']}/cfusion/runtime/conf"
-    not_if { File.exists?("#{node['cf10']['installer']['install_folder']}/jre/lib/security/trusted-vagrant.pem") }
+    not_if { File.exists?("#{node['cf10']['installer']['install_folder']}/jre/lib/security/trusted-tomcat.pem") }
   end
 
   # Import the cert
-  execute "import_ssl-vagrant" do
-    command "#{node['cf10']['installer']['install_folder']}/jre/bin/keytool -importcert -noprompt -trustcacerts -alias vagrant -file vagrant.cer -keystore cacerts -storepass changeit"
+  execute "import_ssl_tomcat" do
+    command "#{node['cf10']['installer']['install_folder']}/jre/bin/keytool -importcert -noprompt -trustcacerts -alias TomcatLocalhostCert -file trusted-tomcat.pem -keystore cacerts -storepass changeit"
     action :run
     user "root"
     cwd "#{node['cf10']['installer']['install_folder']}/jre/lib/security"
-    not_if "#{node['cf10']['installer']['install_folder']}/jre/bin/keytool -list -alias vagrant -keystore #{node['cf10']['installer']['install_folder']}/jre/lib/security/cacerts -storepass changeit"
+    not_if "#{node['cf10']['installer']['install_folder']}/jre/bin/keytool -list -alias TomcatLocalhostCert -keystore #{node['cf10']['installer']['install_folder']}/jre/lib/security/cacerts -storepass changeit"
     notifies :restart, "service[coldfusion]", :delayed
   end
 

@@ -19,7 +19,7 @@
 
 # Generate a keystore
 execute "cf_keygen" do
-  command "#{node['cf10']['installer']['install_folder']}/jre/bin/keytool -genkeypair -alias vagrant -dname \"cn=vagrant, ou=vagrant, o=vagrant, L=nowhere, ST=none, C=US\" -keyalg rsa -storepass vagrant -keystore #{node['cf10']['installer']['install_folder']}/cfusion/runtime/conf/.keystore"
+  command "#{node['cf10']['installer']['install_folder']}/jre/bin/keytool -genkeypair -alias tomcat -dname \"cn=tomcat, ou=tomcat, o=tomcat, L=nowhere, ST=none, C=US\" -keyalg rsa -storepass changeit -keystore #{node['cf10']['installer']['install_folder']}/cfusion/runtime/conf/.keystore"
   creates "#{node['cf10']['installer']['install_folder']}/cfusion/runtime/conf/.keystore"
   action :run
   user "root"
