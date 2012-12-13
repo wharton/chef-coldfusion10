@@ -75,5 +75,6 @@ execute "run_cf10_installer" do
   action :run
   user node['cf10']['installer']['runtimeuser']
   cwd Chef::Config['file_cache_path']
-  notifies :run, "execute[run_wsconfig]", :delayed if node.recipe?("coldfusion10::apache")
+  notifies :run, "execute[uninstall_wsconfig]", :delayed if node.recipe?("coldfusion10::apache")
+  notifies :run, "execute[install_wsconfig]", :delayed if node.recipe?("coldfusion10::apache")
 end

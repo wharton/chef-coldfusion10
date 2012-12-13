@@ -35,21 +35,42 @@ execute "start_cf_for_coldfusion10_wsconfig" do
 end
 
 # wsconfig 
-execute "run_wsconfig" do
+execute "install_wsconfig" do
   case node['platform_family']
     when "rhel", "fedora", "arch"
       command <<-COMMAND
       #{node['cf10']['installer']['install_folder']}/cfusion/runtime/bin/wsconfig -ws Apache -dir #{node['apache']['dir']}/conf -bin #{node['apache']['binary']} -script /usr/sbin/apachectl -v
-      mv #{node['apache']['dir']}/conf/httpd.conf.1 #{node['apache']['dir']}/conf/httpd.conf
-      mv #{node['apache']['dir']}/conf/mod_jk.conf #{node['apache']['dir']}/conf.d/mod_jk.conf
+      cp -f #{node['apache']['dir']}/conf/httpd.conf.1 #{node['apache']['dir']}/conf/httpd.conf
+      cp -f #{node['apache']['dir']}/conf/mod_jk.conf #{node['apache']['dir']}/conf.d/mod_jk.conf
       COMMAND
     else
       command <<-COMMAND
       #{node['cf10']['installer']['install_folder']}/cfusion/runtime/bin/wsconfig -ws Apache -dir #{node['apache']['dir']} -bin #{node['apache']['binary']} -script /usr/sbin/apache2ctl -v
-      rm #{node['apache']['dir']}/httpd.conf -f
-      mv #{node['apache']['dir']}/mod_jk.conf #{node['apache']['dir']}/conf.d/mod_jk.conf
+      cp -f #{node['apache']['dir']}/httpd.conf.1 #{node['apache']['dir']}/httpd.conf 
+      cp -f #{node['apache']['dir']}/mod_jk.conf #{node['apache']['dir']}/conf.d/mod_jk.conf
       COMMAND
     end
   action :nothing  
   notifies :restart, "service[apache2]", :immediately
 end
+
+execute "uninstall_wsconfig" do
+  case node['platform_family']
+    when "rhel", "fedora", "arch"
+      command <<-COMMAND
+      #{node['cf10']['installer']['install_folder']}/cfusion/runtime/bin/wsconfig -uninstall -ws Apache -dir #{node['apache']['dir']}/conf -bin #{node['apache']['binary']} -script /usr/sbin/apachectl -v
+      rm -f #{node['apache']['dir']}/conf/httpd.conf.1 
+      rm -f #{node['apache']['dir']}/conf.d/mod_jk.conf
+      COMMAND
+    else
+      command <<-COMMAND
+      #{node['cf10']['installer']['install_folder']}/cfusion/runtime/bin/wsconfig -uninstall -ws Apache -dir #{node['apache']['dir']} -bin #{node['apache']['binary']} -script /usr/sbin/apache2ctl -v
+      rm -f #{node['apache']['dir']}/httpd.conf.1
+      rm -f #{node['apache']['dir']}/conf.d/mod_jk.conf
+      COMMAND
+    end
+  action :nothing  
+  notifies :restart, "service[apache2]", :immediately
+  only_if "#{node['cf10']['installer']['install_folder']}/cfusion/runtime/bin/wsconfig -list"
+end
+
