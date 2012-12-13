@@ -13,7 +13,7 @@ default['cf10']['config_settings'] = {}
 
 # CF config manager 
 default['cf10']['configmanager']['source_url'] = "https://github.com/downloads/nmische/cf-configmanager/configmanager.zip"
-default['cf10']['configmanager']['api_url'] = "http://localhost:8500//CFIDE/administrator/configmanager/api/index.cfm"
+default['cf10']['configmanager']['api_url'] = "http://localhost:8500/CFIDE/administrator/configmanager/api/index.cfm"
 
 # CF secure profile IP addresses
 default['cf10']['installer']['admin_ip'] = ""
@@ -83,12 +83,16 @@ default['cf10']['updates']['urls'] = %w{
   http://download.adobe.com/pub/adobe/coldfusion/hotfix_001.jar
   http://download.adobe.com/pub/adobe/coldfusion/hotfix_002.jar
   http://download.adobe.com/pub/adobe/coldfusion/hotfix_004.jar
+  http://download.adobe.com/pub/adobe/coldfusion/hotfix_005.jar
+  http://download.adobe.com/pub/adobe/coldfusion/hotfix_006.jar
 }
 default['cf10']['updates']['files'] = %w{ 
   hf1000-3332326.jar
   chf10000001.jar
   chf10000002.jar
   chf10000004.jar
+  chf10000005.jar
+  chf10000006.jar
 }
 
 # Tomcat or Apache web root
