@@ -34,8 +34,8 @@ execute "start_cf_for_coldfusion10_wsconfig" do
   notifies :start, "service[coldfusion]", :immediately
 end
 
-# Run wsconfig 
-execute "wsconfig" do
+# wsconfig 
+execute "run_wsconfig" do
   case node['platform_family']
     when "rhel", "fedora", "arch"
       command <<-COMMAND
@@ -50,7 +50,6 @@ execute "wsconfig" do
       mv #{node['apache']['dir']}/mod_jk.conf #{node['apache']['dir']}/conf.d/mod_jk.conf
       COMMAND
     end
-  action :run
-  not_if { File.exists?("#{node['apache']['dir']}/conf.d/mod_jk.conf") }
+  action :nothing  
+  notifies :restart, "service[apache2]", :immediately
 end
-

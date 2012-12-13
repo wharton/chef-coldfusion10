@@ -21,7 +21,6 @@
 # Set up install folder with correct permissions
 directory node['cf10']['installer']['install_folder'] do
   owner node['cf10']['installer']['runtimeuser']
-  group node['cf10']['installer']['runtimeuser']
   mode 00755
   action :create
   not_if { File.exists?("#{node['cf10']['installer']['install_folder']}/license.html") }
@@ -30,9 +29,8 @@ end
 # Create the CF 10 properties file
 template "#{Chef::Config['file_cache_path']}/cf10-installer.properties" do
   source "cf10-installer.properties.erb"
-  mode "0644"
   owner node['cf10']['installer']['runtimeuser']
-  group node['cf10']['installer']['runtimeuser']
+  mode 00644 
   not_if { File.exists?("#{node['cf10']['installer']['install_folder']}/license.html") }
 end
 
@@ -44,10 +42,9 @@ if node['cf10']['installer'] && node['cf10']['installer']['url']
   # Download CF 10
   remote_file "#{Chef::Config['file_cache_path']}/#{file_name}" do
     source node['cf10']['installer']['url']
-    action :create_if_missing
-    mode "0744"
     owner node['cf10']['installer']['runtimeuser']
-    group node['cf10']['installer']['runtimeuser']
+    mode 00744
+    action :create_if_missing
     not_if { File.exists?("#{node['cf10']['installer']['install_folder']}/license.html") }
   end
 
@@ -59,9 +56,8 @@ elsif node['cf10']['installer'] && node['cf10']['installer']['file']
   # Move the CF 10 installer
   cookbook_file "#{Chef::Config['file_cache_path']}/#{file_name}" do
     source file_name
-    mode "0744"
     owner node['cf10']['installer']['runtimeuser']
-    group node['cf10']['installer']['runtimeuser']
+    mode 00744    
     not_if { File.exists?("#{node['cf10']['installer']['install_folder']}/license.html") }
   end
 
@@ -79,4 +75,5 @@ execute "run_cf10_installer" do
   action :run
   user node['cf10']['installer']['runtimeuser']
   cwd Chef::Config['file_cache_path']
+  notifies :run, "execute[run_wsconfig]", :delayed if node.recipe?("coldfusion10::apache")
 end

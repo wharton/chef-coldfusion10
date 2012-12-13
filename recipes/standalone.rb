@@ -37,8 +37,7 @@ end
 
 # Create the webroot if it doesn't exist
 directory node['cf10']['webroot'] do
-  owner "vagrant"
-  group "vagrant"
+  owner node['cf10']['installer']['runtimeuser']
   mode "0755"
   action :create
   not_if { File.directory?(node['cf10']['webroot']) }
