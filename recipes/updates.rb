@@ -39,7 +39,6 @@ node['cf10']['updates']['urls'].each do | update |
       source update
       action :create_if_missing
       mode "0744"
-      owner node['cf10']['installer']['runtimeuser']
     end
 
     # Run the installer
@@ -47,7 +46,6 @@ node['cf10']['updates']['urls'].each do | update |
     execute "run_cf10_#{file_name.split('.').first}_installer" do
       command "#{node['cf10']['java']['home']}/jre/bin/java -jar #{file_name} -i silent -f update-installer.properties"
       action :run
-      user node['cf10']['installer']['runtimeuser']
       cwd Chef::Config['file_cache_path']
       notifies :run, "execute[uninstall_wsconfig]", :delayed if node.recipe?("coldfusion10::apache") 
       notifies :run, "execute[install_wsconfig]", :delayed if node.recipe?("coldfusion10::apache")
