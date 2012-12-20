@@ -26,25 +26,20 @@ template "#{Chef::Config['file_cache_path']}/update-installer.properties" do
   owner node['cf10']['installer']['runtimeuser']
 end
 
-
-
-
-
 # Run updates 
 node['cf10']['updates']['urls'].each do | update |
 
   # Only apply an update if it or a later update doesn't exist 
   if updates_jars.select { |x| File.exists?("#{node['cf10']['installer']['install_folder']}/cfusion/lib/updates/#{x}") }.empty?
 
-    update_sudo = sudo "cf10_#{file_name.split('.').first}" do
+    file_name = update.split('/').last
+    sodo_name = "cf10_#{file_name.split('.').first}_sudo"
+
+    sudo sodo_name do
       user node['cf10']['installer']['runtimeuser']
       nopasswd true
-      action :nothing
+      action :install
     end
-
-    update_sudo.run_action(:install)
-
-    file_name = update.split('/').last
 
     # Download the update
     remote_file "#{Chef::Config['file_cache_path']}/#{file_name}" do
@@ -67,7 +62,11 @@ node['cf10']['updates']['urls'].each do | update |
       end
     end
 
-    update_sudo.run_action(:remove)
+    sudo sodo_name do
+      user node['cf10']['installer']['runtimeuser']
+      nopasswd true
+      action :remove
+    end
 
   end 
 
