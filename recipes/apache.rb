@@ -39,17 +39,19 @@ execute "install_wsconfig" do
   case node['platform_family']
     when "rhel", "fedora", "arch"
       command <<-COMMAND
+      sleep 11
       #{node['cf10']['installer']['install_folder']}/cfusion/runtime/bin/wsconfig -ws Apache -dir #{node['apache']['dir']}/conf -bin #{node['apache']['binary']} -script /usr/sbin/apachectl -v
       cp -f #{node['apache']['dir']}/conf/httpd.conf.1 #{node['apache']['dir']}/conf/httpd.conf
       cp -f #{node['apache']['dir']}/conf/mod_jk.conf #{node['apache']['dir']}/conf.d/mod_jk.conf
-      sleep 15
+      sleep 11
       COMMAND
     else
       command <<-COMMAND
+      sleep 11
       #{node['cf10']['installer']['install_folder']}/cfusion/runtime/bin/wsconfig -ws Apache -dir #{node['apache']['dir']} -bin #{node['apache']['binary']} -script /usr/sbin/apache2ctl -v
       cp -f #{node['apache']['dir']}/httpd.conf.1 #{node['apache']['dir']}/httpd.conf 
       cp -f #{node['apache']['dir']}/mod_jk.conf #{node['apache']['dir']}/conf.d/mod_jk.conf
-      sleep 15
+      sleep 11
       COMMAND
     end
   action :nothing  
@@ -60,17 +62,19 @@ execute "uninstall_wsconfig" do
   case node['platform_family']
     when "rhel", "fedora", "arch"
       command <<-COMMAND
+      sleep 11
       #{node['cf10']['installer']['install_folder']}/cfusion/runtime/bin/wsconfig -uninstall -ws Apache -dir #{node['apache']['dir']}/conf -bin #{node['apache']['binary']} -script /usr/sbin/apachectl -v
       rm -f #{node['apache']['dir']}/conf/httpd.conf.1 
       rm -f #{node['apache']['dir']}/conf.d/mod_jk.conf
-      sleep 15
+      sleep 11
       COMMAND
     else
       command <<-COMMAND
+      sleep 11
       #{node['cf10']['installer']['install_folder']}/cfusion/runtime/bin/wsconfig -uninstall -ws Apache -dir #{node['apache']['dir']} -bin #{node['apache']['binary']} -script /usr/sbin/apache2ctl -v
       rm -f #{node['apache']['dir']}/httpd.conf.1
       rm -f #{node['apache']['dir']}/conf.d/mod_jk.conf
-      sleep 15
+      sleep 11
       COMMAND
     end
   action :nothing  
