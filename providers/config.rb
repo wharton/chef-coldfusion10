@@ -70,6 +70,15 @@ action :bulk_set do
 end
 
 def make_api_call(msg)
+  # Load password from encrypted data bag, otherwise node attribute
+  begin
+    password_databag = Chef::EncryptedDataBagItem.load("cf10",node['cf10']['installer']['password_databag'])
+    admin_password = password_databag["admin_password"]
+  rescue
+    Chef::Log.info("Could not load encrypted data bag: cf10/#{node['cf10']['installer']['password_databag']}")
+  ensure
+    admin_password ||= node["cf10"]["installer"]["admin_password"]
+  end
 
   last_mod = nil
   made_update = false
@@ -84,7 +93,7 @@ def make_api_call(msg)
     action :nothing
     url node['cf10']['configmanager']['api_url']
     message msg
-    headers({"AUTHORIZATION" => "Basic #{Base64.encode64("admin:#{node['cf10']['installer']['admin_password']}")}"})
+    headers({"AUTHORIZATION" => "Basic #{Base64.encode64("admin:#{admin_password}")}"})
   end
 
   hr.run_action(:post)

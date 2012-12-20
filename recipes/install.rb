@@ -26,9 +26,9 @@ begin
 rescue
   Chef::Log.info("Could not load encrypted data bag: cf10/#{node['cf10']['installer']['password_databag']}")
 ensure
-  admin_password = node["cf10"]["installer"]["admin_password"]
-  jetty_password = node["cf10"]["installer"]["jetty_password"]
-  rds_password = node["cf10"]["installer"]["rds_password"]
+  admin_password ||= node["cf10"]["installer"]["admin_password"]
+  jetty_password ||= node["cf10"]["installer"]["jetty_password"]
+  rds_password ||= node["cf10"]["installer"]["rds_password"]
 end
 
 # Set up install folder with correct permissions
