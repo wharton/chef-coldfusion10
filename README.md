@@ -139,6 +139,20 @@ The standalone installation type will run the following recipes `coldfusion10::s
 
 The J2EE installation type will run the `coldfusion10::j2ee` recipe.
 
+Securely Storing Passwords
+--------------------------
+
+If you'd like to securely store the CF10 passwords for installation, you can create an encrypted data bag at `cf10/#{node['cf10']['installer']['password_databag']}` which defaults to `cf10/installer_passwords`. For example:
+
+* `knife data bag create cf10`
+* `knife data bag create cf10 installer_passwords --secret-file=path/to/secret`
+
+    {
+      "id": "installer_passwords",
+      "admin_password": "my_admin_password",
+      "jetty_password": "my_jetty_password",
+      "rds_password": "my_rds_password"
+    }
 
 For Trusted Certificates
 ------------------------
