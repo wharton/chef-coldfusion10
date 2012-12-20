@@ -51,6 +51,8 @@ default['cf10']['installer']['jetty_password'] = "vagrant"
 default['cf10']['installer']['license_mode'] = "developer"
 #CF migrate coldfusion, applicable to non-Windows OSes only
 default['cf10']['installer']['migrate_coldfusion'] = "false"
+# CF encrypted password data bag (if available)
+default['cf10']['installer']['password_databag'] = "installer_passwords"
 #CF migrate coldfusion, applicable to non-Windows OSes only
 default['cf10']['installer']['prev_cf_migr_dir'] = ""
 # CF previous serial number, use when it is upgrade

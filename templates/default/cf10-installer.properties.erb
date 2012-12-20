@@ -17,13 +17,13 @@ SILENT_INSTALL_FOLDER=<%= node['cf10']['installer']['install_folder'] %>
 SILENT_ENABLE_SECURE_PROFILE=<%= node['cf10']['installer']['enable_secure_profile'] %>
 SILENT_ADMIN_IP=<%= node['cf10']['installer']['admin_ip'] %>
 SILENT_ADMIN_USERNAME=<%= node['cf10']['installer']['admin_username'] %>
-SILENT_ADMIN_PASSWORD=<%= node['cf10']['installer']['admin_password'] %>
+SILENT_ADMIN_PASSWORD=<%= @admin_password %>
 SILENT_ENABLE_RDS=<%= node['cf10']['installer']['enable_rds'] %>
 #Provide password when enable RDS is true
-SILENT_RDS_PASSWORD=<%= node['cf10']['installer']['rds_password'] %>
+SILENT_RDS_PASSWORD=<%= @rds_password %>
 #Remote username/password
 SILENT_JETTY_USERNAME=<%= node['cf10']['installer']['jetty_username'] %>
-SILENT_JETTY_PASSWORD=<%= node['cf10']['installer']['jetty_password'] %>
+SILENT_JETTY_PASSWORD=<%= @jetty_password %>
 #Context root for J2EE installation
 SILENT_CONTEXT_ROOT=<%= node['cf10']['installer']['context_root'] %>
 #Automatically check for serverupdates 

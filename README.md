@@ -48,6 +48,7 @@ The following attributes are under `node['cf10']['installer']`:
 * `['migrate_coldfusion']` - Migrate setting from a previous installation (default: "false")
 * `['jetty_username']` - Jetty useranme (default: "admin")
 * `['jetty_password']` - Jetty password (default: "vagrant")
+* `['password_databag']` - encrypted data bag item with ColdFusion passwords set during installation (default: "password_databag")
 * `['prev_cf_migr_dir']` - Where to migrate setting from (default: "")
 * `['prev_serial_number']` - If an upgrade license, previous serial number (default: "") 
 * `['rds_password']` - Password if RDS is enabled (default: "vagrant")
