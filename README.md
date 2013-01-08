@@ -123,6 +123,7 @@ The following attributes are under `node['cf10']['apache']`:
 * `['ssl_cert_file']` - The SSL cert to use for Apache (default: "/etc/ssl/certs/ssl-cert-snakeoil.pem")
 * `['ssl_cert_key_file']` - The SSL key to use for Apache (default: "/etc/ssl/private/ssl-cert-snakeoil.key")
 * `['ssl_cert_chain_file']` - The SSL chain to use for Apache (default: nil) 
+* `['adminapi_whitelist']` - An array of hosts/IP addresses beyond localhost/127.0.0.1 to grant adminapi access.
 
 
 Usage

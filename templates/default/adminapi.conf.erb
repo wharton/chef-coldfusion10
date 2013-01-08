@@ -1,0 +1,19 @@
+  <Directory "<%= node['cf10']['installer']['install_folder']%>/cfusion/wwwroot/CFIDE/adminapi">
+      Order deny,allow
+      Deny from all
+      Allow from localhost
+      Allow from 127.0.0.1
+      <% node['cf10']['apache']['adminapi_whitelist'].each do |host| %>
+      Allow from <%= host%>
+      <% end %>
+  </Directory>
+
+  <Location "/CFIDE/adminapi">
+      Order deny,allow
+      Deny from all
+      Allow from localhost
+      Allow from 127.0.0.1
+      <% node['cf10']['apache']['adminapi_whitelist'].each do |host| %>
+      Allow from <%= host%>
+      <% end %>
+  </Location>

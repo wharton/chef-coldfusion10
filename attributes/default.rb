@@ -8,6 +8,9 @@ default['cf10']['apache']['ssl_cert_file'] = "/etc/ssl/certs/ssl-cert-snakeoil.p
 default['cf10']['apache']['ssl_cert_key_file'] = "/etc/ssl/private/ssl-cert-snakeoil.key"
 default['cf10']['apache']['ssl_cert_chain_file'] = nil
 
+# Lock down /CFIDE/adminapi
+default['cf10']['apache']['adminapi_whitelist'] = []
+
 # Configuration 
 default['cf10']['config_settings'] = {}
 
