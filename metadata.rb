@@ -4,7 +4,7 @@ maintainer_email "nmische@gmail.com"
 license          "Apache 2.0"
 description      "Installs/Configures Adobe ColdFusion 10"
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          "0.1.0"
+version          "0.1.1"
 
 %w{ redhat ubuntu }.each do |os|
   supports os
@@ -12,8 +12,9 @@ end
 
 depends "apt"
 depends "apache2"
-depends "jbossas7"
 depends "sudo"
+
+suggests "jbossas7"
 
 recipe "coldfusion10", "Includes the standalone, jvmconfig, and update recipes"
 recipe "coldfusion10::apache", "Configures ColdFusion to run behind the Apache httpd web server"
