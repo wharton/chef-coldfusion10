@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-node['cf10']['java']['home'] = node['java']['java_home'] if node['java'] && node['java']['java_home']
+node.set['cf10']['java']['home'] = node['java']['java_home'] if node['java'] && node['java']['java_home']
   
 # Customize the jvm config
 template "#{node['cf10']['installer']['install_folder']}/cfusion/bin/jvm.config" do
