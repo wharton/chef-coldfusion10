@@ -1,0 +1,177 @@
+#!/bin/sh
+
+# chkconfig: 345 90 14
+# description: starts the Jetty(Admin Component) service for ColdFusion. Starting this also starts Solr search service if it is installed.
+
+
+PATH=/usr/xpg4/bin:/bin:/sbin:/usr/bin:/usr/sbin:$PATH
+RUNTIME_USER=<%= node['cf10']['installer']['runtimeuser'] %>
+SOLR="<%= node['cf10']['installer']['install_folder'] %>/cfusion/jetty"
+SOLR_JVM="<%= node['cf10']['installer']['install_folder'] %>/jre"
+SOLRPORT=8985
+STOPPORT=8077
+NETSTATCMD="netstat"
+
+# JVM Args
+JVMARGS="-XX:+AggressiveOpts -XX:+ScavengeBeforeFullGC -XX:-UseParallelGC -Xmx512m -Dsolr.solr.home=multicore -DSTOP.PORT=$STOPPORT -DSTOP.KEY=cfsolrstop"
+
+ID=`id -u`
+RTUSERID=`id -u $RUNTIME_USER`
+USEROK=0
+if [ $ID -eq $RTUSERID ]; then
+    # running as the installed user
+    USEROK=1
+fi
+
+if [ ! $ID -eq 0 -a ! $USEROK -eq 1 ]; then
+    echo "You must be root to start ColdFusion Jetty service."
+    exit 1
+fi
+
+solrrunning()
+{
+  IS_RUNNING="false"
+  res=`$NETSTATCMD -an|grep $SOLRPORT|grep LISTEN`
+  if [ "$res" = "" ]
+  then
+     IS_RUNNING="false"
+  else
+     IS_RUNNING="true"
+  fi
+}
+
+# Run the solr admin start script
+solrstart()
+{
+        echo "You are starting Admin Component for ColdFusion. Starting this service also starts Solr search service (if installed)."
+
+        solrrunning
+        
+        if [ "$IS_RUNNING" = "true" ]; then
+           echo "ColdFusion Jetty service is already running or the port is not free"
+           echo exiting
+           exit 2
+        fi
+
+        echo "Starting ColdFusion Jetty Server..."
+    if [ -x $SOLR/start.jar ]
+    then
+        eval $SOLRSTART &
+    else
+                echo "Could not locate start.jar. Exiting.."
+                exit 2
+    fi
+        echo "ColdFusion Jetty Server is starting up and will be available shortly."
+        
+}
+
+# Run the solr admin stop script
+solrstop()
+{
+    solrrunning
+
+        if [ "$IS_RUNNING" = "false" ]; then
+           echo "ColdFusion Jetty Service does not appear to be running."
+    else
+       echo "Stopping ColdFusion Jetty Server, please wait"
+       if [ -x $SOLR/start.jar ]
+       then
+        eval $SOLRSTOP 
+       else
+                echo "Could not locate start.jar. Exiting.."
+                exit 2
+       fi
+       sleep 2
+       echo "ColdFusion Jetty Server has been stopped"
+        fi
+
+}
+
+
+case `uname` in
+
+    SunOS)
+        OS=Solaris
+        SUCMD="su $RUNTIME_USER -c"
+        if [ $ID -eq 0 ]; then
+            SOLRSTART='cd $SOLR;$SUCMD $SOLR_JVM/bin/java $JVMARGS -jar start.jar >> $SOLR/logs/start.log 2>&1'
+            SOLRSTOP='cd $SOLR;$SUCMD $SOLR_JVM/bin/java $JVMARGS -jar start.jar --stop >> $SOLR/logs/start.log 2>&1'
+        else
+            SOLRSTART='cd $SOLR;$SUCMD $SOLR_JVM/bin/java $JVMARGS -jar start.jar >> $SOLR/logs/start.log 2>&1'
+            SOLRSTOP='cd $SOLR;$SUCMD $SOLR_JVM/bin/java $JVMARGS -jar start.jar --stop >> $SOLR/logs/start.log 2>&1'
+        fi
+    ;;
+
+    Linux)
+        OS=Linux
+        # With SELinux, have to use runuser command
+        if [ -x /sbin/runuser ]; then
+            SUCMD="/sbin/runuser -s /bin/sh $RUNTIME_USER -c"
+        else
+            SUCMD="su -s /bin/sh $RUNTIME_USER -c"
+        fi
+
+        if [ $ID -eq 0 ]; then
+            SOLRSTART='cd $SOLR;$SUCMD "$SOLR_JVM/bin/java $JVMARGS -jar start.jar >> $SOLR/logs/start.log 2>&1"'
+            SOLRSTOP='cd $SOLR;$SUCMD "$SOLR_JVM/bin/java $JVMARGS -jar start.jar --stop >> $SOLR/logs/start.log 2>&1"'
+        else
+            SOLRSTART='cd $SOLR;$SUCMD "$SOLR_JVM/bin/java $JVMARGS -jar start.jar >> $SOLR/logs/start.log 2>&1"'
+            SOLRSTOP='cd $SOLR;$SUCMD "$SOLR_JVM/bin/java $JVMARGS -jar start.jar --stop >> $SOLR/logs/start.log 2>&1"'
+        fi
+    ;;
+
+    Darwin)
+        OS=Darwin
+        SOLRSTART='cd $SOLR;nohup java $JVMARGS -jar start.jar > $SOLR/logs/start.log 2>&1  &'
+        SOLRSTOP='cd $SOLR;nohup java $JVMARGS -jar start.jar --stop > $SOLR/logs/start.log 2>&1'
+    ;;
+
+    AIX)
+        OS=AIX
+        SOLRSTART='cd $SOLR;nohup java $JVMARGS -jar start.jar > $SOLR/logs/start.log 2>&1  &'
+        SOLRSTOP='cd $SOLR;nohup java $JVMARGS -jar start.jar --stop > $SOLR/logs/start.log 2>&1'
+    ;;
+
+    *)
+
+    echo "Your OS: `uname` is unsupported"
+    echo "exiting"
+    exit 1
+    ;;
+
+esac
+
+# if we running as the user, no need for su
+if [ $USEROK -eq 1 ]; then
+    SUCMD=""
+fi
+
+ARG=$1
+
+[ -z "$ARG" ] && ARG=usage
+
+case $ARG in
+
+    start)
+        solrstart
+    ;;
+
+    stop)
+        solrstop
+    ;;
+
+    restart)
+        echo "Restarting ColdFusion Jetty service..."
+        solrstop
+        solrstart
+    ;;
+
+    *)
+        echo "Usage:$0 (start|stop|restart)"
+    ;;
+
+esac
+
+
+exit 0
+

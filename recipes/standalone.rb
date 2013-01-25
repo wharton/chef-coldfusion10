@@ -35,6 +35,19 @@ service "coldfusion" do
   action [ :enable, :start ]
 end
 
+# Link the jetty init script, if installed
+link "/etc/init.d/cfjetty" do
+  to "#{node['cf10']['installer']['install_folder']}/cfusion/jetty/cfjetty"
+  only_if { File.exists?("#{node['cf10']['installer']['install_folder']}/cfusion/jetty/cfjetty") }
+end
+
+# Set up jetty as a service, if installed
+service "cfjetty" do
+  supports :restart => true
+  action [ :enable, :start ]
+  only_if { File.exists?("#{node['cf10']['installer']['install_folder']}/cfusion/jetty/cfjetty") }
+end
+
 # Create the webroot if it doesn't exist
 directory node['cf10']['webroot'] do
   owner node['cf10']['installer']['runtimeuser']

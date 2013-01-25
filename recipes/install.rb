@@ -98,3 +98,13 @@ execute "run_cf10_installer" do
     notifies :run, "execute[install_wsconfig]", :delayed
   end
 end
+
+# Fix up jetty if installed
+template "#{node['cf10']['installer']['install_folder']}/cfusion/jetty/cfjetty" do
+  source "cfjetty.erb"
+  owner node['cf10']['installer']['runtimeuser']
+  group "root"
+  mode 00755
+  only_if { File.exists?("#{node['cf10']['installer']['install_folder']}/cfusion/jetty/cfjetty") }
+end
+
