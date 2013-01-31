@@ -20,6 +20,7 @@
 def initialize(*args)
   super  
   @action = :set
+  @instance = "cfusion"
 end
 
 actions :set, :bulk_set
@@ -28,3 +29,4 @@ attribute :component,   :kind_of => String, :name_attribute => true
 attribute :property,    :kind_of => String
 attribute :args,     	:kind_of => Hash
 attribute :config,     	:kind_of => Hash
+attribute :instance,    :kind_of => String, :default => "cfusion"

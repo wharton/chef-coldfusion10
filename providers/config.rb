@@ -22,6 +22,8 @@ include Chef::Mixin::Checksum
 def initialize(*args)
   super
 
+  require "rexml/document"
+
   # Make sure we have unzip package  
   p = package "unzip" do
     action :nothing
@@ -38,14 +40,30 @@ def initialize(*args)
     group "root"
   end
 
-  rf.run_action(:create_if_missing) unless ::File.exists?("#{node['cf10']['cfide_dir']}/administrator/configmanager")
+  # Find the instance in the ColdFuison server's instances.xml
+  instances_xml_doc = REXML::Document.new ::File.new("#{node['cf10']['installer']['install_folder']}/config/instances.xml")
+  server_xml_element = instances_xml_doc.elements["//*/text()[normalize-space(.)='#{new_resource.instance}']/../.."]
+  Chef::Application.fatal!("No instance named #{new_resource.instance} found.") unless server_xml_element
+
+  # Find the HTTP port from the instance's server.xml
+  instance_dir = server_xml_element.elements["directory"].text.strip
+  server_xml_doc = REXML::Document.new ::File.new("#{instance_dir}/runtime/conf/server.xml")
+  http_connector_xml_element = server_xml_doc.root.elements["//Connector[@protocol='org.apache.coyote.http11.Http11Protocol']"]
+  Chef::Application.fatal!("The #{new_resource.instance} instance does not appear to be running an HTTP connector.") unless http_connector_xml_element
+
+  port = http_connector_xml_element.attributes["port"]
+  cfide_dir = "#{instance_dir}/wwwroot/CFIDE"
+  @lib_dir = "#{instance_dir}/lib"
+  @api_url = "http://localhost:#{port}/CFIDE/administrator/configmanager/api/config.cfm"
+
+  rf.run_action(:create_if_missing) unless ::File.exists?("#{cfide_dir}/administrator/configmanager")
 
   # Install the application
-  e = execute "unzip #{Chef::Config['file_cache_path']}/configmanager.zip -d #{node['cf10']['cfide_dir']}/administrator/configmanager" do
+  e = execute "unzip #{Chef::Config['file_cache_path']}/configmanager.zip -d #{cfide_dir}/administrator/configmanager" do
     action :nothing
   end
 
-  e.run_action(:run) unless ::File.exists?("#{node['cf10']['cfide_dir']}/administrator/configmanager")
+  e.run_action(:run) unless ::File.exists?("#{cfide_dir}/administrator/configmanager")
 
 end
 
@@ -82,16 +100,18 @@ def make_api_call(msg)
 
   last_mod = nil
   made_update = false
+  config_api_url = @api_url
+  config_dir = @lib_dir
 
   # Get config state before attempted update
-  before = Dir.glob("#{node['cf10']['config_dir']}/neo-*.xml").map { |filename| checksum(filename) }
+  before = Dir.glob("#{config_dir}/neo-*.xml").map { |filename| checksum(filename) }
 
-  Chef::Log.debug("Making API call to #{node['cf10']['configmanager']['api_url']}")
+  Chef::Log.debug("Making API call to #{@api_url}")
 
   # Make API call
   hr = http_request "post_config" do
     action :nothing
-    url node['cf10']['configmanager']['api_url']
+    url config_api_url
     message msg
     headers({"AUTHORIZATION" => "Basic #{Base64.encode64("admin:#{admin_password}")}"})
   end
@@ -99,7 +119,7 @@ def make_api_call(msg)
   hr.run_action(:post)
 
   # Get config state after attempted update
-  after = Dir.glob("#{node['cf10']['config_dir']}/neo-*.xml").map { |filename| checksum(filename) }
+  after = Dir.glob("#{config_dir}/neo-*.xml").map { |filename| checksum(filename) }
 
   made_update = true if (after - before).length > 0 
 
