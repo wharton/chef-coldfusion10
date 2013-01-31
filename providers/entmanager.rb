@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: coldfusion10
-# Providers:: config
+# Providers:: entmanager
 #
 # Copyright 2012, Nathan Mische
 #
@@ -37,10 +37,10 @@ def initialize(*args)
     group "root"
   end
   
-  instance_data = CF10Entmanager.get_instance_data(new_resource.instance, node)
+  instance_data = CF10Entmanager.get_instance_data("cfusion", node)
   
   @lib_dir = instance_data.lib_dir
-  @api_url = "#{instance_data.api_path}/config.cfm"
+  @api_url = "#{instance_data.api_path}/entmanager.cfm"
 
   cf.run_action(:create_if_missing) unless ::File.exists?("#{instance_data.cfide_dir}/administrator/configmanager")
 
@@ -53,37 +53,72 @@ def initialize(*args)
 
 end
 
-action :set do
-  config = { new_resource.component => { new_resource.property => [ new_resource.args ] } } 
-  if make_api_call(config) 
-    new_resource.updated_by_last_action(true)
-    Chef::Log.info("Updated ColdFusion #{new_resource.component} configuration.")
-  else
-    Chef::Log.info("No ColdFusion configuration changes made.")
+action :addServer do
+
+  params = { "serverName" => new_resource.name }
+  %w{ serverDir }.each do |param|
+    if new_resource[param]
+      params[param] = new_resource[param]
+    end
   end 
-end
 
-action :bulk_set do
-  config = new_resource.config 
-  if make_api_call(config)
+  if make_api_call("addServer",params) 
     new_resource.updated_by_last_action(true)
-    Chef::Log.info("Updated ColdFusion configuration.")
+    Chef::Log.info("Updated ColdFusion instance configuration.")
   else
-    Chef::Log.info("No ColdFusion configuration changes made.")
-  end
+    Chef::Log.info("No ColdFusion instance changes made.")
+  end 
+
 end
 
-def make_api_call(msg)
+action :addRemoteServer do
+
+  params = { "remoteServerName" => new_resource.name }  
+  %w{ host jvmRoute remotePort httpPort adminPort adminUsername adminPassword lbFactor https }.each do |param|
+    if new_resource[param]
+      params[param] = new_resource[param]
+    end
+  end 
+  
+  if make_api_call("addRemoteServer",params) 
+    new_resource.updated_by_last_action(true)
+    Chef::Log.info("Updated ColdFusion instance configuration.")
+  else
+    Chef::Log.info("No ColdFusion instance changes made.")
+  end  
+
+end
+
+action :addCluster do
+
+  params = { "clusterName" => new_resource.name }
+  %w{ servers multicastPort stickySessions }.each do |param|
+    if new_resource[param]
+      params[param] = new_resource[param]
+    end
+  end 
+
+  if make_api_call("addCluster",params) 
+    new_resource.updated_by_last_action(true)
+    Chef::Log.info("Updated ColdFusion cluster configuration.")
+  else
+    Chef::Log.info("No ColdFusion cluster changes made.")
+  end  
+
+end
+
+def make_api_call(a,p)
 
   # Load password from encrypted data bag, data bag (:solo), or node attribute
-  pwds = CF10Passwords.get_passwords(node)
+  pwds = CF10Passwords.get_passwords(node)  
 
   made_update = false
   config_api_url = @api_url
   config_dir = @lib_dir
+  msg = { "action" => a, "params" => p }
 
   # Get config state before attempted update
-  before = Dir.glob("#{config_dir}/neo-*.xml").map { |filename| checksum(filename) }
+  before = Dir.glob("#{node['cf10']['installer']['install_folder']}/config/*.xml").map { |filename| checksum(filename) }
 
   Chef::Log.debug("Making API call to #{@api_url}")
 
@@ -92,13 +127,13 @@ def make_api_call(msg)
     action :nothing
     url config_api_url
     message msg
-    headers({"AUTHORIZATION" => "Basic #{Base64.encode64("admin:#{pwds.admin_password}")}"})
+    headers({"AUTHORIZATION" => "Basic #{Base64.encode64("admin:#{admin_password}")}"})
   end
 
   hr.run_action(:post)
 
   # Get config state after attempted update
-  after = Dir.glob("#{config_dir}/neo-*.xml").map { |filename| checksum(filename) }
+  after = Dir.glob("#{node['cf10']['installer']['install_folder']}/config/*.xml").map { |filename| checksum(filename) }
 
   made_update = true if (after - before).length > 0 
 

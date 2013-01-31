@@ -17,19 +17,8 @@
 # limitations under the License.
 #
 
-# Load passwords from encrypted data bag, otherwise node attributes
-begin
-  password_databag = Chef::EncryptedDataBagItem.load("cf10",node['cf10']['installer']['password_databag'])
-  admin_password = password_databag["admin_password"]
-  jetty_password = password_databag["jetty_password"]
-  rds_password = password_databag["rds_password"]
-rescue
-  Chef::Log.info("Could not load encrypted data bag: cf10/#{node['cf10']['installer']['password_databag']}")
-ensure
-  admin_password ||= node["cf10"]["installer"]["admin_password"]
-  jetty_password ||= node["cf10"]["installer"]["jetty_password"]
-  rds_password ||= node["cf10"]["installer"]["rds_password"]
-end
+# Load password from encrypted data bag, data bag (:solo), or node attribute
+pwds = CF10Passwords.get_passwords(node)
 
 # Set up install folder with correct permissions
 directory node['cf10']['installer']['install_folder'] do
@@ -45,9 +34,9 @@ template "#{Chef::Config['file_cache_path']}/cf10-installer.properties" do
   owner node['cf10']['installer']['runtimeuser']
   mode 00644 
   variables(
-    :admin_password => admin_password,
-    :jetty_password => jetty_password,
-    :rds_password => rds_password
+    :admin_password => pwds.admin_password,
+    :jetty_password => pwds.jetty_password,
+    :rds_password => pwds.rds_password
   )
   not_if { File.exists?("#{node['cf10']['installer']['install_folder']}/license.html") }
 end
