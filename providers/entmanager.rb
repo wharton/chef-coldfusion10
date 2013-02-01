@@ -18,6 +18,9 @@
 #
 
 include Chef::Mixin::Checksum
+include CF10Entmanager
+include CF10Passwords
+
 
 def initialize(*args)
   super
@@ -37,19 +40,19 @@ def initialize(*args)
     group "root"
   end
   
-  instance_data = CF10Entmanager.get_instance_data("cfusion", node)
+  instance_data = get_instance_data("cfusion", node)
   
-  @lib_dir = instance_data.lib_dir
-  @api_url = "#{instance_data.api_path}/entmanager.cfm"
+  @lib_dir = instance_data['lib_dir']
+  @api_url = "#{instance_data['api_path']}/entmanager.cfm"
 
-  cf.run_action(:create_if_missing) unless ::File.exists?("#{instance_data.cfide_dir}/administrator/configmanager")
+  cf.run_action(:create_if_missing) unless ::File.exists?("#{instance_data['cfide_dir']}/administrator/configmanager")
 
   # Install the application
-  e = execute "unzip #{Chef::Config['file_cache_path']}/configmanager.zip -d #{instance_data.cfide_dir}/administrator/configmanager" do
+  e = execute "unzip #{Chef::Config['file_cache_path']}/configmanager.zip -d #{instance_data['cfide_dir']}/administrator/configmanager" do
     action :nothing
   end
 
-  e.run_action(:run) unless ::File.exists?("#{instance_data.cfide_dir}/administrator/configmanager")
+  e.run_action(:run) unless ::File.exists?("#{instance_data['cfide_dir']}/administrator/configmanager")
 
 end
 
@@ -110,7 +113,7 @@ end
 def make_api_call(a,p)
 
   # Load password from encrypted data bag, data bag (:solo), or node attribute
-  pwds = CF10Passwords.get_passwords(node)  
+  pwds = get_passwords(node)  
 
   made_update = false
   config_api_url = @api_url
@@ -127,7 +130,7 @@ def make_api_call(a,p)
     action :nothing
     url config_api_url
     message msg
-    headers({"AUTHORIZATION" => "Basic #{Base64.encode64("admin:#{admin_password}")}"})
+    headers({"AUTHORIZATION" => "Basic #{Base64.encode64("admin:#{pwds['admin_password']}")}"})
   end
 
   hr.run_action(:post)
