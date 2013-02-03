@@ -77,5 +77,16 @@ module CF10Providers
 
   end
 
+
+  # Borrowed from Rails: http://api.rubyonrails.org/classes/ActiveSupport/Inflector.html#method-i-camelize
+  def camelize(lower_case_and_underscored_word, first_letter_in_uppercase = false)
+    if first_letter_in_uppercase
+      lower_case_and_underscored_word.to_s.gsub(/\/(.?)/) { "::#{$1.upcase}" }.gsub(/(?:^|_)(.)/) { $1.upcase }
+    else
+      lower_case_and_underscored_word.to_s[0].chr.downcase + camelize(lower_case_and_underscored_word,true)[1..-1]
+    end
+  end
+
+
 end
 

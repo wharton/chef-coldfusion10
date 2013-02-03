@@ -19,18 +19,19 @@
 
 def initialize(*args)
   super  
-  @action = :addServer
+  @action = :add_server
 end
 
-actions :addServer, :addRemoteServer
+actions :add_server, :add_remote_server
  
-attribute :serverName,      :kind_of => String, :name_attribute => true
-attribute :host,            :kind_of => String, :required => true
-attribute :jvmRoute,        :kind_of => String, :required => true
-attribute :remotePort,      :kind_of => Integer, :required => true
-attribute :httpPort,        :kind_of => Integer, :required => true
-attribute :adminPort,       :kind_of => Integer, :required => false
-attribute :adminUsername,   :kind_of => String, :required => false
-attribute :adminPassword,   :kind_of => String, :required => false
-attribute :lbFactor,        :kind_of => Integer, :required => false, :default => 1
-attribute :https,           :kind_of => TrueClass, :required => false, :default => false
+attribute :server_name,      :kind_of => String, :name_attribute => true
+attribute :server_dir,       :kind_of => String
+attribute :host,             :kind_of => String
+attribute :jvm_route,        :kind_of => String
+attribute :remote_port,      :kind_of => Integer
+attribute :http_port,        :kind_of => Integer
+attribute :admin_port,       :kind_of => Integer
+attribute :admin_username,   :kind_of => String
+attribute :admin_password,   :kind_of => String
+attribute :lb_factor,        :kind_of => Integer, :default => 1
+attribute :https,            :kind_of => TrueClass, :default => false

@@ -32,12 +32,12 @@ def initialize(*args)
 
 end
 
-action :addServer do
+action :add_server do
 
   params = { "serverName" => new_resource.name }
-  %w{ serverDir }.each do |param|
+  %w{ server_dir }.each do |param|
     if new_resource.send param
-      params[param] = new_resource.send param 
+      params[camelize(param)] = new_resource.send param 
     end
   end 
 
@@ -50,12 +50,12 @@ action :addServer do
 
 end
 
-action :addRemoteServer do
+action :add_remote_server do
 
   params = { "remoteServerName" => new_resource.name }  
-  %w{ host jvmRoute remotePort httpPort adminPort adminUsername adminPassword lbFactor https }.each do |param|
+  %w{ host jvm_route remote_port http_port admin_port admin_username admin_password lb_factor https }.each do |param|
     if new_resource.send param
-      params[param] = new_resource.send param 
+      params[camelize(param)] = new_resource.send param 
     end
   end 
   

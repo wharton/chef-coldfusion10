@@ -31,12 +31,12 @@ def initialize(*args)
 
 end
 
-action :addCluster do
+action :add_cluster do
 
   params = { "clusterName" => new_resource.name }
-  %w{ servers multicastPort stickySessions }.each do |param|
+  %w{ servers multicast_port sticky_sessions }.each do |param|
     if new_resource.send param
-      params[param] = new_resource.send param 
+      params[camelize(param)] = new_resource.send param 
     end
   end 
 

@@ -19,12 +19,12 @@
 
 def initialize(*args)
   super  
-  @action = :addCluster
+  @action = :add_cluster
 end
 
-actions :addCluster
+actions :add_cluster
  
-attribute :clusterName,     :kind_of => String, :name_attribute => true
-attribute :servers,         :kind_of => String
-attribute :multicastPort,   :kind_of => Integer
-attribute :stickySessions,  :kind_of => String
+attribute :cluster_name,     :kind_of => String, :name_attribute => true
+attribute :servers,          :kind_of => String
+attribute :multicast_port,   :kind_of => Integer
+attribute :sticky_sessions,  :kind_of => String
