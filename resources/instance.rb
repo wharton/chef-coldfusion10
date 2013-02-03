@@ -20,7 +20,6 @@
 def initialize(*args)
   super  
   @action = :addServer
-  @provider = "coldfusion10_entmanager"
 end
 
 actions :addServer, :addRemoteServer
@@ -34,5 +33,4 @@ attribute :adminPort,       :kind_of => Integer, :required => false
 attribute :adminUsername,   :kind_of => String, :required => false
 attribute :adminPassword,   :kind_of => String, :required => false
 attribute :lbFactor,        :kind_of => Integer, :required => false, :default => 1
-attribute :https,           :kind_of => Boolean, :required => false, :defautl => false
-
+attribute :https,           :kind_of => TrueClass, :required => false, :default => false

@@ -19,46 +19,23 @@
 
 include Chef::Mixin::Checksum
 include CF10Entmanager
+include CF10Providers
 include CF10Passwords
 
 
 def initialize(*args)
   super
-
-   # Make sure we have unzip package  
-  p = package "unzip" do
-    action :nothing
-  end
-
-  p.run_action(:install)
-  
-  cf = cookbook_file "#{Chef::Config['file_cache_path']}/configmanager.zip" do
-    source "configmanager.zip"
-    action :nothing
-    mode "0744"
-    owner "root"
-    group "root"
-  end
-  
+   
   instance_data = get_instance_data(new_resource.instance, node)
-  
-  @lib_dir = instance_data['lib_dir']
-  @api_url = "#{instance_data['api_path']}/config.cfm"
-
-  cf.run_action(:create_if_missing) unless ::File.exists?("#{instance_data['cfide_dir']}/administrator/configmanager")
-
-  # Install the application
-  e = execute "unzip #{Chef::Config['file_cache_path']}/configmanager.zip -d #{instance_data['cfide_dir']}/administrator/configmanager" do
-    action :nothing
-  end
-
-  e.run_action(:run) unless ::File.exists?("#{instance_data['cfide_dir']}/administrator/configmanager")
+  new_resource.instance_dir = instance_data['dir']
+  new_resource.instance_http_port = instance_data['http_port']
+  install_configmanager("#{instance_data['dir']}/wwwroot/CFIDE") unless ::File.exists?("#{instance_data['dir']}/wwwroot/CFIDE/administrator/configmanager")
 
 end
 
 action :set do
   config = { new_resource.component => { new_resource.property => [ new_resource.args ] } } 
-  if make_api_call(config) 
+  if make_config_api_call(config, new_resource) 
     new_resource.updated_by_last_action(true)
     Chef::Log.info("Updated ColdFusion #{new_resource.component} configuration.")
   else
@@ -68,7 +45,7 @@ end
 
 action :bulk_set do
   config = new_resource.config 
-  if make_api_call(config)
+  if make_config_api_call(config, new_resource)
     new_resource.updated_by_last_action(true)
     Chef::Log.info("Updated ColdFusion configuration.")
   else
@@ -76,37 +53,14 @@ action :bulk_set do
   end
 end
 
-def make_config_api_call(msg)
+def make_config_api_call( msg, new_resource )
 
-  # Load password from encrypted data bag, data bag (:solo), or node attribute
   pwds = get_passwords(node)
-
-  made_update = false
-  config_api_url = @api_url
-  config_dir = @lib_dir
-
-  # Get config state before attempted update
-  before = Dir.glob("#{config_dir}/neo-*.xml").map { |filename| checksum(filename) }
-
-  Chef::Log.debug("Making API call to #{@api_url}")
-
-  # Make API call
-  hr = http_request "post_config" do
-    action :nothing
-    url config_api_url
-    message msg
-    headers({"AUTHORIZATION" => "Basic #{Base64.encode64("admin:#{pwds['admin_password']}")}"})
-  end
-
-  hr.run_action(:post)
-
-  # Get config state after attempted update
-  after = Dir.glob("#{config_dir}/neo-*.xml").map { |filename| checksum(filename) }
-
-  made_update = true if (after - before).length > 0 
-
-  made_update
+  make_api_call( msg, "http://localhost:#{new_resource.instance_http_port}/CFIDE/administrator/configmanager/api/config.cfm", "#{new_resource.instance_dir}/lib/neo-*.xml", pwds['admin_password'] )
 
 end
+
+
+
 
 

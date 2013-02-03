@@ -16,45 +16,49 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-class Chef::Recipe::CF10Passwords
 
-    def self.get_passwords(node)
+module CF10Passwords 
 
-        passwords = Hash.new()
+  def get_passwords(node)
 
-        begin
-          if Chef::Config[:solo]
-            begin 
-              password_databag = Chef::DataBagItem.load("cf10",node['cf10']['installer']['password_databag'])
-            rescue
-              Chef::Log.info("No shibboleth-idp data bag found")
-            end
-          else
-            begin 
-              password_databag = Chef::EncryptedDataBagItem.load("cf10",node['cf10']['installer']['password_databag'])
-            rescue
-              Chef::Log.info("No shibboleth-idp encrypted data bag found")
-            end
-          end
+    passwords = Hash.new()
 
-          if password_databag
+    admin_password = jetty_password = rds_password = nil
 
-            passwords["admin_password"] = password_databag["admin_password"]
-            passwords["jetty_password"] = password_databag["jetty_password"]
-            passwords["rds_password"] = password_databag["rds_password"]
-            
-          end 
-
-        ensure 
-
-          passwords["admin_password"] ||= node["cf10"]["installer"]["admin_password"]
-          passwords["jetty_password"] ||= node["cf10"]["installer"]["jetty_password"]
-          passwords["rds_password"] ||= node["cf10"]["installer"]["rds_password"]
-
-        end
-
-        passwords
-        
+    begin
+      if Chef::Config[:solo]
+      begin 
+        password_databag = Chef::DataBagItem.load("cf10",node['cf10']['installer']['password_databag'])
+      rescue
+        Chef::Log.info("No shibboleth-idp data bag found")
+      end
+    else
+      begin 
+        password_databag = Chef::EncryptedDataBagItem.load("cf10",node['cf10']['installer']['password_databag'])
+      rescue
+        Chef::Log.info("No shibboleth-idp encrypted data bag found")
+      end
     end
 
+    if password_databag
+
+      admin_password = password_databag["admin_password"]
+      jetty_password = password_databag["jetty_password"]
+      rds_password = password_databag["rds_password"]
+
+    end 
+
+    ensure 
+
+      passwords["admin_password"] = admin_password || node["cf10"]["installer"]["admin_password"]
+      passwords["jetty_password"] = jetty_password || node["cf10"]["installer"]["jetty_password"]
+      passwords["rds_password"] = rds_password || node["cf10"]["installer"]["rds_password"]
+
+    end
+
+    passwords
+
+  end
+
 end
+

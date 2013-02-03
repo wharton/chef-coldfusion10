@@ -18,7 +18,10 @@
 #
 
 # Load password from encrypted data bag, data bag (:solo), or node attribute
-pwds = CF10Passwords.get_passwords(node)
+class Chef::Recipe
+  include CF10Passwords
+end
+pwds = get_passwords(node)
 
 # Set up install folder with correct permissions
 directory node['cf10']['installer']['install_folder'] do
@@ -34,9 +37,9 @@ template "#{Chef::Config['file_cache_path']}/cf10-installer.properties" do
   owner node['cf10']['installer']['runtimeuser']
   mode 00644 
   variables(
-    :admin_password => pwds.admin_password,
-    :jetty_password => pwds.jetty_password,
-    :rds_password => pwds.rds_password
+    :admin_password => pwds['admin_password'],
+    :jetty_password => pwds['jetty_password'],
+    :rds_password => pwds['rds_password']
   )
   not_if { File.exists?("#{node['cf10']['installer']['install_folder']}/license.html") }
 end

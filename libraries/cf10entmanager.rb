@@ -16,34 +16,33 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-class Chef::Recipe::CF10Entmanager 
 
-    def self.get_instance_data(instance, node)
+module CF10Entmanager 
 
-      require "rexml/document"
+  def get_instance_data(instance, node)
 
-      # Find the instance in the ColdFuison server's instances.xml
-      instances_xml_doc = REXML::Document.new ::File.new("#{node['cf10']['installer']['install_folder']}/config/instances.xml")
-      server_xml_element = instances_xml_doc.elements["//*/text()[normalize-space(.)='#{instance}']/../.."]
-      Chef::Application.fatal!("No instance named #{instance} found.") unless server_xml_element
+    require "rexml/document"
 
-      # Find the HTTP port from the instance's server.xml
-      instance_dir = server_xml_element.elements["directory"].text.strip
-      server_xml_doc = REXML::Document.new ::File.new("#{instance_dir}/runtime/conf/server.xml")
-      http_connector_xml_element = server_xml_doc.root.elements["//Connector[@protocol='org.apache.coyote.http11.Http11Protocol']"]
-      Chef::Application.fatal!("The #{new_resource.instance} instance does not appear to be running an HTTP connector.") unless http_connector_xml_element
+    # Find the instance in the ColdFuison server's instances.xml
+    instances_xml_doc = REXML::Document.new ::File.new("#{node['cf10']['installer']['install_folder']}/config/instances.xml")
+    server_xml_element = instances_xml_doc.elements["//*/text()[normalize-space(.)='#{instance}']/../.."]
+    Chef::Application.fatal!("No instance named #{instance} found.") unless server_xml_element
 
-      port = http_connector_xml_element.attributes["port"]
+    # Find the HTTP port from the instance's server.xml
+    dir = server_xml_element.elements["directory"].text.strip
+    server_xml_doc = REXML::Document.new ::File.new("#{dir}/runtime/conf/server.xml")
+    http_connector_xml_element = server_xml_doc.root.elements["//Connector[@protocol='org.apache.coyote.http11.Http11Protocol']"]
+    Chef::Application.fatal!("The #{instance} instance does not appear to be running an HTTP connector.") unless http_connector_xml_element
 
-      instance_data = Hash.new()
-      instance_data["instance_dir"] = instance_dir
-      instance_data["http_port"] = port
-      instance_data["cfide_dir"] = "#{instance_dir}/wwwroot/CFIDE"
-      instance_data["lib_dir"] = "#{instance_dir}/lib"
-      instance_data["api_path"] = "http://localhost:#{port}/CFIDE/administrator/configmanager/api"
+    http_port = http_connector_xml_element.attributes["port"]
 
-      instance_data
-        
-    end
+    instance_data = Hash.new()
+    instance_data["dir"] = dir
+    instance_data["http_port"] = http_port
+    
+    instance_data
+    
+  end
 
 end
+ 

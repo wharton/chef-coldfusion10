@@ -20,7 +20,6 @@
 def initialize(*args)
   super  
   @action = :addCluster
-  @provider = "coldfusion10_entmanager"
 end
 
 actions :addCluster
@@ -29,4 +28,3 @@ attribute :clusterName,     :kind_of => String, :name_attribute => true
 attribute :servers,         :kind_of => String
 attribute :multicastPort,   :kind_of => Integer
 attribute :stickySessions,  :kind_of => String
-
