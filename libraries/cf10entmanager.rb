@@ -44,5 +44,17 @@ module CF10Entmanager
     
   end
 
+  def update_node_instances_xml(node)
+    ::File.open("#{node['cf10']['installer']['install_folder']}/config/instances.xml") { |f|
+        node.set['cf10']['instances_xml'] = f.read
+    } if File.exists?("#{node['cf10']['installer']['install_folder']}/config/instances.xml")
+  end
+
+  def update_node_cluster_xml(node)
+    ::File.open("#{node['cf10']['installer']['install_folder']}/config/cluster.xml") { |f|
+        node.set['cf10']['cluster_xml'] = f.read
+    } if File.exists?("#{node['cf10']['installer']['install_folder']}/config/cluster.xml")
+  end
+
 end
  

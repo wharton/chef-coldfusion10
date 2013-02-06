@@ -19,6 +19,7 @@
 
 # Load password from encrypted data bag, data bag (:solo), or node attribute
 class Chef::Recipe
+  include CF10Entmanager 
   include CF10Passwords
 end
 pwds = get_passwords(node)
@@ -90,6 +91,9 @@ execute "run_cf10_installer" do
     notifies :run, "execute[install_wsconfig]", :delayed
   end
 end
+
+# Update the node's instances_xml
+update_node_instances_xml(node)
 
 # Fix up jetty if installed
 template "#{node['cf10']['installer']['install_folder']}/cfusion/jetty/cfjetty" do

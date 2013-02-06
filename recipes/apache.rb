@@ -42,6 +42,7 @@ end
 execute "start_cf_for_coldfusion10_wsconfig" do
   command "/bin/true"
   notifies :start, "service[coldfusion]", :immediately
+  notifies :run, "execute[install_wsconfig]", :delayed
 end
 
 # wsconfig 
@@ -66,6 +67,7 @@ execute "install_wsconfig" do
     end
   action :nothing  
   notifies :restart, "service[apache2]", :immediately
+  only_if "#{node['cf10']['installer']['install_folder']}/cfusion/runtime/bin/wsconfig -list 2>&1 | grep 'There are no configured web servers'"
 end
 
 execute "uninstall_wsconfig" do
@@ -89,6 +91,6 @@ execute "uninstall_wsconfig" do
     end
   action :nothing  
   notifies :restart, "service[apache2]", :immediately
-  only_if "#{node['cf10']['installer']['install_folder']}/cfusion/runtime/bin/wsconfig -list"
+  only_if "#{node['cf10']['installer']['install_folder']}/cfusion/runtime/bin/wsconfig -list | grep 'Apache : #{node['apache']['dir']}'"
 end
 

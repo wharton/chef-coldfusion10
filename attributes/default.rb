@@ -68,10 +68,14 @@ default['cf10']['installer']['runtimeuser'] = "nobody"
 default['cf10']['installer']['serial_number'] = ""
 
 # CFIDE directory
-default['cf10']['cfide_dir'] = "#{node['cf10']['installer']['install_folder']}/cfusion/wwwroot/CFIDE"
+default['cf10']['cfusion']['cfide_dir'] = "#{node['cf10']['installer']['install_folder']}/cfusion/wwwroot/CFIDE"
 
 # Config directory
-default['cf10']['config_dir'] = "#{node['cf10']['installer']['install_folder']}/cfusion/lib"
+default['cf10']['cfusion']['config_dir'] = "#{node['cf10']['installer']['install_folder']}/cfusion/lib"
+
+# Node attributes to hold the instance and cluster data
+default['cf10']['instances_xml']
+default['cf10']['cluster_xml']
 
 # JVM Settings
 default['cf10']['java']['args'] = %w{ 

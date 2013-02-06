@@ -27,7 +27,7 @@ def initialize(*args)
    
   instance_data = get_instance_data("cfusion", node)  
   @api_url = "http://localhost:#{instance_data['http_port']}/CFIDE/administrator/configmanager/api/entmanager.cfm"
-  install_configmanager("#{instance_data['dir']}/wwwroot/CFIDE") unless ::File.exists?("#{instance_data['dir']}/wwwroot/CFIDE/administrator/configmanager")
+  install_configmanager("#{instance_data['dir']}/wwwroot/CFIDE")
 
 
 end
@@ -43,6 +43,7 @@ action :add_server do
 
   if make_entmanager_api_call("addServer",params) 
     new_resource.updated_by_last_action(true)
+    update_node_instances_xml(node)
     Chef::Log.info("Updated ColdFusion instance configuration.")
   else
     Chef::Log.info("No ColdFusion instance changes made.")
@@ -61,6 +62,7 @@ action :add_remote_server do
   
   if make_entmanager_api_call("addRemoteServer",params) 
     new_resource.updated_by_last_action(true)
+    update_node_instances_xml(node)
     Chef::Log.info("Updated ColdFusion instance configuration.")
   else
     Chef::Log.info("No ColdFusion instance changes made.")

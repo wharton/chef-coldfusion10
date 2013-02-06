@@ -29,7 +29,7 @@ def initialize(*args)
   instance_data = get_instance_data(new_resource.instance, node)
   new_resource.instance_dir = instance_data['dir']
   new_resource.instance_http_port = instance_data['http_port']
-  install_configmanager("#{instance_data['dir']}/wwwroot/CFIDE") unless ::File.exists?("#{instance_data['dir']}/wwwroot/CFIDE/administrator/configmanager")
+  install_configmanager("#{instance_data['dir']}/wwwroot/CFIDE")
 
 end
 

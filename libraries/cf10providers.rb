@@ -23,29 +23,34 @@ module CF10Providers
   
   def install_configmanager( cfide_dir )
 
-    # Make sure we have unzip package  
-    p = package "unzip" do
-      action :nothing
+    version_file = "#{cfide_dir}/administrator/configmanager/version"
+    unless ::File.exists?(version_file) && File.open(version_file) { |f| f.grep(/0\.1\.0/) }
+ 
+      # Make sure we have unzip package  
+      p = package "unzip" do
+        action :nothing
+      end
+
+      p.run_action(:install)
+      
+      cf = cookbook_file "#{Chef::Config['file_cache_path']}/configmanager.zip" do
+        source "configmanager.zip"
+        action :nothing
+        mode "0744"
+        owner "root"
+        group "root"
+      end
+
+      cf.run_action(:create_if_missing) 
+
+      # Install the application
+      e = execute "unzip #{Chef::Config['file_cache_path']}/configmanager.zip -f -o -d #{cfide_dir}/administrator/configmanager" do
+        action :nothing
+      end
+
+      e.run_action(:run)
+
     end
-
-    p.run_action(:install)
-    
-    cf = cookbook_file "#{Chef::Config['file_cache_path']}/configmanager.zip" do
-      source "configmanager.zip"
-      action :nothing
-      mode "0744"
-      owner "root"
-      group "root"
-    end
-
-    cf.run_action(:create_if_missing) 
-
-    # Install the application
-    e = execute "unzip #{Chef::Config['file_cache_path']}/configmanager.zip -d #{cfide_dir}/administrator/configmanager" do
-      action :nothing
-    end
-
-    e.run_action(:run)
 
   end
 

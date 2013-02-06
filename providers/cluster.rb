@@ -27,7 +27,7 @@ def initialize(*args)
    
   instance_data = get_instance_data("cfusion", node) 
   @api_url = "http://localhost:#{instance_data['http_port']}/CFIDE/administrator/configmanager/api/entmanager.cfm"
-  install_configmanager("#{instance_data['dir']}/wwwroot/CFIDE") unless ::File.exists?("#{instance_data['dir']}/wwwroot/CFIDE/administrator/configmanager")
+  install_configmanager("#{instance_data['dir']}/wwwroot/CFIDE")
 
 end
 
@@ -42,6 +42,7 @@ action :add_cluster do
 
   if make_entmanager_api_call("addCluster",params) 
     new_resource.updated_by_last_action(true)
+    update_node_cluster_xml(node)
     Chef::Log.info("Updated ColdFusion cluster configuration.")
   else
     Chef::Log.info("No ColdFusion cluster changes made.")
