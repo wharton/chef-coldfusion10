@@ -44,7 +44,7 @@ module CF10Providers
       cf.run_action(:create_if_missing) 
 
       # Install the application
-      e = execute "unzip #{Chef::Config['file_cache_path']}/configmanager.zip -f -o -d #{cfide_dir}/administrator/configmanager" do
+      e = execute "unzip -o #{Chef::Config['file_cache_path']}/configmanager.zip -d #{cfide_dir}/administrator/configmanager" do
         action :nothing
       end
 
