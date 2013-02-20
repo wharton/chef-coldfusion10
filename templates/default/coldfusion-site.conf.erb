@@ -25,8 +25,8 @@
   CustomLog <%= node['apache']['log_dir'] %>/coldfusion-access.log combined
   ServerSignature On
 
-  Alias /CFIDE/ "<%= node['cf10']['installer']['install_folder'] %>/cfusion/wwwroot/CFIDE/"
-  Alias /cfide/ "<%= node['cf10']['installer']['install_folder'] %>/cfusion/wwwroot/CFIDE/"
+  Alias /CFIDE "<%= node['cf10']['installer']['install_folder'] %>/cfusion/wwwroot/CFIDE"
+  Alias /cfide "<%= node['cf10']['installer']['install_folder'] %>/cfusion/wwwroot/CFIDE"
 
   <Directory "<%= node['cf10']['installer']['install_folder']%>/cfusion/wwwroot/CFIDE">
       Options Indexes MultiViews
@@ -34,6 +34,15 @@
       Order allow,deny
       Allow from all
   </Directory>
+
+  Alias /CFFileServlet "<%= node['cf10']['installer']['install_folder'] %>/cfusion/tmpCache/CFFileServlet"
+
+  <Directory "<%= node['cf10']['installer']['install_folder']%>/cfusion/tmpCache/CFFileServlet">
+      Options Indexes FollowSymLinks
+      AllowOverride None
+      Order allow,deny
+      Allow from all
+  </Directory> 
 
   DirectoryIndex index.cfm index.html index.cgi index.pl index.php index.xhtml index.htm
 
@@ -66,11 +75,20 @@
   CustomLog <%= node['apache']['log_dir'] %>/coldfusion-access.log combined
   ServerSignature On
 
-  Alias /CFIDE/ "<%= node['cf10']['installer']['install_folder'] %>/cfusion/wwwroot/CFIDE/"
-  Alias /cfide/ "<%= node['cf10']['installer']['install_folder'] %>/cfusion/wwwroot/CFIDE/"
+  Alias /CFIDE "<%= node['cf10']['installer']['install_folder'] %>/cfusion/wwwroot/CFIDE"
+  Alias /cfide "<%= node['cf10']['installer']['install_folder'] %>/cfusion/wwwroot/CFIDE"
 
   <Directory "<%= node['cf10']['installer']['install_folder']%>/cfusion/wwwroot/CFIDE">
       Options Indexes MultiViews
+      AllowOverride None
+      Order allow,deny
+      Allow from all
+  </Directory>
+
+  Alias /CFFileServlet "<%= node['cf10']['installer']['install_folder'] %>/cfusion/tmpCache/CFFileServlet"
+
+  <Directory "<%= node['cf10']['installer']['install_folder']%>/cfusion/tmpCache/CFFileServlet">
+      Options Indexes FollowSymLinks
       AllowOverride None
       Order allow,deny
       Allow from all
