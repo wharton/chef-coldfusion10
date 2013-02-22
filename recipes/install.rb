@@ -61,7 +61,7 @@ if node['cf10']['installer'] && node['cf10']['installer']['url']
   remote_file "#{Chef::Config['file_cache_path']}/#{file_name}" do
     source node['cf10']['installer']['url']
     owner node['cf10']['installer']['runtimeuser']
-    mode 00744
+    mode 00755
     action :create_if_missing
     not_if { File.exists?("#{node['cf10']['installer']['install_folder']}/license.html") }
   end
