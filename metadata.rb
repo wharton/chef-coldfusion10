@@ -6,7 +6,7 @@ description      "Installs/Configures Adobe ColdFusion 10"
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 version          "0.1.7"
 
-%w{ redhat ubuntu }.each do |os|
+%w{ centos redhat ubuntu }.each do |os|
   supports os
 end
 
