@@ -31,6 +31,7 @@ end
 
 # Set up ColdFusion as a service
 service "coldfusion" do
+  pattern "\\-Dcoldfusion\\.home=#{node['cf10']['installer']['install_folder']}\/cfusion \.* com\\.adobe\\.coldfusion\\.bootstrap\\.Bootstrap \\-start"
   supports :restart => true
   action [ :enable, :start ]
 end
