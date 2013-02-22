@@ -87,19 +87,7 @@ execute "run_cf10_installer" do
   action :run
   user node['cf10']['installer']['runtimeuser']
   cwd Chef::Config['file_cache_path']
-  if node['recipes'].include?("coldfusion10::apache")
-    notifies :run, "execute[uninstall_wsconfig]", :delayed
-    notifies :run, "execute[install_wsconfig]", :delayed
-  end
 end
-
-# Fix up init script
-# template "#{node['cf10']['installer']['install_folder']}/cfusion/bin/coldfusion" do
-#  source "coldfusion.erb"
-#  owner node['cf10']['installer']['runtimeuser']
-#  group "root"
-#  mode 00755
-# end
 
 # Fix up jetty if installed
 template "#{node['cf10']['installer']['install_folder']}/cfusion/jetty/cfjetty" do

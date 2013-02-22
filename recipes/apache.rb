@@ -42,6 +42,7 @@ end
 execute "start_cf_for_coldfusion10_wsconfig" do
   command "/bin/true"
   notifies :start, "service[coldfusion]", :immediately
+  notifies :run, "execute[uninstall_wsconfig]", :delayed
   notifies :run, "execute[install_wsconfig]", :delayed
 end
 
