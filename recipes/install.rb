@@ -95,7 +95,6 @@ execute "run_cf10_installer" do
   cwd Chef::Config['file_cache_path']
   if node['recipes'].include?("coldfusion10::apache")
     notifies :run, "execute[uninstall_wsconfig]", :delayed
-    notifies :run, "execute[install_wsconfig]", :delayed
   end
 end
 
