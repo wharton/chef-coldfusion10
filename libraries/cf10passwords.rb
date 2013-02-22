@@ -30,13 +30,13 @@ module CF10Passwords
       begin 
         password_databag = Chef::DataBagItem.load("cf10",node['cf10']['installer']['password_databag'])
       rescue
-        Chef::Log.info("No shibboleth-idp data bag found")
+        Chef::Log.info("No coldfusion10 passwords data bag found")
       end
     else
       begin 
         password_databag = Chef::EncryptedDataBagItem.load("cf10",node['cf10']['installer']['password_databag'])
       rescue
-        Chef::Log.info("No shibboleth-idp encrypted data bag found")
+        Chef::Log.info("No coldfusion10 passwords encrypted data bag found")
       end
     end
 

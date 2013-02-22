@@ -54,10 +54,10 @@ module CF10Providers
 
   end
 
-  def make_api_call( message, api_url, config_glob, admin_pwd )
+  def make_api_call( msg, api_url, config_glob, admin_pwd )
 
     made_update = false   
-   
+     
     # Get config state before attempted update
     before = Dir.glob(config_glob).map { |filename| checksum(filename) }
 
@@ -67,7 +67,7 @@ module CF10Providers
     hr = http_request "post_config" do
       action :nothing
       url api_url
-      message message
+      message msg
       headers({"AUTHORIZATION" => "Basic #{Base64.encode64("admin:#{admin_pwd}")}"})
     end
 

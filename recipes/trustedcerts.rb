@@ -18,7 +18,10 @@
 #
 
 if node.recipe?("java") && node['java']['install_flavor'] == "oracle" 
-  node['cf10']['java']['home'] = node['java']['java_home']
+  node.set['cf10']['java']['home'] = node['java']['java_home']
+end
+unless node['cf10']['java']['home']
+  node.set['cf10']['java']['home'] = node['cf10']['installer']['install_folder'] 
 end
 
 # If using Apache import the ssl cert

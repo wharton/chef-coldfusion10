@@ -17,6 +17,19 @@
 # limitations under the License.
 #
 
+class Chef::Recipe
+  include CF10Entmanager 
+  include CF10Passwords
+end
+
+class Chef::Resource::RubyBlock
+  include CF10Entmanager 
+  include CF10Passwords
+end
+
+# Load password from encrypted data bag, data bag (:solo), or node attribute
+pwds = get_passwords(node)
+
 if !node['cf10']['installer']['installer_type'].match("standalone")
   Chef::Application.fatal!("ColdFusion 10 installer type must be 'standalone' for standalone installation!")
 end
@@ -31,8 +44,28 @@ end
 
 # Set up ColdFusion as a service
 service "coldfusion" do
+  pattern "\\-Dcoldfusion\\.home=#{node['cf10']['installer']['install_folder']}\/cfusion \.* com\\.adobe\\.coldfusion\\.bootstrap\\.Bootstrap \\-start"
   supports :restart => true
   action [ :enable, :start ]
+end
+
+# Start ColdFusion immediatly so we can initilize it
+execute "start_cf_for_coldfusion10_standalone" do
+ command "/bin/true"
+ notifies :start, "service[coldfusion]", :immediately
+ only_if { File.exists?("#{node['cf10']['installer']['install_folder']}/cfusion/wwwroot/CFIDE/administrator/cfadmin.wzrd") }
+end
+
+# Initialize the instance
+ruby_block "initialize_coldfusion" do
+ block do
+   # Initilize the instance
+   init_instance("cfusion", pwds['admin_password'], node)
+   # Update the node's instances_xml
+   update_node_instances_xml(node)
+ end
+ action :create
+ only_if { File.exists?("#{node['cf10']['installer']['install_folder']}/cfusion/wwwroot/CFIDE/administrator/cfadmin.wzrd") }
 end
 
 # Link the jetty init script, if installed

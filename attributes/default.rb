@@ -67,12 +67,6 @@ default['cf10']['installer']['runtimeuser'] = "nobody"
 # CF serial number
 default['cf10']['installer']['serial_number'] = ""
 
-# CFIDE directory
-default['cf10']['cfusion']['cfide_dir'] = "#{node['cf10']['installer']['install_folder']}/cfusion/wwwroot/CFIDE"
-
-# Config directory
-default['cf10']['cfusion']['config_dir'] = "#{node['cf10']['installer']['install_folder']}/cfusion/lib"
-
 # Node attributes to hold the instance and cluster data
 default['cf10']['instances_xml']
 default['cf10']['cluster_xml']
@@ -84,7 +78,7 @@ default['cf10']['java']['args'] = %w{
   -XX:MaxPermSize=192m
   -XX:+UseParallelGC
 }
-default['cf10']['java']['home'] = node['cf10']['installer']['install_folder']
+default['cf10']['java']['home'] = nil
 
 # CF Updates
 default['cf10']['updates']['urls'] = %w{ 

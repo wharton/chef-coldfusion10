@@ -17,11 +17,12 @@
 # limitations under the License.
 #
 
-# Load password from encrypted data bag, data bag (:solo), or node attribute
 class Chef::Recipe
   include CF10Entmanager 
   include CF10Passwords
 end
+
+# Load password from encrypted data bag, data bag (:solo), or node attribute
 pwds = get_passwords(node)
 
 # Set up install folder with correct permissions
@@ -92,8 +93,13 @@ execute "run_cf10_installer" do
   end
 end
 
-# Update the node's instances_xml
-update_node_instances_xml(node)
+# Fix up init script
+# template "#{node['cf10']['installer']['install_folder']}/cfusion/bin/coldfusion" do
+#  source "coldfusion.erb"
+#  owner node['cf10']['installer']['runtimeuser']
+#  group "root"
+#  mode 00755
+# end
 
 # Fix up jetty if installed
 template "#{node['cf10']['installer']['install_folder']}/cfusion/jetty/cfjetty" do

@@ -17,8 +17,13 @@
 # limitations under the License.
 #
 
-node.set['cf10']['java']['home'] = node['java']['java_home'] if node['java'] && node['java']['java_home']
-  
+if node.recipe?("java") && node['java']['install_flavor'] == "oracle" 
+  node.set['cf10']['java']['home'] = node['java']['java_home']
+end
+unless node['cf10']['java']['home']
+  node.set['cf10']['java']['home'] = node['cf10']['installer']['install_folder'] 
+end
+
 # Customize the jvm config
 template "#{node['cf10']['installer']['install_folder']}/cfusion/bin/jvm.config" do
   source "jvm.config.erb"

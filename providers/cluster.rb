@@ -42,7 +42,14 @@ action :add_cluster do
 
   if make_entmanager_api_call("addCluster",params) 
     new_resource.updated_by_last_action(true)
-    update_node_cluster_xml(node)
+     # Register the cluster
+    ruby_block "register_cluster_#{new_resource.name}" do
+      block do
+        # Update the node's cluster_xml
+        update_node_cluster_xml(node)
+      end
+      action :create
+    end
     Chef::Log.info("Updated ColdFusion cluster configuration.")
   else
     Chef::Log.info("No ColdFusion cluster changes made.")

@@ -17,7 +17,14 @@
 # limitations under the License.
 #
 
-updates_jars = node['cf10']['updates']['files']
+if node.recipe?("java") && node['java']['install_flavor'] == "oracle" 
+  node.set['cf10']['java']['home'] = node['java']['java_home']
+end
+unless node['cf10']['java']['home']
+  node.set['cf10']['java']['home'] = node['cf10']['installer']['install_folder'] 
+end
+
+updates_jars = node.default['cf10']['updates']['files']
 
 # Create the CF 10 update properties file
 template "#{Chef::Config['file_cache_path']}/update-installer.properties" do
