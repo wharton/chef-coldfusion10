@@ -25,7 +25,10 @@ module CF10Entmanager
 
     # Find the instance in the ColdFuison server's instances.xml
     instances_xml_doc = REXML::Document.new ::File.new("#{node['cf10']['installer']['install_folder']}/config/instances.xml")
-    server_xml_element = instances_xml_doc.elements["//*/text()[normalize-space(.)='#{instance}']/../.."]
+    server_xml_element = nil
+    instances_xml_doc.root.each_element { |e| 
+      server_xml_element = e if e.elements["name"].text.strip == instance
+    }
     Chef::Application.fatal!("No instance named #{instance} found.") unless server_xml_element
 
     # Find the HTTP port from the instance's server.xml
