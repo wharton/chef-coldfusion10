@@ -45,7 +45,7 @@ end
 # Set up ColdFusion as a service
 service "coldfusion" do
   pattern "\\-Dcoldfusion\\.home=#{node['cf10']['installer']['install_folder']}\/cfusion \.* com\\.adobe\\.coldfusion\\.bootstrap\\.Bootstrap \\-start"
-  status_command "ps -ef | grep '\-Dcoldfusion\.home=#{node['cf10']['installer']['install_folder']}\/cfusion .* com\.adobe\.coldfusion\.bootstrap\.Bootstrap \-start'" if platform_family?("rhel")
+  status_command "ps -ef | grep '\\-Dcoldfusion\\.home=#{node['cf10']['installer']['install_folder']}\\/cfusion .* com\\.adobe\\.coldfusion\\.bootstrap\\.Bootstrap \\-start'" if platform_family?("rhel")
   supports :restart => true
   action [ :enable, :start ]
 end
@@ -78,7 +78,7 @@ end
 # Set up jetty as a service, if installed
 service "cfjetty" do
   pattern "#{node['cf10']['installer']['install_folder']}\/cfusion\/jetty\/cfjetty start"
-  status_command "ps -ef | grep '#{node['cf10']['installer']['install_folder']}\/cfusion\/jetty\/cfjetty start'" if platform_family?("rhel")
+  status_command "ps -ef | grep '#{node['cf10']['installer']['install_folder']}\\/cfusion\\/jetty\\/cfjetty start'" if platform_family?("rhel")
   supports :restart => true
   action [ :enable, :start ]
   only_if { File.exists?("#{node['cf10']['installer']['install_folder']}/cfusion/jetty/cfjetty") }
