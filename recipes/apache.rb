@@ -41,9 +41,10 @@ end
 # Make sure CF is running
 execute "start_cf_for_coldfusion10_wsconfig" do
   command "/bin/true"
-  notifies :start, "service[coldfusion]", :immediately
+  notifies :start, "service[coldfusion]", :delayed
   notifies :run, "execute[uninstall_wsconfig]", :delayed
   notifies :run, "execute[install_wsconfig]", :delayed
+  only_if "#{node['cf10']['installer']['install_folder']}/cfusion/runtime/bin/wsconfig -list 2>&1 | grep 'There are no configured web servers'"
 end
 
 # wsconfig 
@@ -76,7 +77,7 @@ execute "uninstall_wsconfig" do
     when "rhel", "fedora", "arch"
       command <<-COMMAND
       sleep 11
-      #{node['cf10']['installer']['install_folder']}/cfusion/runtime/bin/wsconfig -uninstall -ws Apache -dir #{node['apache']['dir']}/conf -bin #{node['apache']['binary']} -script /usr/sbin/apachectl -v
+      #{node['cf10']['installer']['install_folder']}/cfusion/runtime/bin/wsconfig -uninstall -bin #{node['apache']['binary']} -script /usr/sbin/apachectl -v
       rm -f #{node['apache']['dir']}/conf/httpd.conf.1 
       rm -f #{node['apache']['dir']}/conf.d/mod_jk.conf
       sleep 11
@@ -84,7 +85,7 @@ execute "uninstall_wsconfig" do
     else
       command <<-COMMAND
       sleep 11
-      #{node['cf10']['installer']['install_folder']}/cfusion/runtime/bin/wsconfig -uninstall -ws Apache -dir #{node['apache']['dir']} -bin #{node['apache']['binary']} -script /usr/sbin/apache2ctl -v
+      #{node['cf10']['installer']['install_folder']}/cfusion/runtime/bin/wsconfig -uninstall -bin #{node['apache']['binary']} -script /usr/sbin/apache2ctl -v
       rm -f #{node['apache']['dir']}/httpd.conf.1
       rm -f #{node['apache']['dir']}/conf.d/mod_jk.conf
       sleep 11

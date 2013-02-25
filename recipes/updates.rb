@@ -24,7 +24,7 @@ unless node['cf10']['java']['home']
   node.set['cf10']['java']['home'] = node['cf10']['installer']['install_folder'] 
 end
 
-updates_jars = node.default['cf10']['updates']['files']
+updates_jars = node['cf10']['updates']['files'].dup
 
 # Create the CF 10 update properties file
 template "#{Chef::Config['file_cache_path']}/update-installer.properties" do
@@ -57,16 +57,20 @@ node['cf10']['updates']['urls'].each do | update |
     end
 
     # Run the installer
-    # Some updates require you to re-run wsconfig, so just do it if we have the apache recipe in the runlist and an update was applied
     execute "run_cf10_#{file_name.split('.').first}_installer" do
       command "#{node['cf10']['java']['home']}/jre/bin/java -jar #{file_name} -i silent -f update-installer.properties"
       action :run
       user node['cf10']['installer']['runtimeuser']
       cwd Chef::Config['file_cache_path']
-      if node['recipes'].include?("coldfusion10::apache")
-        notifies :run, "execute[uninstall_wsconfig]", :delayed  
-        notifies :run, "execute[install_wsconfig]", :delayed
-      end
+    end
+
+    # Some updates require you to re-run wsconfig, so just do it if wsconfig is configured and an update was applied
+    execute "start_cf_for_coldfusion10_updater_wsconfig" do
+      command "/bin/true"
+      notifies :start, "service[coldfusion]", :delayed
+      notifies :run, "execute[uninstall_wsconfig]", :delayed
+      notifies :run, "execute[install_wsconfig]", :delayed
+      only_if "#{node['cf10']['installer']['install_folder']}/cfusion/runtime/bin/wsconfig -list | grep 'Apache : #{node['apache']['dir']}'"
     end
 
     sudo sodo_name do
