@@ -3,7 +3,21 @@
 Description
 ===========
 
-Installs ColdFusion 10.
+Installs/Configures Adobe ColdFusion 10
+
+Recipes
+=======
+
+* `coldfusion10` - Includes the standalone, jvmconfig, and update recipes if the installer type is standalone (the default), or the j2ee recipe if installer type is ear or war
+* `coldfusion10::apache` - Configures ColdFusion to run behind the Apache httpd web server
+* `coldfusion10::configure` - Sets ColdFusion configuration settings via the config LWRP
+* `coldfusion10::install` - Runs the ColdFusion installer"
+* `coldfusion10::j2ee` - Includes the install recipe and explodes the ear if installer type is ear
+* `coldfusion10::jvmconfig` - Sets necessary JVM configuration"
+* `coldfusion10::standalone` - Installs ColdFusion 10 in standalone mode
+* `coldfusion10::tomcat` - Enables SSL and changes webroot for built in Tomcat webserver
+* `coldfusion10::trustedcerts` - Imports certificates from a data bag into the JVM truststore
+* `coldfusion10::updates` - Applies ColdFusion updates
 
 Requirements
 ============
@@ -11,15 +25,83 @@ Requirements
 Files
 -----
 
-You must download the ColdFusion 10 installer, ColdFusion_10_WWEJ_linux32.bin, from 
-Adobe.com and place it in this cookbook's `files/default` directory.
+You must download the ColdFusion 10 installer, i.e. ColdFusion\_10\_WWEJ\_linux32.bin, from Adobe.com and place it in this cookbook's `files/default` directory.
 
 Cookbooks
 ---------
 
-* apt - The apt cookbook is required.
-* apache2 - The apache2 cookbook is required if using the colfusion10::apache recipe.
-* jbossas7 - The jbossas7 cookbook is required if using the colfusion10::jbossas7 recipe.
+* `apt` - The apt cookbook is required by the coldfusion10::default recipe if the platform is Ubuntu <= 10.04.
+* `apache2` - The apache2 cookbook is required if using the colfusion10::apache recipe.
+* `jbossas7` - The jbossas7 cookbook is required if using the colfusion10::jbossas7 recipe.
+* `sudo` - The sudo cookbook is required if using the colfusion10::updates recipe.
+
+Resources/Providers
+===================
+
+This cookbook provides LWRPs that wrap the [ColdFusion Configuration Manager API](https://github.com/nmische/cf-configmanager).
+
+Config
+------
+
+The config resource can be used to set ColdFusion administrator settings. This resource supports two actions. The `:bulk_set` action allows multiple settings to be changed at once. For example, adding the following to a recipe will ensure the trusted cache is enabled and that a mapping exits:
+
+    coldfusion10_config "bulk" do
+      action :bulk_set
+      config ({ "runtime" => {
+                  "cacheProperty" => [
+                    { "propertyName" => "TrustedCache",
+                      "propertyValue" => true}
+                  ]
+                }, 
+                "extensions" => {
+                  "mapping" => [
+                     { "mapName" => "/cf10", 
+                       "mapPath" => "/opt/coldfusion10" }
+                  ]
+                } })
+      notifies :restart, "service[coldfusion]", :delayed
+    end
+
+The config resouce also has a `:set` action that can target a ColdFusion administrator API componet directly. For example to create a MS Sql Server datasouce you can do the following: 
+
+    coldfusion10_config "datasource" do
+      action :set
+      property "MSSQL"
+      args ({ "name" => "test_db",
+              "host" => "db.example.com",
+              "database" => "test_db",
+              "username" => "test_db_user",
+              "password" => "test_db_password",
+              "sendStringParametersAsUnicode" => true,
+              "disable_clob" => false,
+              "disable_blob" => false })
+    end
+
+Configuration settings can be targeted to a specific ColdFusion instance by setting the instance attribute of the config resource. By default the resource targets the "cfusion" instance.
+
+Note that the config resource is not yet idempotent. Each time config provider runs it attempts to update the underlying ColdFusion Administrator setting.
+
+Instance
+--------
+
+The instance resource can be used to create new local or remote instances. For example, the following will create a new local instance and configure it as a service:
+
+    coldfusion10_instance "cfusion2" do
+      create_service true
+    end
+
+Note that the instance resource only supports creating new instances. Once an instance is created it cannot be updated or deleted via the the instance resource.
+
+Cluster
+-------
+
+The cluster resource can be used to create new clusters.
+
+    coldfusion10_cluster "testCluster" do
+        servers "cfusion,cfusion2"
+    end
+
+Note that clusters can be created and modified using this resource, but not deleted.
 
 Attributes
 ==========
@@ -29,8 +111,12 @@ For ColdFusion Installation
 
 The following attributes are under `node['cf10']['installer']`:
 
+For the installer binary: 
+
 * `['url']` - If defined, the installer will be downloaded from this location. If not defined you must download the CF10 installer from Adobe and place in the cookbook's `files/default` directory and set the `node['cf10']['installer']['file']` attribute. (no default)
 * `['file']` - If defined, a cookbook file with this name must be available in this cookbook's `files/default` directory. You may download the installer from adobe.com. If not defined you must provide an alternate download URL for CF10 installer by setting the `node['cf10']['installer']['url']` attribute. (no default)
+
+Additional settings:
 
 * `['admin_ip']` - Secure profile IP addresses, IP addresses from which Administrator can be accessed (default: "")
 * `['admin_username']` - ColdFusion administrator username (default: "admin")
@@ -42,12 +128,14 @@ The following attributes are under `node['cf10']['installer']`:
 * `['install_admin']` - Install the ColdFusion administrator application (default: "true")
 * `['install_folder']` - ColdFusion installation path (default: "/opt/coldfusion10")
 * `['install_jnbridge']` - Install the .Net integration services, applies only to Windows systems with .Net framework installed (default: "false")
+* `['install_odbc']` - ODBC services (default: "true")
+* `['install_samples']` - ColdFusion samples, the Getting Started Experience, Tutorials, and Documentation (default: "false")
 * `['install_solr']` - Install Apache Solr (default: "true")
 * `['installer_type']` - The type of installation, valid values are ear/war/standalone (default: "standalone")
-* `['license_mode']` - The license mode, valid values are full/trial/developer (default: "developer")
-* `['migrate_coldfusion']` - Migrate setting from a previous installation (default: "false")
 * `['jetty_username']` - Jetty useranme (default: "admin")
 * `['jetty_password']` - Jetty password (default: "vagrant")
+* `['license_mode']` - The license mode, valid values are full/trial/developer (default: "developer")
+* `['migrate_coldfusion']` - Migrate setting from a previous installation (default: "false")
 * `['password_databag']` - encrypted data bag item with ColdFusion passwords set during installation (default: "password_databag")
 * `['prev_cf_migr_dir']` - Where to migrate setting from (default: "")
 * `['prev_serial_number']` - If an upgrade license, previous serial number (default: "") 
@@ -76,21 +164,18 @@ The following attributes are under `node['cf10']`:
 
 * `['config_settings']` - Settings to apply to the ColdFusion server (default: {})
 
-ColdFusion configuration for this cookbook is handled by a LWRP wrapping the 
-ColdFusion Configuration Manager project (https://github.com/nmische/cf-configmanager). 
-To set ColdFusion admin settings via this cookbook set the config_settings as necessary
-and include the coldfusion10::configure recipe in your run list. Below is a sample
+ColdFusion configuration for this cookbook is handled by a LWRP wrapping the [ColdFusion Configuration Manager project](https://github.com/nmische/cf-configmanager). To set ColdFusion admin settings via this cookbook set the config_settings as necessary and include the coldfusion10::configure recipe in your run list. Below is a sample
 JSON datasource definition:
 
     "config_settings" => {
       "datasource" => {
         "MSSql" => [
           {
-            "name" => "MYDSN",
-            "host" => "mydbserver",
-            "database" => "mydb",
-            "username" => "dbuser",
-            "password" => "dbpassword",
+            "name" => "test_db",
+            "host" => "db.example.com",
+            "database" => "test_db",
+            "username" => "test_db_user",
+            "password" => "test_db_password",
             "sendStringParametersAsUnicode" => true,
             "disable_clob" => false,
             "disable_blob" => false,
@@ -99,21 +184,29 @@ JSON datasource definition:
       }
     }
 
-For Configuration Manager LWRP
-------------------------------
-
-The following attributes are under `node['cf10']['configmanager']`:
-
-* `['source_url']` - Source for cf-configmanger (default: "https://github.com/downloads/nmische/cf-configmanager/configmanager.zip")
-* `['api_url']` - The url to use to invoke cf-configmanger (default: "http://localhost:8500//CFIDE/administrator/configmanager/api/index.cfm")
-
 For Updates
 -----------
 
 The following attributes are under `node['cf10']['updates']`:
 
-* `['urls']` - A list of update URLs to download and install. (default: [ "http://download.macromedia.com/pub/coldfusion/10/cf10_mdt_updt.jar", "http://download.adobe.com/pub/adobe/coldfusion/hotfix_001.jar", "http://download.adobe.com/pub/adobe/coldfusion/hotfix_002.jar" ])
-* `['files']` - A list of files deployed by the update installers. There should be one entry for each update url defined in `node['cf10']['updates']['urls']`. (default: [ "hf1000-3332326.jar", "chf10000001.jar", "chf10000002.jar" ])
+* `['urls']` - A list of update URLs to download and install. (default: `%w{ 
+  http://download.macromedia.com/pub/coldfusion/10/cf10_mdt_updt.jar 
+  http://download.adobe.com/pub/adobe/coldfusion/hotfix_001.jar
+  http://download.adobe.com/pub/adobe/coldfusion/hotfix_002.jar
+  http://download.adobe.com/pub/adobe/coldfusion/hotfix_004.jar
+  http://download.adobe.com/pub/adobe/coldfusion/hotfix_005.jar
+  http://download.adobe.com/pub/adobe/coldfusion/hotfix_006.jar
+  http://download.adobe.com/pub/adobe/coldfusion/hotfix_007.jar
+}`)
+* `['files']` - A list of files deployed by the update installers. There should be one entry for each update url defined in `node['cf10']['updates']['urls']`. (default: `%w{ 
+  hf1000-3332326.jar
+  chf10000001.jar
+  chf10000002.jar
+  chf10000004.jar
+  chf10000005.jar
+  chf10000006.jar
+  chf10000007.jar
+}`)
 
 For Apache
 ----------
@@ -145,8 +238,10 @@ Securely Storing Passwords
 
 If you'd like to securely store the CF10 passwords for installation, you can create an encrypted data bag at `cf10/#{node['cf10']['installer']['password_databag']}` which defaults to `cf10/installer_passwords`. For example:
 
-* `knife data bag create cf10`
-* `knife data bag create cf10 installer_passwords --secret-file=path/to/secret`
+    $ knife data bag create cf10
+    $ knife data bag create cf10 installer_passwords --secret-file=path/to/secret
+
+_in your editor type:_
 
     {
       "id": "installer_passwords",

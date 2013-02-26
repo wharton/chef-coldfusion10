@@ -14,10 +14,6 @@ default['cf10']['apache']['adminapi_whitelist'] = []
 # Configuration 
 default['cf10']['config_settings'] = {}
 
-# CF config manager 
-default['cf10']['configmanager']['source_url'] = "https://github.com/downloads/nmische/cf-configmanager/configmanager.zip"
-default['cf10']['configmanager']['api_url'] = "http://localhost:8500/CFIDE/administrator/configmanager/api/index.cfm"
-
 # CF secure profile IP addresses
 default['cf10']['installer']['admin_ip'] = ""
 # CF admin username
