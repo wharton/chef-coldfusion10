@@ -58,16 +58,32 @@ action :add_server do
 
       instance_data = get_instance_data(new_resource.name, node)
 
-      # Link the init script
-      link "/etc/init.d/#{new_resource.name}" do
+      # Link the coldfusion init script
+      link "/etc/init.d/coldfusion-#{new_resource.name}" do
         to "#{instance_data['dir']}/bin/coldfusion"
       end
 
-      # Set up instance as a service
-      service "#{new_resource.name}" do
-        pattern "\\-Dcoldfusion\\.home=#{instance_data['dir']} \.* com\\.adobe\\.coldfusion\\.bootstrap\\.Bootstrap \\-start"
+      # Set up coldfusion instance as a service
+      service "coldfusion-#{new_resource.name}" do
+        pattern "\\-Dcoldfusion\\.home=#{instance_data['dir'].gsub('/','\\\\/')} .* com\\.adobe\\.coldfusion\\.bootstrap\\.Bootstrap \\-start"
+        status_command "ps -ef | grep '\\-Dcoldfusion\\.home=#{instance_data['dir'].gsub('/','\\\\/')} .* com\\.adobe\\.coldfusion\\.bootstrap\\.Bootstrap \\-start'" if platform_family?("rhel")
         supports :restart => true
         action [ :enable, :start ]
+      end
+
+      # Link the jetty init script, if installed
+      link "/etc/init.d/cfjetty-#{new_resource.name}" do
+        to "#{instance_data['dir']}/jetty/cfjetty"
+        only_if { File.exists?("#{instance_data['dir']}/jetty/cfjetty") }
+      end
+
+      # Set up jetty as a service, if installed
+      service "cfjetty-#{new_resource.name}" do
+        pattern "#{instance_data['dir'].gsub('/','\\\\/')}\\/jetty\\/cfjetty start"
+        status_command "ps -ef | grep '#{instance_data['dir'].gsub('/','\\\\/')}\\/jetty\\/cfjetty start'" if platform_family?("rhel")
+        supports :restart => true
+        action [ :enable, :start ]
+        only_if { File.exists?("#{instance_data['dir']}/jetty/cfjetty") }
       end
 
     end
