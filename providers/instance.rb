@@ -74,16 +74,16 @@ action :add_server do
       # Link the jetty init script, if installed
       link "/etc/init.d/cfjetty-#{new_resource.name}" do
         to "#{instance_data['dir']}/jetty/cfjetty"
-        only_if { File.exists?("#{instance_data['dir']}/jetty/cfjetty") }
+        only_if { ::File.exists?("#{instance_data['dir']}/jetty/cfjetty") }
       end
 
       # Set up jetty as a service, if installed
       service "cfjetty-#{new_resource.name}" do
-        pattern "#{instance_data['dir'].gsub('/','\\\\/')}\\/jetty\\/cfjetty start"
-        status_command "ps -ef | grep '#{instance_data['dir'].gsub('/','\\\\/')}\\/jetty\\/cfjetty start'" if platform_family?("rhel")
+        pattern "\\/bin\\/sh.*cfjetty-#{new_resource.name} start"
+        status_command "ps -ef | grep '\\/bin\\/sh.*cfjetty-#{new_resource.name} start'" if platform_family?("rhel")
         supports :restart => true
         action [ :enable, :start ]
-        only_if { File.exists?("#{instance_data['dir']}/jetty/cfjetty") }
+        only_if { ::File.exists?("#{instance_data['dir']}/jetty/cfjetty") }
       end
 
     end

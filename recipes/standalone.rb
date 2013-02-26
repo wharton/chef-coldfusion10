@@ -77,8 +77,8 @@ end
 
 # Set up jetty as a service, if installed
 service "cfjetty" do
-  pattern "#{node['cf10']['installer']['install_folder'].gsub('/','\\\\/')}\\/cfusion\\/jetty\\/cfjetty start"
-  status_command "ps -ef | grep '#{node['cf10']['installer']['install_folder'].gsub('/','\\\\/')}\\/cfusion\\/jetty\\/cfjetty start'" if platform_family?("rhel")
+  pattern "\\/bin\\/sh.*cfjetty start"
+  status_command "ps -ef | grep '\\/bin\\/sh.*cfjetty start'" if platform_family?("rhel")
   supports :restart => true
   action [ :enable, :start ]
   only_if { File.exists?("#{node['cf10']['installer']['install_folder']}/cfusion/jetty/cfjetty") }
