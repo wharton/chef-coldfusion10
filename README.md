@@ -42,6 +42,58 @@ This cookbook provides LWRPs that wrap the [ColdFusion Configuration Manager API
 
 Config
 ------
+### Actions
+<table>
+  <tr>
+    <th>Action</th>
+    <th>Description</th>
+    <th>Default</th>
+  </tr>
+  <tr>
+    <td><b>set</b></td>
+    <td>Set a property on a specific admin component</td>
+    <td>true</td>
+  </tr>
+  <tr>
+    <td><b>bulk_set</b></td>
+    <td>Set multiple properties on multiple admin components</td>
+    <td></td>
+  </tr>
+</table>
+
+### Attributes
+<table>
+  <tr>
+    <th>Attribute</th>
+    <th>Description</th>
+    <th>Default Value</th>
+  </tr>
+  <tr>
+    <td><b>component</b></td>
+    <td><em>Name attribute:</em> The componet to target if action is :set (required for :set)</td>
+    <td>name</td>
+  </tr>
+  <tr>
+    <td><b>property</b></td>
+    <td>The property to set if action is :set (required for :set)</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><b>args</b></td>
+    <td>A hash of arguments to pass to the component setter method if action is :set (required for :set)</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><b>config</b></td>
+    <td>A hash of config settings if action is :bulk_set (required for :bulk_set)</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><b>instance</b></td>
+    <td>The instance to target</td>
+    <td>cfusion</td>
+  </tr>  
+</table>
 
 The config resource can be used to set ColdFusion administrator settings. This resource supports two actions. The `:bulk_set` action allows multiple settings to be changed at once. For example, adding the following to a recipe will ensure the trusted cache is enabled and that a mapping exits:
 
@@ -83,6 +135,93 @@ Note that the config resource is not yet idempotent. Each time config provider r
 
 Instance
 --------
+### Actions
+<table>
+  <tr>
+    <th>Action</th>
+    <th>Description</th>
+    <th>Default</th>
+  </tr>
+  <tr>
+    <td><b>add_server</b></td>
+    <td>Add a local instance</td>
+    <td>true</td>
+  </tr>
+  <tr>
+    <td><b>add_remote_server</b></td>
+    <td>Register a remote instance</td>
+    <td></td>
+  </tr>
+</table>
+
+### Attributes
+<table>
+  <tr>
+    <th>Attribute</th>
+    <th>Description</th>
+    <th>Default Value</th>
+  </tr>
+  <tr>
+    <td><b>server_name</b></td>
+    <td><em>Name attribute:</em> The instance name (required)</td>
+    <td>name</td>
+  </tr>
+  <tr>
+    <td><b>create_service</b></td>
+    <td>Enable and start service for the instnace if action is :add_server</td>
+    <td>false</td>
+  </tr>
+  <tr>
+    <td><b>server_dir</b></td>
+    <td>The server dirctory to use if action is :add_server. This value must be node['cf10']['installer']['install_folder'] + server_name (<em>Do not set this attribute</em>)</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><b>host</b></td>
+    <td>The IP address or DNS name for the remote instance host if action is :add_remote_server (required for :add_remote_server)</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><b>jvm_route</b></td>
+    <td>The jvmRoute attribute value of Engine from server.xml of the remote instance if action is :add_remote_server (required for :add_remote_server)</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><b>remote_port</b></td>
+    <td>The Connector port value with protocol AJP from server.xml of the remote instance if action is :add_remote_server (required for :add_remote_server)</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><b>http_port</b></td>
+    <td>The HTTP port through which the administrator of the remote instance can be accessed if action is :add_remote_server (required for :add_remote_server)</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><b>admin_port</b></td>
+    <td>The port on which admin component is running on remote instance if action is :add_remote_server</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><b>admin_username</b></td>
+    <td>The username for the admin component running on remote instanc if action is :add_remote_server</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><b>admin_password</b></td>
+    <td>The password for the admin component running on remote instance if action is :add_remote_server</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><b>lb_factor</b></td>
+    <td>The load balancing factor for the remote instance if action is :add_remote_server (required for :add_remote_server)</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td><b>https</b></td>
+    <td>Use https to connect to remote instance if action :add_remote_server</td>
+    <td>false</td>
+  </tr>
+</table>
 
 The instance resource can be used to create new local or remote instances. For example, the following will create a new local instance and configure it as a service:
 
@@ -94,6 +233,48 @@ Note that the instance resource only supports creating new instances. Once an in
 
 Cluster
 -------
+### Actions
+<table>
+  <tr>
+    <th>Action</th>
+    <th>Description</th>
+    <th>Default</th>
+  </tr>
+  <tr>
+    <td><b>add_cluster</b></td>
+    <td>Add a cluster</td>
+    <td>true</td>
+  </tr>
+</table>
+
+### Attributes
+<table>
+  <tr>
+    <th>Attribute</th>
+    <th>Description</th>
+    <th>Default Value</th>
+  </tr>
+  <tr>
+    <td><b>cluster_name</b></td>
+    <td><em>Name attribute:</em> The name of the cluster (required)</td>
+    <td>name</td>
+  </tr>
+  <tr>
+    <td><b>servers</b></td>
+    <td>A comma delimited list of servers to include in the cluster (required)</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><b>multicast_port</b></td>
+    <td>The mutlicast port to use for this cluster. If not set ColdFusion will pick an available port</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><b>sticky_sessions</b></td>
+    <td>A string, either 'true' or 'false', indicating this cluster will use sticky sessions. If not set this value will default to 'true'</td>
+    <td></td>
+  </tr>
+</table>
 
 The cluster resource can be used to create new clusters.
 
