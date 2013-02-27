@@ -4,8 +4,15 @@
 # default['cf10']['installer']['file'] = "ColdFusion_10_WWEJ_linux32.bin"
 
 # Apache SSL certificate files
-default['cf10']['apache']['ssl_cert_file'] = "/etc/ssl/certs/ssl-cert-snakeoil.pem"
-default['cf10']['apache']['ssl_cert_key_file'] = "/etc/ssl/private/ssl-cert-snakeoil.key"
+case node['platform_family']
+when 'rhel'
+  default['cf10']['apache']['ssl_cert_file'] = "/etc/pki/tls/certs/localhost.crt"
+  default['cf10']['apache']['ssl_cert_key_file'] = "/etc/pki/tls/private/localhost.key"
+else
+  default['cf10']['apache']['ssl_cert_file'] = "/etc/ssl/certs/ssl-cert-snakeoil.pem"
+  default['cf10']['apache']['ssl_cert_key_file'] = "/etc/ssl/private/ssl-cert-snakeoil.key"
+end
+
 default['cf10']['apache']['ssl_cert_chain_file'] = nil
 
 # Lock down /CFIDE/adminapi
