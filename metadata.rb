@@ -10,9 +10,9 @@ version          "0.2.5"
   supports os
 end
 
+depends "sudo"
 suggests "apt"
 suggests "apache2"
-suggests "sudo"
 
 recipe "coldfusion10", "Includes the standalone, jvmconfig, and update recipes if the installer type is standalone (the default), or the j2ee recipe if installer type is ear or war."
 recipe "coldfusion10::apache", "Configures ColdFusion to run behind the Apache httpd web server"
