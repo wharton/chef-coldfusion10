@@ -43,12 +43,16 @@ link "/etc/init.d/coldfusion" do
 end
 
 # Set up ColdFusion as a service
-service "coldfusion" do
-  pattern "\\-Dcoldfusion\\.home=#{node['cf10']['installer']['install_folder'].gsub('/','\\\\/')}\\/cfusion .* com\\.adobe\\.coldfusion\\.bootstrap\\.Bootstrap \\-start"
-  status_command "ps -ef | grep '\\-Dcoldfusion\\.home=#{node['cf10']['installer']['install_folder'].gsub('/','\\\\/')}\\/cfusion .* com\\.adobe\\.coldfusion\\.bootstrap\\.Bootstrap \\-start'" if platform_family?("rhel")
-  supports :restart => true
-  action [ :enable, :start ]
+coldfusion_service "coldfusion" do
+  instance "cfusion"
 end
+
+# service "coldfusion" do
+#   pattern "\\-Dcoldfusion\\.home=#{node['cf10']['installer']['install_folder'].gsub('/','\\\\/')}\\/cfusion .* com\\.adobe\\.coldfusion\\.bootstrap\\.Bootstrap \\-start"
+#   status_command "ps -ef | grep '\\-Dcoldfusion\\.home=#{node['cf10']['installer']['install_folder'].gsub('/','\\\\/')}\\/cfusion .* com\\.adobe\\.coldfusion\\.bootstrap\\.Bootstrap \\-start'" if platform_family?("rhel")
+#   supports :restart => true
+#   action [ :enable, :start ]
+# end
 
 # Start ColdFusion immediatly so we can initilize it
 execute "start_cf_for_coldfusion10_standalone" do
@@ -63,7 +67,7 @@ ruby_block "initialize_coldfusion" do
    # Initilize the instance
    init_instance("cfusion", pwds['admin_password'], node)
    # Update the node's instances_xml
-   update_node_instances_xml(node)
+   update_node_instances(node)
  end
  action :create
  only_if { File.exists?("#{node['cf10']['installer']['install_folder']}/cfusion/wwwroot/CFIDE/administrator/cfadmin.wzrd") }

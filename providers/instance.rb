@@ -48,8 +48,8 @@ action :add_server do
     # Register the instance
     ruby_block "register_instance_#{new_resource.name}" do
       block do
-        # Update the node's instances_xml
-        update_node_instances_xml(node)
+        # Update the node's instances data
+        update_node_instances(node)
       end
       action :create
     end
@@ -106,7 +106,7 @@ action :add_remote_server do
   
   if make_entmanager_api_call("addRemoteServer",params) 
     new_resource.updated_by_last_action(true)
-    update_node_instances_xml(node)
+    update_node_instances(node)
     Chef::Log.info("Updated ColdFusion instance configuration.")
   else
     Chef::Log.info("No ColdFusion instance changes made.")

@@ -8,16 +8,16 @@ Installs/Configures Adobe ColdFusion 10
 Recipes
 =======
 
-* `coldfusion10` - Includes the standalone, jvmconfig, and update recipes if the installer type is standalone (the default), or the j2ee recipe if installer type is ear or war
+* `coldfusion10` - Includes the standalone, jvmconfig, and updates recipes if the installer type is standalone (the default), or the j2ee recipe if installer type is ear or war
 * `coldfusion10::apache` - Configures ColdFusion to run behind the Apache httpd web server
-* `coldfusion10::configure` - Sets ColdFusion configuration settings via the config LWRP
-* `coldfusion10::install` - Runs the ColdFusion installer"
+* `coldfusion10::configure` - Sets ColdFusion configuration settings via the config LWRP (cfusion instance only)
+* `coldfusion10::install` - Runs the ColdFusion installer
 * `coldfusion10::j2ee` - Includes the install recipe and explodes the ear if installer type is ear
-* `coldfusion10::jvmconfig` - Sets necessary JVM configuration"
+* `coldfusion10::jvmconfig` - Sets necessary JVM configuration (cfusion instance only)
 * `coldfusion10::standalone` - Installs ColdFusion 10 in standalone mode
-* `coldfusion10::tomcat` - Enables SSL and changes webroot for built in Tomcat webserver
+* `coldfusion10::tomcat` - Enables SSL and changes webroot for built in Tomcat webserver (cfusion instance only)
 * `coldfusion10::trustedcerts` - Imports certificates from a data bag into the JVM truststore
-* `coldfusion10::updates` - Applies ColdFusion updates
+* `coldfusion10::updates` - Applies ColdFusion updates to all local instances
 
 Requirements
 ============
@@ -25,14 +25,13 @@ Requirements
 Files
 -----
 
-You must download the ColdFusion 10 installer, i.e. ColdFusion\_10\_WWEJ\_linux32.bin, from Adobe.com and place it in this cookbook's `files/default` directory.
+Unless you have the ColdFusion 10 installer available on a private network you must download the installer, i.e. ColdFusion\_10\_WWEJ\_linux32.bin, from Adobe.com and place it in this cookbook's `files/default` directory. For more details see the information on the `node['cf10']['installer']['file']` and `node['cf10']['installer']['file']` attributes below.
 
 Cookbooks
 ---------
 
 * `apt` - The apt cookbook is required by the coldfusion10::default recipe if the platform is Ubuntu <= 10.04.
 * `apache2` - The apache2 cookbook is required if using the colfusion10::apache recipe.
-* `jbossas7` - The jbossas7 cookbook is required if using the colfusion10::jbossas7 recipe.
 * `sudo` - The sudo cookbook is required if using the colfusion10::updates recipe.
 
 Resources/Providers
@@ -378,6 +377,7 @@ The following attributes are under `node['cf10']['updates']`:
   http://download.adobe.com/pub/adobe/coldfusion/hotfix_005.jar
   http://download.adobe.com/pub/adobe/coldfusion/hotfix_006.jar
   http://download.adobe.com/pub/adobe/coldfusion/hotfix_007.jar
+  http://download.adobe.com/pub/adobe/coldfusion/hotfix_008.jar
 }`)
 * `['files']` - A list of files deployed by the update installers. There should be one entry for each update url defined in `node['cf10']['updates']['urls']`. (default: `%w{ 
   hf1000-3332326.jar
@@ -387,6 +387,7 @@ The following attributes are under `node['cf10']['updates']`:
   chf10000005.jar
   chf10000006.jar
   chf10000007.jar
+  chf10000008.jar
 }`)
 
 For Apache
@@ -399,6 +400,15 @@ The following attributes are under `node['cf10']['apache']`:
 * `['ssl_cert_chain_file']` - The SSL chain to use for Apache (default: nil) 
 * `['adminapi_whitelist']` - An array of hosts/IP addresses beyond localhost/127.0.0.1 to grant adminapi access.
 
+For Chef Search
+---------------
+
+The following attributes are set during a Chef run and can be used to query your coldfusion infrastructure:
+
+*`node['cf10']['instances_xml']` - The contents of the instances.xml file
+*`node['cf10']['instances_local']` - A comma delimited list of local instances
+*`node['cf10']['instances_remote']` - A comma delimited list of remote instances
+*`node['cf10']['cluster_xml']` - The contents of the cluster.xml file
 
 Usage
 =====
