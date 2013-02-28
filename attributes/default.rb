@@ -76,10 +76,6 @@ default['cf10']['instances_local'] = nil
 default['cf10']['instances_remote'] = nil
 default['cf10']['cluster_xml'] = nil
 
-
-
-
-
 # JVM Settings
 default['cf10']['java']['args'] = %w{ 
   -Xms256m  

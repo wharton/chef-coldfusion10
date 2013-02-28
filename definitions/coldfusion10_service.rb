@@ -1,4 +1,4 @@
-define :coldfusion_service do
+define :coldfusion10_service do
 
  # Set up instance as a service
   service params[:name] do

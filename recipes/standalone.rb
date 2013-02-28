@@ -43,7 +43,7 @@ link "/etc/init.d/coldfusion" do
 end
 
 # Set up ColdFusion as a service
-coldfusion_service "coldfusion" do
+coldfusion10_service "coldfusion" do
   instance "cfusion"
 end
 
