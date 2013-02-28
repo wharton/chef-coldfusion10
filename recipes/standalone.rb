@@ -47,13 +47,6 @@ coldfusion10_service "coldfusion" do
   instance "cfusion"
 end
 
-# service "coldfusion" do
-#   pattern "\\-Dcoldfusion\\.home=#{node['cf10']['installer']['install_folder'].gsub('/','\\\\/')}\\/cfusion .* com\\.adobe\\.coldfusion\\.bootstrap\\.Bootstrap \\-start"
-#   status_command "ps -ef | grep '\\-Dcoldfusion\\.home=#{node['cf10']['installer']['install_folder'].gsub('/','\\\\/')}\\/cfusion .* com\\.adobe\\.coldfusion\\.bootstrap\\.Bootstrap \\-start'" if platform_family?("rhel")
-#   supports :restart => true
-#   action [ :enable, :start ]
-# end
-
 # Start ColdFusion immediatly so we can initilize it
 execute "start_cf_for_coldfusion10_standalone" do
  command "/bin/true"
