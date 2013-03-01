@@ -48,8 +48,8 @@ action :add_server do
     # Register the instance
     ruby_block "register_instance_#{new_resource.name}" do
       block do
-        # Update the node's instances_xml
-        update_node_instances_xml(node)
+        # Update the node's instances data
+        update_node_instances(node)
       end
       action :create
     end
@@ -57,14 +57,15 @@ action :add_server do
     if new_resource.create_service 
 
       instance_data = get_instance_data(new_resource.name, node)
+      service_name = new_resource.service_name || new_resource.name
 
       # Link the coldfusion init script
-      link "/etc/init.d/coldfusion-#{new_resource.name}" do
+      link "/etc/init.d/#{service_name}" do
         to "#{instance_data['dir']}/bin/coldfusion"
       end
 
       # Set up coldfusion instance as a service
-      service "coldfusion-#{new_resource.name}" do
+      service service_name do
         pattern "\\-Dcoldfusion\\.home=#{instance_data['dir'].gsub('/','\\\\/')} .* com\\.adobe\\.coldfusion\\.bootstrap\\.Bootstrap \\-start"
         status_command "ps -ef | grep '\\-Dcoldfusion\\.home=#{instance_data['dir'].gsub('/','\\\\/')} .* com\\.adobe\\.coldfusion\\.bootstrap\\.Bootstrap \\-start'" if platform_family?("rhel")
         supports :restart => true
@@ -106,7 +107,7 @@ action :add_remote_server do
   
   if make_entmanager_api_call("addRemoteServer",params) 
     new_resource.updated_by_last_action(true)
-    update_node_instances_xml(node)
+    update_node_instances(node)
     Chef::Log.info("Updated ColdFusion instance configuration.")
   else
     Chef::Log.info("No ColdFusion instance changes made.")

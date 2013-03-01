@@ -45,8 +45,8 @@ action :add_cluster do
      # Register the cluster
     ruby_block "register_cluster_#{new_resource.name}" do
       block do
-        # Update the node's cluster_xml
-        update_node_cluster_xml(node)
+        # Update the node's cluster data
+        update_node_clusters(node)
       end
       action :create
     end

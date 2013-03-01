@@ -71,8 +71,10 @@ default['cf10']['installer']['runtimeuser'] = "nobody"
 default['cf10']['installer']['serial_number'] = ""
 
 # Node attributes to hold the instance and cluster data
-default['cf10']['instances_xml']
-default['cf10']['cluster_xml']
+default['cf10']['instances_xml'] = nil
+default['cf10']['instances_local'] = nil
+default['cf10']['instances_remote'] = nil
+default['cf10']['cluster_xml'] = nil
 
 # JVM Settings
 default['cf10']['java']['args'] = %w{ 
@@ -92,6 +94,7 @@ default['cf10']['updates']['urls'] = %w{
   http://download.adobe.com/pub/adobe/coldfusion/hotfix_005.jar
   http://download.adobe.com/pub/adobe/coldfusion/hotfix_006.jar
   http://download.adobe.com/pub/adobe/coldfusion/hotfix_007.jar
+  http://download.adobe.com/pub/adobe/coldfusion/hotfix_008.jar
 }
 default['cf10']['updates']['files'] = %w{ 
   hf1000-3332326.jar
@@ -101,6 +104,7 @@ default['cf10']['updates']['files'] = %w{
   chf10000005.jar
   chf10000006.jar
   chf10000007.jar
+  chf10000008.jar
 }
 
 # Tomcat or Apache web root
