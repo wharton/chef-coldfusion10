@@ -167,8 +167,13 @@ Instance
   </tr>
   <tr>
     <td><b>create_service</b></td>
-    <td>Enable and start service for the instnace if action is :add_server</td>
+    <td>Enable and start service for the instance if action is :add_server</td>
     <td>false</td>
+  </tr>
+    <tr>
+    <td><b>service_name</b></td>
+    <td>Name of symlink to place in /etc/init.d for the instance coldfusion init script if action is :add_server</td>
+    <td>server_name</td>
   </tr>
   <tr>
     <td><b>server_dir</b></td>
