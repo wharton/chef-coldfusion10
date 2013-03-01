@@ -65,7 +65,7 @@ action :add_server do
       end
 
       # Set up coldfusion instance as a service
-      service "#{service_name}" do
+      service service_name do
         pattern "\\-Dcoldfusion\\.home=#{instance_data['dir'].gsub('/','\\\\/')} .* com\\.adobe\\.coldfusion\\.bootstrap\\.Bootstrap \\-start"
         status_command "ps -ef | grep '\\-Dcoldfusion\\.home=#{instance_data['dir'].gsub('/','\\\\/')} .* com\\.adobe\\.coldfusion\\.bootstrap\\.Bootstrap \\-start'" if platform_family?("rhel")
         supports :restart => true
