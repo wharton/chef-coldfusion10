@@ -123,13 +123,32 @@ module CF10Entmanager
 
   end
 
-  def update_node_instances_xml(node)
+  def update_node_instances(node)
+    
+    require "rexml/document"
+
     ::File.open("#{node['cf10']['installer']['install_folder']}/config/instances.xml") { |f|
         node.set['cf10']['instances_xml'] = f.read
     } if File.exists?("#{node['cf10']['installer']['install_folder']}/config/instances.xml")
+
+    local_instances = []
+    remote_instances = []
+
+    # Find the instance in the ColdFuison server's instances.xml
+    if ::File.exists?("#{node['cf10']['installer']['install_folder']}/config/instances.xml")     
+      instances_xml_doc = REXML::Document.new ::File.new("#{node['cf10']['installer']['install_folder']}/config/instances.xml")      
+      instances_xml_doc.root.each_element { |e| 
+        local_instances.push( e.elements["name"].text.strip ) unless e.attributes["remote"]
+        remote_instances.push( e.elements["name"].text.strip ) if e.attributes["remote"]
+      }
+    end 
+
+    node.set['cf10']['instances_local'] = local_instances.join(",")
+    node.set['cf10']['instances_remote'] = remote_instances.join(",")
+
   end
 
-  def update_node_cluster_xml(node)
+  def update_node_clusters(node)
     ::File.open("#{node['cf10']['installer']['install_folder']}/config/cluster.xml") { |f|
         node.set['cf10']['cluster_xml'] = f.read
     } if File.exists?("#{node['cf10']['installer']['install_folder']}/config/cluster.xml")

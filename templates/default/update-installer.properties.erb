@@ -2,6 +2,6 @@ INSTALLER_UI=SILENT
 USER_INSTALL_DIR=<%= node['cf10']['installer']['install_folder'] %>
 DOC_ROOT=<%= node['cf10']['installer']['install_folder'] %>/cfusion/wwwroot 
 #The following applies only to multi server scenarios. 
-#INSTANCE_LIST=cfusion
+<% if node['cf10']['instances_local'] != 'cfusion'%>INSTANCE_LIST=<%= node['cf10']['instances_local'] %><% else %>#INSTANCE_LIST=cfusion<% end %>
 #COMMAND_INSTALL applies only to *INX based systems.
 #COMMAND_INSTALL=true

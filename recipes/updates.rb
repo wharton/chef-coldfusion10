@@ -17,6 +17,10 @@
 # limitations under the License.
 #
 
+class Chef::Recipe
+  include CF10Entmanager 
+end
+
 if node.recipe?("java") && node['java']['install_flavor'] == "oracle" 
   node.set['cf10']['java']['home'] = node['java']['java_home']
 end
@@ -25,6 +29,13 @@ unless node['cf10']['java']['home']
 end
 
 updates_jars = node['cf10']['updates']['files'].dup
+
+# Make sure we have the latest node data
+ruby_block "refresh_node_data_for_updates" do
+  block do
+    update_node_instances(node)
+  end
+end
 
 # Create the CF 10 update properties file
 template "#{Chef::Config['file_cache_path']}/update-installer.properties" do

@@ -26,6 +26,7 @@ actions :add_server, :add_remote_server
  
 attribute :server_name,      :kind_of => String, :name_attribute => true
 attribute :create_service,   :kind_of => TrueClass, :default => false
+attribute :service_name,     :kind_of => String
 attribute :server_dir,       :kind_of => String
 attribute :host,             :kind_of => String
 attribute :jvm_route,        :kind_of => String
