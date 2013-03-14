@@ -25,7 +25,7 @@ Requirements
 Files
 -----
 
-Unless you have the ColdFusion 10 installer available on a private network that the target node can access, you must download the necessary installer from Adobe. For more information wee the `node['cf10']['installer']['url']` and `node['cf10']['installer']['cookbook_file']`, and `node['cf10']['installer']['local_file']` attributes below.
+Unless you have the ColdFusion 10 installer available on a private network that the target node can access, you must download the necessary installer from Adobe. For more information see the `node['cf10']['installer']['url']` and `node['cf10']['installer']['cookbook_file']`, and `node['cf10']['installer']['local_file']` attributes below.
 
 Cookbooks
 ---------
@@ -300,7 +300,7 @@ You _must_ set _one_ of the following values for the installer binary:
 
 * `['url']` - If defined, the installer will be downloaded from this location. (no default)
 * `['cookbook_file']` - If defined, a cookbook file with this name, i.e. "ColdFusion\_10\_WWEJ\_linux32.bin", must be available in this cookbook's `files/default` directory. You must download the installer from adobe.com and place it in this directory. (no default)
-* `['local_file']` - If defined, the full path to the installer binary on the chef node, i.e. "/tmp/ColdFusion\_10\_WWEJ\_linux32.bin". This can be useful if you have some way to distribute the installer to target hosts before provisioning. For example you may keep a single copy of the installer on your Vagrant host workstation and make it availble to all you Vagrant guests via a shared folder. (no default)
+* `['local_file']` - If defined, the the installer binary must be available on the the chef node at this path, i.e. "/tmp/ColdFusion\_10\_WWEJ\_linux32.bin". This can be useful if you have some way to distribute the installer to chef nodes before provisioning. For example you may keep a single copy of the installer on your Vagrant host workstation and make it availble to all you Vagrant guests via a shared folder. (no default)
 
 Additional settings:
 
