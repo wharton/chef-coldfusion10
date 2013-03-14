@@ -25,6 +25,11 @@ end
 # Load password from encrypted data bag, data bag (:solo), or node attribute
 pwds = get_passwords(node)
 
+# Backwards compatibility for older file attribute
+if node['cf10']['installer'] && node['cf10']['installer']['file']
+  node.default['cf10']['installer']['cookbook_file'] = node['cf10']['installer']['file']
+end
+
 # Set up install folder with correct permissions
 directory node['cf10']['installer']['install_folder'] do
   owner node['cf10']['installer']['runtimeuser']
@@ -61,9 +66,9 @@ if node['cf10']['installer'] && node['cf10']['installer']['url']
   end
 
 # Copy from cookbook file
-elsif node['cf10']['installer'] && node['cf10']['installer']['file']
+elsif node['cf10']['installer'] && node['cf10']['installer']['cookbook_file']
 
-  file_name = node['cf10']['installer']['file']
+  file_name = node['cf10']['installer']['cookbook_file']
 
   # Move the CF 10 installer
   cookbook_file "#{Chef::Config['file_cache_path']}/#{file_name}" do
@@ -73,10 +78,29 @@ elsif node['cf10']['installer'] && node['cf10']['installer']['file']
     not_if { File.exists?("#{node['cf10']['installer']['install_folder']}/license.html") }
   end
 
+# Copy from local file
+elsif node['cf10']['installer'] && node['cf10']['installer']['local_file']
+
+  file_name = node['cf10']['installer']['local_file'].split('/').last
+
+  # Move the CF 10 installer
+  execute "run_cf10_installer" do
+    command <<-COMMAND
+      mv #{node['cf10']['installer']['local_file']} #{Chef::Config['file_cache_path']}/#{file_name}
+      chown #{node['cf10']['installer']['runtimeuser']}
+      chmod 00744 #{Chef::Config['file_cache_path']}/#{file_name}
+    COMMAND
+    creates "#{Chef::Config['file_cache_path']}/#{file_name}"
+    action :run
+    user node['cf10']['installer']['runtimeuser']
+    cwd Chef::Config['file_cache_path']
+    not_if { File.exists?("#{node['cf10']['installer']['install_folder']}/license.html") }
+  end
+
 # Throw an error if we can't find the installer
 else
 
-  Chef::Application.fatal!("You must define either a cookbook file or url for the ColdFusion 10 installer!")
+  Chef::Application.fatal!("You must define either a cookbook file, local file, or url for the ColdFusion 10 installer!")
 
 end
 

@@ -1,7 +1,8 @@
 
 # Installer locations, one of these must be defined
 # default['cf10']['installer']['url'] = "http://example.com/ColdFusion_10_WWEJ_linux32.bin"
-# default['cf10']['installer']['file'] = "ColdFusion_10_WWEJ_linux32.bin"
+# default['cf10']['installer']['cookbook_file'] = "ColdFusion_10_WWEJ_linux32.bin"
+# default['cf10']['installer']['local_file'] = "/tmp/ColdFusion_10_WWEJ_linux32.bin"
 
 # Apache SSL certificate files
 case node['platform_family']

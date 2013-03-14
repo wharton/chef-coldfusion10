@@ -25,7 +25,7 @@ Requirements
 Files
 -----
 
-Unless you have the ColdFusion 10 installer available on a private network you must download the installer, i.e. ColdFusion\_10\_WWEJ\_linux32.bin, from Adobe.com and place it in this cookbook's `files/default` directory. For more details see the information on the `node['cf10']['installer']['file']` and `node['cf10']['installer']['file']` attributes below.
+Unless you have the ColdFusion 10 installer available on a private network that the target node can access, you must download the necessary installer from Adobe. For more information wee the `node['cf10']['installer']['url']` and `node['cf10']['installer']['cookbook_file']`, and `node['cf10']['installer']['local_file']` attributes below.
 
 Cookbooks
 ---------
@@ -296,10 +296,11 @@ For ColdFusion Installation
 
 The following attributes are under `node['cf10']['installer']`:
 
-For the installer binary: 
+You _must_ set _one_ of the following values for the installer binary: 
 
-* `['url']` - If defined, the installer will be downloaded from this location. If not defined you must download the CF10 installer from Adobe and place in the cookbook's `files/default` directory and set the `node['cf10']['installer']['file']` attribute. (no default)
-* `['file']` - If defined, a cookbook file with this name must be available in this cookbook's `files/default` directory. You may download the installer from adobe.com. If not defined you must provide an alternate download URL for CF10 installer by setting the `node['cf10']['installer']['url']` attribute. (no default)
+* `['url']` - If defined, the installer will be downloaded from this location. (no default)
+* `['cookbook_file']` - If defined, a cookbook file with this name, i.e. "ColdFusion\_10\_WWEJ\_linux32.bin", must be available in this cookbook's `files/default` directory. You must download the installer from adobe.com and place it in this directory. (no default)
+* `['local_file']` - If defined, the full path to the installer binary on the chef node, i.e. "/tmp/ColdFusion\_10\_WWEJ\_linux32.bin". This can be useful if you have some way to distribute the installer to target hosts before provisioning. For example you may keep a single copy of the installer on your Vagrant host workstation and make it availble to all you Vagrant guests via a shared folder. (no default)
 
 Additional settings:
 
