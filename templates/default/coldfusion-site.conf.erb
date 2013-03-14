@@ -35,8 +35,10 @@
       Allow from all
   </Directory>
 
-  # Get ColdFusion JkMount settings
-  JkMountCopy On
+  <IfModule mod_jk.c>
+    # Get ColdFusion JkMount settings
+    JkMountCopy On
+  </IfModule>
 
   DirectoryIndex index.cfm index.html index.cgi index.pl index.php index.xhtml index.htm
 
@@ -79,8 +81,10 @@
       Allow from all
   </Directory>
 
-  # Get ColdFusion JkMount settings
-  JkMountCopy On
+  <IfModule mod_jk.c>
+    # Get ColdFusion JkMount settings
+    JkMountCopy On
+  </IfModule>
 
   DirectoryIndex index.cfm index.html index.cgi index.pl index.php index.xhtml index.htm
 
