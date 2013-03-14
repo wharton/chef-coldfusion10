@@ -84,15 +84,14 @@ elsif node['cf10']['installer'] && node['cf10']['installer']['local_file']
   file_name = node['cf10']['installer']['local_file'].split('/').last
 
   # Move the CF 10 installer
-  execute "run_cf10_installer" do
+  execute "copy_cf10_installer" do
     command <<-COMMAND
-      mv #{node['cf10']['installer']['local_file']} #{Chef::Config['file_cache_path']}/#{file_name}
-      chown #{node['cf10']['installer']['runtimeuser']}
+      cp #{node['cf10']['installer']['local_file']} #{Chef::Config['file_cache_path']}
+      chown #{node['cf10']['installer']['runtimeuser']} #{Chef::Config['file_cache_path']}/#{file_name}
       chmod 00744 #{Chef::Config['file_cache_path']}/#{file_name}
     COMMAND
     creates "#{Chef::Config['file_cache_path']}/#{file_name}"
     action :run
-    user node['cf10']['installer']['runtimeuser']
     cwd Chef::Config['file_cache_path']
     not_if { File.exists?("#{node['cf10']['installer']['install_folder']}/license.html") }
   end
