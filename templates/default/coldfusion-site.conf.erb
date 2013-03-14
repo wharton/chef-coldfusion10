@@ -35,14 +35,8 @@
       Allow from all
   </Directory>
 
-  Alias /CFFileServlet "<%= node['cf10']['installer']['install_folder'] %>/cfusion/tmpCache/CFFileServlet"
-
-  <Directory "<%= node['cf10']['installer']['install_folder']%>/cfusion/tmpCache/CFFileServlet">
-      Options Indexes FollowSymLinks
-      AllowOverride None
-      Order allow,deny
-      Allow from all
-  </Directory> 
+  # Get ColdFusion JkMount settings
+  JkMountCopy On
 
   DirectoryIndex index.cfm index.html index.cgi index.pl index.php index.xhtml index.htm
 
@@ -85,14 +79,8 @@
       Allow from all
   </Directory>
 
-  Alias /CFFileServlet "<%= node['cf10']['installer']['install_folder'] %>/cfusion/tmpCache/CFFileServlet"
-
-  <Directory "<%= node['cf10']['installer']['install_folder']%>/cfusion/tmpCache/CFFileServlet">
-      Options Indexes FollowSymLinks
-      AllowOverride None
-      Order allow,deny
-      Allow from all
-  </Directory> 
+  # Get ColdFusion JkMount settings
+  JkMountCopy On
 
   DirectoryIndex index.cfm index.html index.cgi index.pl index.php index.xhtml index.htm
 
