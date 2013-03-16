@@ -71,7 +71,7 @@ module CF10Entmanager
         else
           raise "Error calling #{post_uri.to_s}."
         end
-      rescue        
+      rescue Exception       
         Chef::Application.fatal!("Unable to call #{post_uri.to_s} to initialze ColdFusion instance #{instance}.") if post_retries >= 5        
         post_retries += 1
         Chef::Log.debug("Error calling #{post_uri.to_s}. Retrying in #{post_retries + post_retries * 2} seconds.")
@@ -114,7 +114,7 @@ module CF10Entmanager
         else
           raise "Error calling #{get_url.to_s}."
         end
-      rescue        
+      rescue Exception     
         Chef::Application.fatal!("Unable to call #{get_url.to_s} to initialze ColdFusion instance #{instance}.") if get_retries >= 5        
         get_retries += 1
         Chef::Log.debug("Error calling #{get_url.to_s}. Retrying in #{get_retries + get_retries * 2} seconds.")
