@@ -35,6 +35,7 @@ module CF10Providers
       
       cf = cookbook_file "#{Chef::Config['file_cache_path']}/configmanager.zip" do
         source "configmanager.zip"
+        cookbook "coldfusion10"
         action :nothing
         mode "0744"
         owner "root"
