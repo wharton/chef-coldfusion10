@@ -38,6 +38,16 @@ template "#{node['apache']['dir']}/conf.d/adminapi.conf" do
   notifies :restart, "service[apache2]", :delayed
 end
 
+# Lock down CFIDE
+
+template "#{node['apache']['dir']}/conf.d/cfide.conf" do
+  source "cfide.conf.erb"
+  owner node['apache']['user']
+  group node['apache']['group']
+  mode 00644
+  notifies :restart, "service[apache2]", :delayed
+end
+
 # Make sure CF is running
 execute "start_cf_for_coldfusion10_wsconfig" do
   command "/bin/true"
