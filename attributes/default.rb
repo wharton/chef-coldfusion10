@@ -19,6 +19,9 @@ default['cf10']['apache']['ssl_cert_chain_file'] = nil
 # Lock down /CFIDE/adminapi
 default['cf10']['apache']['adminapi_whitelist'] = []
 
+# Lock down /CFIDE
+default['cf10']['apache']['cfide_whitelist'] = node['cf10']['apache']['adminapi_whitelist']
+
 # Configuration 
 default['cf10']['config_settings'] = {}
 
