@@ -465,6 +465,33 @@ _in your editor type:_
       "rds_password": "my_rds_password"
     }
 
+For Locking Down Web Server
+---------------------------
+
+Using the lockdown recipe, we can block /CFIDE and reopen needed URIs. Use attributes to lockdown additional Location blocks
+
+Configuration also:
+* Sets IP whitelist for /CFIDE/adminapi and /CFIDE/administrator
+* Requires SSL for /CFIDE/administrator
+* Presents 404 error instead of 5XX for ColdFusion application.cfc access
+* Optionally alias /CFIDE/scripts (Server Settings -> Settings -> Default ScriptsSrc Directory)
+
+Below are the explanations for additional ColdFusion pieces that can be blocked. ColdFusion 10 server lockdown documentation can be found here: http://www.adobe.com/content/dam/Adobe/en/products/coldfusion/pdfs/cf10/cf10-lockdown-guide.pdf
+
+URI | Purpose | Safe to Block
+----|---------|--------------
+/cffileservlet | Serves dynamically generated assets. It supports the cfreport, cfpresentation, and cfimage (with action=captcha and action=writeToBrowser) tags | Only if cfreport, cfpresentations and cfimage are not used.
+/cfformgateway | Used for `<cfform format=flash>`  | Only if Flash Forms are not used.
+/cfform-internal | Used for `<cfform format=flash>` | Only if Flash Forms are not used.
+/CFIDE/AIR | AIR Sync API | Usually, unless AIR sync API is used.
+/CFIDE/classes | Contains java applets for cfgrid, cftree, and cfslider | Usually, unless java applets are used.
+/CFIDE/GraphData | Used to render cfgraph and cfchart assets. | Only if cfchart and cfgraph is not used
+/CFIDE/scripts | Contains javascript and other assets for several ColdFusion features cfform, cfchart, ajax tags, etc. | Yes - we will create a new, non default URI for this folder, and specify the new URI in the ColdFusion administrator.
+/flex2gateway | Flex Remoting | Only if Flex Remoting is not used.
+/flex-internal | Flex Remoting | Only if Flex Remoting is not used.
+/rest | Used for CF10 Rest web services support. | Only if CF10 REST web services are not used.
+/WSRPProducer | Web Services Endpoint for WSRP. | Usually, unless WSRP is used.
+
 For Trusted Certificates
 ------------------------
 
