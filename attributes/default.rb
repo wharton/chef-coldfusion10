@@ -77,6 +77,7 @@ default['cf10']['lockdown']['cfide']['administrator_whitelist'] = []
 default['cf10']['lockdown']['cfide']['air'] = false
 default['cf10']['lockdown']['cfide']['classes'] = false
 default['cf10']['lockdown']['cfide']['graphdata'] = false
+default['cf10']['lockdown']['cfide']['scripts'] = false
 default['cf10']['lockdown']['cfide']['scripts_alias'] = nil
 default['cf10']['lockdown']['cffileservlet'] = false
 default['cf10']['lockdown']['flash_forms'] = false
