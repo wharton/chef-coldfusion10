@@ -1,0 +1,104 @@
+# CFIDE Lockdown
+
+<Location "/CFIDE">
+  Order Deny,Allow
+  Deny from all
+  Allow from localhost
+  Allow from 127.0.0.1
+</Location>
+
+<Location "/CFIDE/adminapi">
+  Order Deny,Allow
+  Deny from all
+  Allow from localhost
+  Allow from 127.0.0.1
+  <% node['cf10']['lockdown']['cfide']['adminapi_whitelist'].each do |host| %>
+  Allow from <%= host %>
+  <% end %>
+</Location>
+
+<Location "/CFIDE/administrator">
+  SSLRequireSSL
+  Order Deny,Allow
+  Deny from all
+  Allow from localhost
+  Allow from 127.0.0.1
+  <% node['cf10']['lockdown']['cfide']['administrator_whitelist'].each do |host| %>
+  Allow from <%= host %>
+  <% end %>
+</Location>
+
+<% unless node['cf10']['lockdown']['cfide']['air'] -%>
+<Location "/CFIDE/AIR">
+  Order Deny,Allow
+  Allow from all
+</Location>
+<% end -%>
+
+<% unless node['cf10']['lockdown']['cfide']['classes'] -%>
+<Location "/CFIDE/classes">
+  Order Deny,Allow
+  Allow from all
+</Location>
+<% end -%>
+
+<% unless node['cf10']['lockdown']['cfide']['graphdata'] -%>
+<Location "/CFIDE/GraphData">
+  Order Deny,Allow
+  Allow from all
+</Location>
+<% end -%>
+
+<% unless node['cf10']['lockdown']['cfide']['scripts'] && node['cf10']['lockdown']['cfide']['scripts_alias'] -%>
+<Location "/CFIDE/scripts">
+  Order Deny,Allow
+  Allow from all
+</Location>
+<% end -%>
+
+<% if node['cf10']['lockdown']['cfide']['scripts_alias'] -%>
+Alias <%= node['cf10']['lockdown']['cfide']['scripts_alias'] %> <%= node['cf10']['install_path'] %>/cfusion/wwwroot/CFIDE/scripts
+<% end -%>
+
+# Other ColdFusion path lockdown
+
+<Location "/cffileservlet">
+  Order Deny,Allow
+  <%= node['cf10']['lockdown']['cffileservlet'] ? "Deny" : "Allow" -%> from all
+</Location>
+
+<Location "/cfformgateway">
+  Order Deny,Allow
+  <%= node['cf10']['lockdown']['flash_forms'] ? "Deny" : "Allow" -%> from all
+</Location>
+
+<Location "/cfform-internal">
+  Order Deny,Allow
+  <%= node['cf10']['lockdown']['flash_forms'] ? "Deny" : "Allow" -%> from all
+</Location>
+
+<Location "/flex2gateway">
+  Order Deny,Allow
+  <%= node['cf10']['lockdown']['flex_remoting'] ? "Deny" : "Allow" -%> from all
+</Location>
+
+<Location "/flex-internal">
+  Order Deny,Allow
+  <%= node['cf10']['lockdown']['flex_remoting'] ? "Deny" : "Allow" -%> from all
+</Location>
+
+<Location "/rest">
+  Order Deny,Allow
+  <%= node['cf10']['lockdown']['rest'] ? "Deny" : "Allow" -%> from all
+</Location>
+
+<Location "/WSRPProducer">
+  Order Deny,Allow
+  <%= node['cf10']['lockdown']['wsrpproducer'] ? "Deny" : "Allow" -%> from all
+</Location>
+
+# Prevent ColdFusion 5XX errors
+RedirectMatch 404 ".*\/(a|A)pplication\.cf(c|m)"
+
+# Prevent accidental source control issues
+RedirectMatch 404 ".*\/\.(git|svn).*"

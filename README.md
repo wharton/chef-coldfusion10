@@ -14,6 +14,7 @@ Recipes
 * `coldfusion10::install` - Runs the ColdFusion installer
 * `coldfusion10::j2ee` - Includes the install recipe and explodes the ear if installer type is ear
 * `coldfusion10::jvmconfig` - Sets necessary JVM configuration (cfusion instance only)
+* `coldfusion10::lockdown` - Locks down CFIDE and other ColdFusion pieces in web server configuration
 * `coldfusion10::standalone` - Installs ColdFusion 10 in standalone mode
 * `coldfusion10::tomcat` - Enables SSL and changes webroot for built in Tomcat webserver (cfusion instance only)
 * `coldfusion10::trustedcerts` - Imports certificates from a data bag into the JVM truststore
@@ -336,6 +337,24 @@ The following attributes are under `node['cf10']`:
 
 * `['webroot']` - The document root to use for either Apache or Tomcat (default: "/vagrant/wwwroot") 
 
+For Locking Down Web Server
+---------------------------
+
+The following attributes are under `node['cf10']['lockdown']`:
+
+* `['cfide']['adminapi_whitelist']` - An array of hosts/IP addresses beyond localhost/127.0.0.1 to grant adminapi access.
+* `['cfide']['administrator_whitelist']` - An array of hosts/IP addresses beyond localhost/127.0.0.1 to grant administrator access.
+* `['cfide']['air']` - Lockdown AIR if not using AIR sync API
+* `['cfide']['classes']` - Lockdown classes if not using Java applets for cfgrid, cftree, and cfslider
+* `['cfide']['graphdata']` - Lockdown GraphData if not using  cfgraph and cfchart
+* `['cfide']['scripts']` - Lockdown scripts if not using cfform, cfchart, AJAX tags, etc.
+* `['cfide']['scripts_alias']` - Create Alias for scripts and lockdown original path
+* `['cffileservlet']` - Lockdown cffileservlet if not using  cfreport, cfpresentations and cfimage
+* `['flash_forms']` - Lockdown cfformgateway and cfform-internal if not using Flash forms
+* `['flex_remoting']` - Lockdown cfflex2gateway and cfflex-internal if not using Flex Remoting
+* `['rest']` - Lockdown REST if not using REST services
+* `['wsrpproducer']` - Lockdown WSRPProducer if not using WSRPProducer
+
 For Java
 --------
 The following attributes are under `node['cf10']['java']`:
@@ -404,7 +423,6 @@ The following attributes are under `node['cf10']['apache']`:
 * `['ssl_cert_file']` - The SSL cert to use for Apache (default: "/etc/ssl/certs/ssl-cert-snakeoil.pem")
 * `['ssl_cert_key_file']` - The SSL key to use for Apache (default: "/etc/ssl/private/ssl-cert-snakeoil.key")
 * `['ssl_cert_chain_file']` - The SSL chain to use for Apache (default: nil) 
-* `['adminapi_whitelist']` - An array of hosts/IP addresses beyond localhost/127.0.0.1 to grant adminapi access.
 
 For Chef Search
 ---------------
