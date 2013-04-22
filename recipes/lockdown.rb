@@ -30,6 +30,6 @@ end
 coldfusion10_config "runtime" do
   action :set
   property "runtimeProperty"
-  args ({"propertyName" => "CFFormScriptSrc", "propertyValue" => node['cf10']['lockdown']['cfide']['scripts_alias']})
-  only_if node['cf10']['lockdown']['cfide']['scripts_alias']
+  args ( {"propertyName" => "CFFormScriptSrc", "propertyValue" => node['cf10']['lockdown']['cfide']['scripts_alias']} )
+  only_if { node['cf10']['lockdown']['cfide']['scripts_alias'] }
 end

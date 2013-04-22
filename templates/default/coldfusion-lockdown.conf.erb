@@ -9,23 +9,31 @@
 
 <Location "/CFIDE/adminapi">
   Order Deny,Allow
+  <% if node['cf10']['lockdown']['cfide']['adminapi_whitelist'].length > 0 -%>
   Deny from all
   Allow from localhost
   Allow from 127.0.0.1
   <% node['cf10']['lockdown']['cfide']['adminapi_whitelist'].each do |host| %>
   Allow from <%= host %>
   <% end %>
+  <% else -%>
+  Allow from all
+  <% end -%>
 </Location>
 
 <Location "/CFIDE/administrator">
   SSLRequireSSL
   Order Deny,Allow
+  <% if node['cf10']['lockdown']['cfide']['administrator_whitelist'].length > 0 -%>
   Deny from all
   Allow from localhost
   Allow from 127.0.0.1
   <% node['cf10']['lockdown']['cfide']['administrator_whitelist'].each do |host| %>
   Allow from <%= host %>
   <% end %>
+  <% else -%>
+  Allow from all
+  <% end -%>
 </Location>
 
 <% unless node['cf10']['lockdown']['cfide']['air'] -%>
@@ -49,7 +57,7 @@
 </Location>
 <% end -%>
 
-<% unless node['cf10']['lockdown']['cfide']['scripts'] && node['cf10']['lockdown']['cfide']['scripts_alias'] -%>
+<% unless node['cf10']['lockdown']['cfide']['scripts'] || node['cf10']['lockdown']['cfide']['scripts_alias'] -%>
 <Location "/CFIDE/scripts">
   Order Deny,Allow
   Allow from all
@@ -57,7 +65,7 @@
 <% end -%>
 
 <% if node['cf10']['lockdown']['cfide']['scripts_alias'] -%>
-Alias <%= node['cf10']['lockdown']['cfide']['scripts_alias'] %> <%= node['cf10']['install_path'] %>/cfusion/wwwroot/CFIDE/scripts
+Alias <%= node['cf10']['lockdown']['cfide']['scripts_alias'] %> <%= node['cf10']['installer']['install_folder'] %>/cfusion/wwwroot/CFIDE/scripts
 <% end -%>
 
 # Other ColdFusion path lockdown
