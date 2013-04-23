@@ -28,16 +28,6 @@ web_app "coldfusion" do
   template "coldfusion-site.conf.erb"
 end
 
-# Lock down adminapi
-
-template "#{node['apache']['dir']}/conf.d/adminapi.conf" do
-  source "adminapi.conf.erb"
-  owner node['apache']['user']
-  group node['apache']['group']
-  mode 00644
-  notifies :restart, "service[apache2]", :delayed
-end
-
 # Make sure CF is running
 execute "start_cf_for_coldfusion10_wsconfig" do
   command "/bin/true"
