@@ -71,6 +71,20 @@ default['cf10']['installer']['runtimeuser'] = "nobody"
 # CF serial number
 default['cf10']['installer']['serial_number'] = ""
 
+# Lockdown settings
+default['cf10']['lockdown']['cfide']['adminapi_whitelist'] = []
+default['cf10']['lockdown']['cfide']['administrator_whitelist'] = []
+default['cf10']['lockdown']['cfide']['air'] = false
+default['cf10']['lockdown']['cfide']['classes'] = false
+default['cf10']['lockdown']['cfide']['graphdata'] = false
+default['cf10']['lockdown']['cfide']['scripts'] = false
+default['cf10']['lockdown']['cfide']['scripts_alias'] = nil
+default['cf10']['lockdown']['cffileservlet'] = false
+default['cf10']['lockdown']['flash_forms'] = false
+default['cf10']['lockdown']['flex_remoting'] = false
+default['cf10']['lockdown']['rest'] = false
+default['cf10']['lockdown']['wsrpproducer'] = false
+
 # Node attributes to hold the instance and cluster data
 default['cf10']['instances_xml'] = nil
 default['cf10']['instances_local'] = nil
