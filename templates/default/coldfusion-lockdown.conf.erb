@@ -70,12 +70,12 @@ Alias <%= node['cf10']['lockdown']['cfide']['scripts_alias'] %> <%= node['cf10']
 
 # Other ColdFusion path lockdown
 
-<Location "/cffileservlet">
+<Location "/CFFileServlet">
   Order Deny,Allow
   <%= node['cf10']['lockdown']['cffileservlet'] ? "Deny" : "Allow" -%> from all
 </Location>
 
-<Location "/cfformgateway">
+<Location "/CFFormGateway">
   Order Deny,Allow
   <%= node['cf10']['lockdown']['flash_forms'] ? "Deny" : "Allow" -%> from all
 </Location>
