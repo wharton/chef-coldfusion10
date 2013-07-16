@@ -1,0 +1,284 @@
+#!/bin/bash
+
+# chkconfig: 345 90 14
+# description: starts the ColdFusion MX server
+
+
+PATH=/usr/xpg4/bin:/bin:/sbin:/usr/bin:/usr/sbin:$PATH
+CONNECTOR=""
+RUNTIME_USER="<%= node['cf10']['installer']['runtimeuser'] %>"
+JAVA_HOME="<%= node['cf10']['installer']['install_folder'] %>/jre"
+DOCROOT="<%= node['cf10']['installer']['install_folder'] %>/cfusion/wwwroot"
+CF_DIR="<%= node['cf10']['installer']['install_folder'] %>/cfusion"
+IS_RUNNING="false"
+IS_MAC="false"
+VERSION="ColdFusion 10"
+SPACE=" "
+
+CLASSPATH=$CF_DIR/runtime/bin/tomcat-juli.jar:$CF_DIR/bin/cf-bootstrap.jar
+JVMCONFIG=$CF_DIR/bin/jvm.config
+
+. $CF_DIR/bin/parseargs $JVMCONFIG
+
+CLASSPATH=$CLASSPATH:$JAVA_CLASSPATH
+JAVA_LIBRARY_PATH=$JAVA_LIBRARYPATH
+JAVA_EXECUTABLE="$JAVA_HOME/bin/java"
+
+#Get the server instance name 
+arr=$(echo $CF_DIR | tr "/" "\n")
+for x in $arr
+do
+  CF_INSTANCE_NAME="$x"
+done
+
+for word in $JVM_ARGS
+do
+ if [ "$word" != "-Xdebug" ]; then
+  if [ ${word:0:9} != "-Xrunjdwp" ]; then
+    if [ ${word:0:20} != "-Dcom.sun.management" ]; then
+      JVM_ARGS_NODEBUG="$JVM_ARGS_NODEBUG$SPACE$word"
+    fi
+  fi
+fi
+done
+
+
+ID=`id -u`
+
+if [ "`uname`" = "Darwin" ]; then
+  # nothing, on OSX we don't care about the user name.  We assume that the user running it has permission to do everything
+  IS_MAC="true" 
+elif [ ! $ID -eq 0 ]; then
+  echo "You must be root to start ColdFusion ."
+  exit 1
+fi
+
+cfrunning() {
+  IS_RUNNING="false"
+  if [ $OS = "Solaris" ]; then
+    # The comm output on Solaris includes the full path
+    $PSCMD | fgrep $CF_DIR |fgrep java > /dev/null 2>&1
+  else
+    # other platforms have only the executable name
+    $PSCMD | fgrep java | grep -v grep | grep com.adobe.coldfusion.bootstrap.Bootstrap | grep "start" | grep -w $CF_DIR > /dev/null 2>&1
+  fi
+  if [ $? -eq 0 ]; then
+    IS_RUNNING="true"
+  fi
+}
+
+
+cfstart() {
+
+  # [ -f $CF_DIR/bin/jvm.config ] || {
+    # ln -s $CF_DIR/runtime/bin/jvm.config $CF_DIR/bin/jvm.config
+  # }
+
+  cfrunning
+  
+  if [ "$IS_RUNNING" = "true" ]; then
+    echo "$VERSION server instance named $CF_INSTANCE_NAME is already running"
+    echo exiting
+    exit 2    
+  fi
+
+  echo "Starting $VERSION server instance named $CF_INSTANCE_NAME ..."
+
+  eval $CFSTART 
+
+  echo "The $VERSION server instance named $CF_INSTANCE_NAME is starting up and will be available shortly."
+
+  # Insert a sleep statement to give the server a few moments.
+
+  sleep 5
+
+  cfrunning
+    
+  if [ "$IS_RUNNING" = "false" ]; then
+    echo "There has been an error starting $VERSION server instance named $CF_INSTANCE_NAME, please check the logs."
+    exit 1
+  fi
+
+  [ -f "$CF_DIR/bin/cf-connectors.sh" ] && {
+    # give the server a few more seconds to come up
+    sleep 5
+    echo "======================================================================"
+    echo "Running the $VERSION connector wizard"
+    echo "======================================================================"
+
+    sh $CF_DIR/bin/cf-connectors.sh && {
+      mv -f $CF_DIR/bin/cf-connectors.sh $CF_DIR/bin/cf-connectors-run.sh
+    }
+  }
+
+  echo "======================================================================"
+  echo "$VERSION server instance named $CF_INSTANCE_NAME has been started."
+  echo "$VERSION will write logs to $CF_DIR/logs/coldfusion-out.log"
+  echo "======================================================================"
+
+}
+
+cfstop() {
+
+  cfrunning
+    
+  if [ "$IS_RUNNING" = "false" ]; then
+    echo "$VERSION server instance named $CF_INSTANCE_NAME does not seem to be currently running"
+    return
+  fi
+
+  echo "Stopping $VERSION server instance named $CF_INSTANCE_NAME, please wait"
+
+  eval $CFSTOP
+
+  sleep 10
+
+  cfrunning
+  
+  if [ "$IS_RUNNING" = "true" ]; then
+    if [ $OS = "Solaris" -a ! -f "/usr/ucb/ps" ]; then
+      $PSCMD | fgrep java | fgrep $CF_DIR | awk '{print $2}' | xargs kill -9 > /dev/null 2>&1
+    else
+      # other platforms have only the executable name
+      $PSCMD | fgrep java | grep -v grep | grep com.adobe.coldfusion.bootstrap.Bootstrap | grep "start" | grep -w $CF_DIR | awk '{print $2}' | sudo xargs kill -9 > /dev/null 2>&1
+    fi
+    sleep 2
+  fi
+  
+  cfrunning
+  
+  if [ "$IS_RUNNING" = "true" ]; then
+    echo "$VERSION server is not responding. You have to forcefully stop the following ColdFusion PIDs manually: "
+      if [ $OS = "Solaris" ]; then
+        $PSCMD | fgrep java | fgrep $CF_DIR | awk '{print $2}'
+      else
+        # other platforms have only the executable name
+        $PSCMD | fgrep java | grep -v grep | grep com.adobe.coldfusion.bootstrap.Bootstrap | grep "start" | grep -w $CF_DIR | awk '{print $2}'
+      fi
+    echo exiting
+    exit 1
+  fi
+
+  echo "$VERSION server instance named $CF_INSTANCE_NAME has been stopped"
+}
+
+cfstatus()
+{
+  STATUS_OUTPUT=$(eval $CFSTATUS)
+  echo "$STATUS_OUTPUT"
+  if [ "$STATUS_OUTPUT" = "Server is running" ]; then
+    exit 0
+  else
+    exit 1
+  fi   
+}
+
+case `uname` in
+
+  SunOS)
+    OS=Solaris
+    if [  -f "/usr/ucb/ps" ]; then
+      PSCMD="/usr/ucb/ps -auxww"
+    else
+      PSCMD="ps -eo comm"
+    fi
+    JAVA_EXECUTABLE="$JAVA_HOME/bin/sparcv9/java"
+    LD_LIBRARY_PATH="$CF_DIR/lib:$CF_DIR/lib/_solaris/bin:$JAVA_LIBRARY_PATH"
+    CFSTART='su $RUNTIME_USER -c "LD_LIBRARY_PATH=$LD_LIBRARY_PATH; export LD_LIBRARY_PATH; cd $CF_DIR/bin; nohup $JAVA_EXECUTABLE -classpath $CLASSPATH $JVM_ARGS com.adobe.coldfusion.bootstrap.Bootstrap -start &"'
+    CFSTOP='su $RUNTIME_USER -c "cd $CF_DIR/bin; $JAVA_EXECUTABLE -classpath $CLASSPATH $JVM_ARGS_NODEBUG com.adobe.coldfusion.bootstrap.Bootstrap -stop"'
+    CFSTATUS='su $RUNTIME_USER -c "cd $CF_DIR/bin; $JAVA_EXECUTABLE -classpath $CLASSPATH $JVM_ARGS_NODEBUG com.adobe.coldfusion.bootstrap.Bootstrap -status"'
+  ;;
+
+  Darwin)
+    OS=Darwin
+    PSCMD="ps -ef"
+    LD_LIBRARY_PATH="$CF_DIR/lib:$JAVA_LIBRARY_PATH"
+    CFSTART='LD_LIBRARY_PATH=$LD_LIBRARY_PATH; export LD_LIBRARY_PATH;cd $CF_DIR/bin; $JAVA_EXECUTABLE -classpath $CLASSPATH $JVM_ARGS com.adobe.coldfusion.bootstrap.Bootstrap -start&'
+    CFSTOP='env -i; cd $CF_DIR/bin; $JAVA_EXECUTABLE -classpath $CLASSPATH $JVM_ARGS_NODEBUG com.adobe.coldfusion.bootstrap.Bootstrap -stop'
+    CFSTATUS='su $RUNTIME_USER -c "cd $CF_DIR/bin; $JAVA_EXECUTABLE -classpath $CLASSPATH $JVM_ARGS_NODEBUG com.adobe.coldfusion.bootstrap.Bootstrap -status"'
+  ;;
+
+  Linux)
+    OS=Linux
+    PSCMD="ps -ef"
+    LD_LIBRARY_PATH="$CF_DIR/lib:$CF_DIR/lib/_ilnx21/bin:$JAVA_LIBRARY_PATH"
+    SUCMDFILE=su
+    if [ -x /sbin/runuser ]; then
+      SUCMDFILE=/sbin/runuser
+    fi
+    CFSTART='$SUCMDFILE -s /bin/sh $RUNTIME_USER -c "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH; cd $CF_DIR/bin; nohup $JAVA_EXECUTABLE -classpath $CLASSPATH $JVM_ARGS com.adobe.coldfusion.bootstrap.Bootstrap -start &"'
+    CFSTOP='$SUCMDFILE -s /bin/sh $RUNTIME_USER -c "env -i; cd $CF_DIR/bin;$JAVA_EXECUTABLE -classpath $CLASSPATH $JVM_ARGS_NODEBUG com.adobe.coldfusion.bootstrap.Bootstrap -stop"'
+    CFSTATUS='$SUCMDFILE -s /bin/sh $RUNTIME_USER -c "env -i; cd $CF_DIR/bin; $JAVA_EXECUTABLE -classpath $CLASSPATH $JVM_ARGS_NODEBUG com.adobe.coldfusion.bootstrap.Bootstrap -status"'
+  ;;
+
+  *)
+    echo "Your OS: `uname` is unsupported"
+    echo "exiting"
+    exit 1
+  ;;
+
+esac
+
+ARG=$1
+
+[ -z "$ARG" ] && ARG=usage
+
+case $ARG in
+
+  start)
+    cfstart
+  ;;
+
+  stop)
+    cfstop
+  ;;
+
+  restart)
+    echo "Restarting $VERSION server instance named $CF_INSTANCE_NAME ..."
+    cfstop
+    cfstart
+  ;;
+
+  status)
+    cfstatus
+  ;;
+
+  wsconfig)
+    WSCONFIG_JAR=$CF_DIR/runtime/lib/wsconfig.jar
+
+    if [ $# -eq 0 ]; then
+      # no arguments so display built-in help from wsconfig.jar
+      $JAVA_EXECUTABLE -jar $WSCONFIG_JAR -help
+      break
+    else
+      # brief help
+      if [ "$2" = "help" ]; then
+        echo "To configure a webserver connector you must specify the -ws and -dir options."
+        echo "If configuring Apache it is recomended that you also specify the -bin and "
+        echo "-script options."
+        echo ""
+        echo "To list all configured webserver connectors use the -list option."
+        echo "To remove a configured webserver connector use the -r option with the "
+        echo "-ws and -dir options."
+        echo "To remove all webserver connectors use the -uninstall option."
+        echo "To upgrade all installed webserver connectors use the -upgrade option."
+        echo ""
+        echo "For more detailed help see $0 $1."
+      fi
+      break
+    fi
+
+    # pass on all args to wsconfig.jar
+    shift
+    $JAVA_EXECUTABLE -jar $WSCONFIG_JAR $@ -coldfusion
+  ;;
+
+  *)
+    echo "Usage:$0 (start|stop|restart|status|wsconfig)"
+  ;;
+
+esac
+
+
+exit 0
+

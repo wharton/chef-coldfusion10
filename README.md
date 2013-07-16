@@ -403,6 +403,9 @@ The following attributes are under `node['cf10']['updates']`:
   http://download.adobe.com/pub/adobe/coldfusion/hotfix_006.jar
   http://download.adobe.com/pub/adobe/coldfusion/hotfix_007.jar
   http://download.adobe.com/pub/adobe/coldfusion/hotfix_008.jar
+  http://download.adobe.com/pub/adobe/coldfusion/hotfix_009.jar
+  http://download.adobe.com/pub/adobe/coldfusion/hotfix_010.jar
+  http://download.adobe.com/pub/adobe/coldfusion/hotfix_011.jar
 }`)
 * `['files']` - A list of files deployed by the update installers. There should be one entry for each update url defined in `node['cf10']['updates']['urls']`. (default: `%w{ 
   hf1000-3332326.jar
@@ -413,6 +416,9 @@ The following attributes are under `node['cf10']['updates']`:
   chf10000006.jar
   chf10000007.jar
   chf10000008.jar
+  chf10000009.jar
+  chf10000010.jar
+  chf10000011.jar
 }`)
 
 For Apache
