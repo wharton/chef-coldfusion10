@@ -28,7 +28,7 @@ def initialize(*args)
   instance_data = get_instance_data("cfusion", node)  
   @api_url = "http://localhost:#{instance_data['http_port']}/CFIDE/administrator/configmanager/api/entmanager.cfm"
   @pwds = get_passwords(node) 
-  install_configmanager("#{instance_data['dir']}/wwwroot/CFIDE")
+  install_configmanager("#{instance_data['dir']}/wwwroot/CFIDE", node['cf10']['installer']['runtimeuser'])
 
 
 end

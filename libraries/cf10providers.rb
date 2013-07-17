@@ -21,7 +21,7 @@ module CF10Providers
 
   include Chef::Mixin::Checksum
   
-  def install_configmanager( cfide_dir )
+  def install_configmanager( cfide_dir, cf_user )
 
     version_file = "#{cfide_dir}/administrator/configmanager/version"
     unless ::File.exists?(version_file) && ::File.open(version_file) { |f| f.grep(/0\.2\.0/) }.length != 0
@@ -45,7 +45,11 @@ module CF10Providers
       cf.run_action(:create_if_missing) 
 
       # Install the application
-      e = execute "unzip -o #{Chef::Config['file_cache_path']}/configmanager.zip -d #{cfide_dir}/administrator/configmanager" do
+      e = execute "extract_configmanager" do
+      	command <<-COMMAND
+  unzip -o #{Chef::Config['file_cache_path']}/configmanager.zip -d #{cfide_dir}/administrator/configmanager
+  chown -R  #{cf_user} #{cfide_dir}/administrator/configmanager
+COMMAND
         action :nothing
       end
 
