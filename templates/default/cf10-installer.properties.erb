@@ -12,7 +12,7 @@ SILENT_INSTALL_SAMPLES=<%= node['cf10']['installer']['install_samples'] %>
 SILENT_INSTALL_JNBRIDGE=<%= node['cf10']['installer']['install_jnbridge'] %>
 SILENT_INSTALL_ADMIN=<%= node['cf10']['installer']['install_admin'] %>
 SILENT_INSTALL_SOLR=<%= node['cf10']['installer']['install_solr'] %>
-SILENT_INSTALL_FOLDER=<%= node['cf10']['installer']['install_folder'] %>
+SILENT_INSTALL_FOLDER=<%= node['cf10']['installer']['install_folder'].sub(/\\/, "\\\\\\") %>
 #Enable secure profile, IP addresses from which Administrator can be accessed
 SILENT_ENABLE_SECURE_PROFILE=<%= node['cf10']['installer']['enable_secure_profile'] %>
 SILENT_ADMIN_IP=<%= node['cf10']['installer']['admin_ip'] %>
