@@ -16,6 +16,8 @@ suggests "apache2"
 
 # On Windows, this will be a requirement.
 suggests "ms-cpp-redistributable"
+# For the IIS recipe, this will be a requirement.
+depends "iis"
 
 recipe "coldfusion10", "Includes the standalone, jvmconfig, and update recipes if the installer type is standalone (the default), or the j2ee recipe if installer type is ear or war."
 recipe "coldfusion10::apache", "Configures ColdFusion to run behind the Apache httpd web server"
