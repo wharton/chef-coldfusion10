@@ -14,9 +14,8 @@ depends "sudo"
 suggests "apt"
 suggests "apache2"
 
-# On Windows, this will be a requirement.
-suggests "ms-cpp-redistributable"
-# For the IIS recipe, this will be a requirement.
+# Not used if not on Windows
+depends "ms-cpp-redistributable"
 depends "iis"
 
 recipe "coldfusion10", "Includes the standalone, jvmconfig, and update recipes if the installer type is standalone (the default), or the j2ee recipe if installer type is ear or war."
