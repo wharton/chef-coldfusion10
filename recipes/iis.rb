@@ -25,8 +25,8 @@ include_recipe 'iis::mod_isapi'
 # Make sure CF is running
 execute "start_cf_for_coldfusion10_wsconfig" do
   command "true"
-  notifies :run, "execute[uninstall_wsconfig]", :delayed
-  notifies :run, "execute[install_wsconfig]", :delayed
+  notifies :run, "execute[uninstall_wsconfig]", :immediately
+  notifies :run, "execute[install_wsconfig]", :immediately
   only_if "cmd /c #{node['cf10']['installer']['install_folder']}\\cfusion\\runtime\\bin\\wsconfig -list | find \"There are no configured web servers\""
 end
 
