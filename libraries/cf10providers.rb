@@ -24,7 +24,7 @@ module CF10Providers
   def install_configmanager( cfide_dir, cf_user )
 
     version_file = "#{cfide_dir}/administrator/configmanager/version"
-    unless ::File.exists?(version_file) && ::File.open(version_file) { |f| f.grep(/0\.2\.0/) }.length != 0
+    unless ::File.exists?(version_file) && ::File.open(version_file) { |f| f.grep(/0\.3\.0/) }.length != 0
  
       # Make sure we have unzip package  
       p = package "unzip" do
