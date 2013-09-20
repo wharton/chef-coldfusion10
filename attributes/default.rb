@@ -39,7 +39,12 @@ default['cf10']['installer']['enable_secure_profile'] = "false"
 # CF administrator
 default['cf10']['installer']['install_admin'] = "true"
 # CF install folder
-default['cf10']['installer']['install_folder'] = "/opt/coldfusion10"
+default['cf10']['installer']['install_folder'] = case node['platform_family']
+                                                   when 'windows'
+                                                     "C:\\ColdFusion10"
+                                                   else
+                                                     "/opt/coldfusion10"
+                                                 end
 # CF jnbridge, applies only for Windows systems with .Net Framework installed. (.Net Integration Services)
 default['cf10']['installer']['install_jnbridge'] = "false"
 # CF odbc services
@@ -66,7 +71,7 @@ default['cf10']['installer']['prev_cf_migr_dir'] = ""
 default['cf10']['installer']['prev_serial_number'] = ""
 # CF rds password
 default['cf10']['installer']['rds_password'] = "vagrant"
-#CF runtime user
+#CF runtime user (ignored on Windows)
 default['cf10']['installer']['runtimeuser'] = "nobody"
 # CF serial number
 default['cf10']['installer']['serial_number'] = ""
@@ -129,4 +134,9 @@ default['cf10']['updates']['files'] = %w{
 }
 
 # Tomcat or Apache web root
-default['cf10']['webroot'] = "/vagrant/wwwroot"
+default['cf10']['webroot'] = case node['platform_family']
+                               when 'windows'
+                                 "C:\\Inetpub\\wwwroot"
+                               else
+                                 "/vagrant/wwwroot"
+                             end

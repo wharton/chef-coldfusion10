@@ -22,6 +22,8 @@ class Chef::Recipe
   include CF10Passwords
 end
 
+include_recipe "ms-cpp-redistributable::2008_x86" if platform_family?('windows')
+
 # Load password from encrypted data bag, data bag (:solo), or node attribute
 pwds = get_passwords(node)
 
@@ -32,17 +34,18 @@ end
 
 # Set up install folder with correct permissions
 directory node['cf10']['installer']['install_folder'] do
-  owner node['cf10']['installer']['runtimeuser']
-  mode 00755
+  owner node['cf10']['installer']['runtimeuser'] unless platform_family?('windows')
+  mode 00755 unless platform_family?('windows')
   action :create
+  recursive true # to create the parent folders if needed
   not_if { File.exists?("#{node['cf10']['installer']['install_folder']}/license.html") }
 end
 
 # Create the CF 10 properties file
 template "#{Chef::Config['file_cache_path']}/cf10-installer.properties" do
   source "cf10-installer.properties.erb"
-  owner node['cf10']['installer']['runtimeuser']
-  mode 00644 
+  owner node['cf10']['installer']['runtimeuser'] unless platform_family?('windows')
+  mode 00644 unless platform_family?('windows')
   variables(
     :admin_password => pwds['admin_password'],
     :jetty_password => pwds['jetty_password'],
@@ -54,13 +57,13 @@ end
 # Download from a URL
 if node['cf10']['installer'] && node['cf10']['installer']['url']
 
-  file_name = node['cf10']['installer']['url'].split('/').last
+  file_name = node['cf10']['installer']['url'].split('/').last.split('?').first
 
   # Download CF 10
   remote_file "#{Chef::Config['file_cache_path']}/#{file_name}" do
     source node['cf10']['installer']['url']
-    owner node['cf10']['installer']['runtimeuser']
-    mode 00755
+    owner node['cf10']['installer']['runtimeuser'] unless platform_family?('windows')
+    mode 00755 unless platform_family?('windows')
     action :create_if_missing
     not_if { File.exists?("#{node['cf10']['installer']['install_folder']}/license.html") }
   end
@@ -73,23 +76,33 @@ elsif node['cf10']['installer'] && node['cf10']['installer']['cookbook_file']
   # Move the CF 10 installer
   cookbook_file "#{Chef::Config['file_cache_path']}/#{file_name}" do
     source file_name
-    owner node['cf10']['installer']['runtimeuser']
-    mode 00744    
+    owner node['cf10']['installer']['runtimeuser'] unless platform_family?('windows')
+    mode 00744 unless platform_family?('windows')
     not_if { File.exists?("#{node['cf10']['installer']['install_folder']}/license.html") }
   end
 
 # Copy from local file
 elsif node['cf10']['installer'] && node['cf10']['installer']['local_file']
 
-  file_name = node['cf10']['installer']['local_file'].split('/').last
+  if platform_family?('windows')
+    file_name = node['cf10']['installer']['local_file'].split('\\').last
+  else
+    file_name = node['cf10']['installer']['local_file'].split('/').last
+  end
 
   # Move the CF 10 installer
   execute "copy_cf10_installer" do
-    command <<-COMMAND
-      cp #{node['cf10']['installer']['local_file']} #{Chef::Config['file_cache_path']}
-      chown #{node['cf10']['installer']['runtimeuser']} #{Chef::Config['file_cache_path']}/#{file_name}
-      chmod 00744 #{Chef::Config['file_cache_path']}/#{file_name}
-    COMMAND
+    if platform_family?('windows')
+      command <<-COMMAND
+        copy #{node['cf10']['installer']['local_file']} #{Chef::Config['file_cache_path'].gsub("/", "\\")}
+      COMMAND
+    else
+      command <<-COMMAND
+        cp #{node['cf10']['installer']['local_file']} #{Chef::Config['file_cache_path']}
+        chown #{node['cf10']['installer']['runtimeuser']} #{Chef::Config['file_cache_path']}/#{file_name}
+        chmod 00744 #{Chef::Config['file_cache_path']}/#{file_name}
+      COMMAND
+    end
     creates "#{Chef::Config['file_cache_path']}/#{file_name}"
     action :run
     cwd Chef::Config['file_cache_path']
@@ -108,16 +121,16 @@ execute "run_cf10_installer" do
   command "#{Chef::Config['file_cache_path']}/#{file_name} -f #{Chef::Config['file_cache_path']}/cf10-installer.properties"
   creates "#{node['cf10']['installer']['install_folder']}/license.html"
   action :run
-  user node['cf10']['installer']['runtimeuser']
+  user node['cf10']['installer']['runtimeuser'] unless platform_family?('windows')
   cwd Chef::Config['file_cache_path']
 end
 
 # Fix up jetty if installed
 template "#{node['cf10']['installer']['install_folder']}/cfusion/jetty/cfjetty" do
   source "cfjetty.erb"
-  owner node['cf10']['installer']['runtimeuser']
-  group "root"
-  mode 00755
+  owner node['cf10']['installer']['runtimeuser'] unless platform_family?('windows')
+  group "root" unless platform_family?('windows')
+  mode 00755 unless platform_family?('windows')
   only_if { File.exists?("#{node['cf10']['installer']['install_folder']}/cfusion/jetty/cfjetty") }
 end
 

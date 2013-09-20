@@ -37,22 +37,22 @@ end
 # Run the installer
 include_recipe "coldfusion10::install"
 
-# Link the init script
+# Link the init script (not applicable to Windows, CF installer installs a Windows service)
 link "/etc/init.d/coldfusion" do
   to "#{node['cf10']['installer']['install_folder']}/cfusion/bin/coldfusion"
-end
+end unless platform_family?('windows')
 
-# Set up ColdFusion as a service
+# Set up ColdFusion as a service (not applicable to Windows, CF installer installs a Windows service)
 coldfusion10_service "coldfusion" do
   instance "cfusion"
-end
+end unless platform_family?('windows')
 
-# Start ColdFusion immediatly so we can initilize it
+# Start ColdFusion immediatly so we can initilize it (not applicable to Windows, CF installer starts it)
 execute "start_cf_for_coldfusion10_standalone" do
  command "/bin/true"
  notifies :start, "service[coldfusion]", :immediately
  only_if { File.exists?("#{node['cf10']['installer']['install_folder']}/cfusion/wwwroot/CFIDE/administrator/cfadmin.wzrd") }
-end
+end unless platform_family?('windows')
 
 # Initialize the instance
 ruby_block "initialize_coldfusion" do
@@ -66,20 +66,20 @@ ruby_block "initialize_coldfusion" do
  only_if { File.exists?("#{node['cf10']['installer']['install_folder']}/cfusion/wwwroot/CFIDE/administrator/cfadmin.wzrd") }
 end
 
-# Link the jetty init script, if installed
+# Link the jetty init script, if installed (not applicable to Windows, CF installer installs a Windows service)
 link "/etc/init.d/cfjetty" do
   to "#{node['cf10']['installer']['install_folder']}/cfusion/jetty/cfjetty"
   only_if { File.exists?("#{node['cf10']['installer']['install_folder']}/cfusion/jetty/cfjetty") }
-end
+end unless platform_family?('windows')
 
-# Set up jetty as a service, if installed
+# Set up jetty as a service, if installed (not applicable to Windows, CF installer installs a Windows service)
 service "cfjetty" do
   pattern "\\/bin\\/sh.*cfjetty start"
   status_command "ps -ef | grep '\\/bin\\/sh.*cfjetty start'" if platform_family?("rhel")
   supports :restart => true
   action [ :enable, :start ]
   only_if { File.exists?("#{node['cf10']['installer']['install_folder']}/cfusion/jetty/cfjetty") }
-end
+end unless platform_family?('windows')
 
 # Create the webroot if it doesn't exist
 directory node['cf10']['webroot'] do
@@ -87,5 +87,5 @@ directory node['cf10']['webroot'] do
   mode "0755"
   action :create
   not_if { File.directory?(node['cf10']['webroot']) }
-end
+end unless platform_family?('windows')
 
