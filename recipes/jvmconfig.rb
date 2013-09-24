@@ -27,7 +27,7 @@ end
 # Customize the jvm config
 template "#{node['cf10']['installer']['install_folder']}/cfusion/bin/jvm.config" do
   source "jvm.config.erb"
-  mode "0664"
-  owner node['cf10']['installer']['runtimeuser']
+  mode "0664" unless platform_family?('windows')
+  owner node['cf10']['installer']['runtimeuser'] unless platform_family?('windows')
   notifies :restart, "service[coldfusion]", :delayed
 end

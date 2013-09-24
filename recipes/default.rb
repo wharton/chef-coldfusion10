@@ -17,44 +17,6 @@
 # limitations under the License.
 #
 
-# If Ubuntu 10.04 add the lucid-backports repo
-if node['platform'] == 'ubuntu'
-  
-  apt_repository "lucid-backports" do
-    uri "http://us.archive.ubuntu.com/ubuntu/"
-    distribution "lucid-backports"
-    components ["main","universe"]
-    deb_src true
-    action :add
-    only_if { node['platform_version'] == "10.04" }
-  end
-
-  execute "apt-get update" do
-  	action :run
-  	only_if { node['platform_version'] == "10.04" }
-  end
-
-end
-
-# Install necessary packages
-cf_pkgs = value_for_platform_family({
-  "debian" => ["libstdc++5","unzip"],
-  "rhel" => ["libstdc++","unzip"],
-  "default" => ["libstdc++5","unzip"]
-})
-
-cf_pkgs.each do |pkg|
-  package pkg do
-    action :install
-  end
-end
-
-# Setup runtime user
-user node['cf10']['installer']['runtimeuser'] do
-  system true
-  shell "/bin/false"
-end
-
 # Do either a standalone or J2EE intstallation
 if node['cf10']['installer']['installer_type'].match("ear|war")
 

@@ -41,7 +41,7 @@ default['cf10']['installer']['install_admin'] = "true"
 # CF install folder
 default['cf10']['installer']['install_folder'] = case node['platform_family']
                                                    when 'windows'
-                                                     "C:\\ColdFusion10"
+                                                     "C:/ColdFusion10"
                                                    else
                                                      "/opt/coldfusion10"
                                                  end
@@ -133,10 +133,5 @@ default['cf10']['updates']['files'] = %w{
   chf10000011.jar
 }
 
-# Tomcat or Apache web root
-default['cf10']['webroot'] = case node['platform_family']
-                               when 'windows'
-                                 "C:\\Inetpub\\wwwroot"
-                               else
-                                 "/vagrant/wwwroot"
-                             end
+# Tomcat, Apache, or IIS web root
+default['cf10']['webroot'] = "#{node['cf10']['installer']['install_folder']}/cfusion/wwwroot"

@@ -4,19 +4,21 @@ maintainer_email "nmische@gmail.com"
 license          "Apache 2.0"
 description      "Installs/Configures Adobe ColdFusion 10"
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          "0.4.8"
+version          "0.5.0"
 
 %w{ centos redhat ubuntu windows }.each do |os|
   supports os
 end
 
+# Linux
 depends "sudo"
-suggests "apt"
-suggests "apache2"
+depends "apt"
+depends "apache2"
 
-# Not used if not on Windows
+# Windows
 depends "ms-cpp-redistributable"
 depends "iis"
+depends "windows"
 
 recipe "coldfusion10", "Includes the standalone, jvmconfig, and update recipes if the installer type is standalone (the default), or the j2ee recipe if installer type is ear or war."
 recipe "coldfusion10::apache", "Configures ColdFusion to run behind the Apache httpd web server"

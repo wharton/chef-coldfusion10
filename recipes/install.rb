@@ -22,7 +22,50 @@ class Chef::Recipe
   include CF10Passwords
 end
 
+
+# If Ubuntu 10.04 add the lucid-backports repo
+if node['platform'] == 'ubuntu'
+  
+  apt_repository "lucid-backports" do
+    uri "http://us.archive.ubuntu.com/ubuntu/"
+    distribution "lucid-backports"
+    components ["main","universe"]
+    deb_src true
+    action :add
+    only_if { node['platform_version'] == "10.04" }
+  end
+
+  execute "apt-get update" do
+  	action :run
+  	only_if { node['platform_version'] == "10.04" }
+  end
+
+end
+
+# Install necessary packages
+
+# Linux
+cf_pkgs = value_for_platform_family({
+  "debian" => ["libstdc++5","unzip"],
+  "rhel" => ["libstdc++","unzip"],
+  "default" => ["libstdc++5","unzip"]
+})
+
+cf_pkgs.each do |pkg|
+  package pkg do
+    action :install
+  end
+end unless platform_family?('windows')
+
+# Windows
 include_recipe "ms-cpp-redistributable::2008_x86" if platform_family?('windows')
+
+
+# Setup runtime user
+user node['cf10']['installer']['runtimeuser'] do
+  system true
+  shell "/bin/false"
+end unless platform_family?('windows')
 
 # Load password from encrypted data bag, data bag (:solo), or node attribute
 pwds = get_passwords(node)
@@ -84,26 +127,28 @@ elsif node['cf10']['installer'] && node['cf10']['installer']['cookbook_file']
 # Copy from local file
 elsif node['cf10']['installer'] && node['cf10']['installer']['local_file']
 
-  if platform_family?('windows')
-    file_name = node['cf10']['installer']['local_file'].split('\\').last
-  else
-    file_name = node['cf10']['installer']['local_file'].split('/').last
-  end
+  file_name = ::File.basename(node['cf10']['installer']['local_file'])
+  file_src = node['cf10']['installer']['local_file']
+  file_src = win_friendly_path(file_src) if platform_family?('windows')
+  file_target_dir = Chef::Config['file_cache_path']
+  file_target_dir = win_friendly_path(file_target_dir) if platform_family?('windows')
+  file_target_path = ::File.join(Chef::Config['file_cache_path'], file_name)
+  file_target_path = win_friendly_path(file_target_path) if platform_family?('windows')
 
   # Move the CF 10 installer
   execute "copy_cf10_installer" do
     if platform_family?('windows')
       command <<-COMMAND
-        copy #{node['cf10']['installer']['local_file']} #{Chef::Config['file_cache_path'].gsub("/", "\\")}
+        copy #{file_src} #{file_target_dir}
       COMMAND
     else
       command <<-COMMAND
-        cp #{node['cf10']['installer']['local_file']} #{Chef::Config['file_cache_path']}
-        chown #{node['cf10']['installer']['runtimeuser']} #{Chef::Config['file_cache_path']}/#{file_name}
-        chmod 00744 #{Chef::Config['file_cache_path']}/#{file_name}
+        cp #{file_src} #{file_target_dir}
+        chown #{node['cf10']['installer']['runtimeuser']} #{file_target_path}
+        chmod 00744 #{file_target_path}
       COMMAND
     end
-    creates "#{Chef::Config['file_cache_path']}/#{file_name}"
+    creates file_target_path
     action :run
     cwd Chef::Config['file_cache_path']
     not_if { File.exists?("#{node['cf10']['installer']['install_folder']}/license.html") }

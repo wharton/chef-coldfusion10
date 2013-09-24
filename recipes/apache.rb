@@ -17,18 +17,26 @@
 # limitations under the License.
 #
 
-# Disable the default site
-apache_site "000-default" do
-  enable false  
+include_recipe "apache2"
+include_recipe "apache2::mod_ssl"
+
+# Set up a new Apache site
+if node['cf10']['webroot'] && node['cf10']['webroot'] != "#{node['cf10']['installer']['install_folder']}/cfusion/wwwroot"
+
+  # Disable the default site
+  apache_site "default" do
+    enable false  
+  end
+
+  # Add ColdFusion site
+  web_app "coldfusion" do
+    cookbook "coldfusion10"
+    template "coldfusion-site.conf.erb"
+  end
+
 end
 
-# Add ColdFusion site
-web_app "coldfusion" do
-  cookbook "coldfusion10"
-  template "coldfusion-site.conf.erb"
-end
-
-# Make sure CF is running
+# Make sure CF is running, (re)install wsconfig
 execute "start_cf_for_coldfusion10_wsconfig" do
   command "/bin/true"
   notifies :start, "service[coldfusion]", :delayed

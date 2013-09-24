@@ -42,17 +42,28 @@ link "/etc/init.d/coldfusion" do
   to "#{node['cf10']['installer']['install_folder']}/cfusion/bin/coldfusion"
 end unless platform_family?('windows')
 
-# Set up ColdFusion as a service (not applicable to Windows, CF installer installs a Windows service)
-coldfusion10_service "coldfusion" do
-  instance "cfusion"
-end unless platform_family?('windows')
+# Set up ColdFusion as a service 
+if platform_family?('windows')
+  coldfusion10_service "coldfusion" do
+    instance "cfusion"
+    service_name "ColdFusion 10 Application Server" 
+  end 
+else
+  coldfusion10_service "coldfusion" do
+    instance "cfusion"
+  end 
+end
 
-# Start ColdFusion immediatly so we can initilize it (not applicable to Windows, CF installer starts it)
+# Start ColdFusion immediatly so we can initilize it
 execute "start_cf_for_coldfusion10_standalone" do
- command "/bin/true"
+ if platform_family?('windows')
+ 	command "true"
+ else
+ 	command "/bin/true"
+ end 
  notifies :start, "service[coldfusion]", :immediately
  only_if { File.exists?("#{node['cf10']['installer']['install_folder']}/cfusion/wwwroot/CFIDE/administrator/cfadmin.wzrd") }
-end unless platform_family?('windows')
+end
 
 # Initialize the instance
 ruby_block "initialize_coldfusion" do

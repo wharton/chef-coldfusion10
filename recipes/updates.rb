@@ -40,8 +40,8 @@ end
 # Create the CF 10 update properties file
 template "#{Chef::Config['file_cache_path']}/update-installer.properties" do
   source "update-installer.properties.erb"
-  mode "0644"
-  owner node['cf10']['installer']['runtimeuser']
+  mode "0644" unless platform_family?('windows')
+  owner node['cf10']['installer']['runtimeuser'] unless platform_family?('windows')
 end
 
 # Run updates 
@@ -50,45 +50,58 @@ node['cf10']['updates']['urls'].each do | update |
   # Only apply an update if it or a later update doesn't exist 
   if updates_jars.select { |x| File.exists?("#{node['cf10']['installer']['install_folder']}/cfusion/lib/updates/#{x}") }.empty?
 
-    file_name = update.split('/').last
+    file_name = ::File.basename(update)
     sodo_name = "cf10_#{file_name.split('.').first}_sudo"
 
     sudo sodo_name do
       user node['cf10']['installer']['runtimeuser']
       nopasswd true
       action :install
-    end
+    end unless platform_family?('windows')
 
     # Download the update
     remote_file "#{Chef::Config['file_cache_path']}/#{file_name}" do
       source update
       action :create_if_missing
-      mode "0744"
-      owner node['cf10']['installer']['runtimeuser']
-    end
+      mode "0744" unless platform_family?('windows')
+      owner node['cf10']['installer']['runtimeuser'] unless platform_family?('windows')
+    end 
 
     # Run the installer
     execute "run_cf10_#{file_name.split('.').first}_installer" do
       command "#{node['cf10']['java']['home']}/jre/bin/java -jar #{file_name} -i silent -f update-installer.properties"
       action :run
-      user node['cf10']['installer']['runtimeuser']
+      user node['cf10']['installer']['runtimeuser'] unless platform_family?('windows')
       cwd Chef::Config['file_cache_path']
     end
 
+
     # Some updates require you to re-run wsconfig, so just do it if wsconfig is configured and an update was applied
-    execute "start_cf_for_coldfusion10_updater_wsconfig" do
-      command "/bin/true"
-      notifies :start, "service[coldfusion]", :delayed
-      notifies :run, "execute[uninstall_wsconfig]", :delayed
-      notifies :run, "execute[install_wsconfig]", :delayed
-      only_if "#{node['cf10']['installer']['install_folder']}/cfusion/runtime/bin/wsconfig -list | grep 'Apache : #{node['apache']['dir']}'"
-    end
+
+    if node.recipe?("coldfusion10::apache") || node.recipe?("coldfusion10::iis")
+
+      wsconfig = "#{node['cf10']['installer']['install_folder']}/cfusion/runtime/bin/wsconfig"
+      wsconfig = win_friendly_path(wsconfig) if platform_family?('windows')
+    
+      execute "start_cf_for_coldfusion10_updater_wsconfig" do
+        command "/bin/true"
+        notifies :start, "service[coldfusion]", :delayed
+        notifies :run, "execute[uninstall_wsconfig]", :delayed
+        notifies :run, "execute[install_wsconfig]", :delayed
+        if platform_family?('windows')
+          only_if "cmd /c #{wsconfig} -list | find \"IIS\""
+        else
+          only_if "#{wsconfig} -list | grep 'Apache : #{node['apache']['dir']}'"
+        end
+      end
+
+	end
 
     sudo sodo_name do
       user node['cf10']['installer']['runtimeuser']
       nopasswd true
       action :remove
-    end
+    end unless platform_family?('windows')
 
   end 
 
