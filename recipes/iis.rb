@@ -19,8 +19,12 @@
 
 include_recipe 'iis'
 include_recipe 'iis::mod_aspnet'
-include_recipe 'iis::mod_cgi'
 include_recipe 'iis::mod_isapi'
+
+webpi_product "CGI" do
+  accept_eula node['iis']['accept_eula']
+  action :install
+end
 
 # Set up a new IIS site
 if node['cf10']['webroot'] && node['cf10']['webroot'] != "#{node['cf10']['installer']['install_folder']}/cfusion/wwwroot"
