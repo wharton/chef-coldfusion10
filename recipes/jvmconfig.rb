@@ -17,7 +17,15 @@
 # limitations under the License.
 #
 
-if node.recipe?("java") && node['java']['install_flavor'] == "oracle" 
+if Chef::Version.new(Chef::VERSION).major >= 11 
+	has_java = run_context.loaded_recipe?("java")
+	has_rng_tools = run_context.loaded_recipe?("rng-tools")
+else 
+	has_java = node.recipe?("java") 
+	has_rng_tools = node.recipe?("rng-tools") 
+end
+
+if has_java && node['java']['install_flavor'] == "oracle" 
   node.set['cf10']['java']['home'] = node['java']['java_home']
 end
 unless node['cf10']['java']['home']
@@ -30,4 +38,5 @@ template "#{node['cf10']['installer']['install_folder']}/cfusion/bin/jvm.config"
   mode "0664"
   owner node['cf10']['installer']['runtimeuser']
   notifies :restart, "service[coldfusion]", :delayed
+  variables ( { :has_rng_tools => has_rng_tools } )
 end

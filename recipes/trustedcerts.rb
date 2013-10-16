@@ -17,15 +17,26 @@
 # limitations under the License.
 #
 
-if node.recipe?("java") && node['java']['install_flavor'] == "oracle" 
+if Chef::Version.new(Chef::VERSION).major >= 11
+	has_apache = run_context.loaded_recipe?("coldfusion10::apache")
+	has_tomcat = run_context.loaded_recipe?("coldfusion10::tomcat")
+	has_java = run_context.loaded_recipe?("java")
+else
+	has_apache = node.recipe?("coldfusion10::apache")
+	has_tomcat = node.recipe?("coldfusion10::tomcat")
+	has_java = node.recipe?("java") 
+end
+
+if has_java && node['java']['install_flavor'] == "oracle" 
   node.set['cf10']['java']['home'] = node['java']['java_home']
 end
 unless node['cf10']['java']['home']
   node.set['cf10']['java']['home'] = node['cf10']['installer']['install_folder'] 
 end
 
+
 # If using Apache import the ssl cert
-if node.recipe?("coldfusion10::apache")
+if has_apache
 
   cert_file = node['cf10']['apache']['ssl_cert_chain_file'] ? node['cf10']['apache']['ssl_cert_chain_file'] : node['cf10']['apache']['ssl_cert_file']
   file_name = "trusted-" + cert_file.split('/').last
@@ -48,7 +59,7 @@ if node.recipe?("coldfusion10::apache")
 end
 
 # If using Tomcat import the tomcat ssl cert
-if node.recipe?("coldfusion10::tomcat")
+if has_tomcat
 
   # Export the cert
   execute "export_ssl_tomcat" do

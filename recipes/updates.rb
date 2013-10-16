@@ -21,7 +21,13 @@ class Chef::Recipe
   include CF10Entmanager 
 end
 
-if node.recipe?("java") && node['java']['install_flavor'] == "oracle" 
+if Chef::Version.new(Chef::VERSION).major >= 11 
+	has_java = run_context.loaded_recipe?("java")
+else 
+	has_java = node.recipe?("java")
+end
+
+if has_java && node['java']['install_flavor'] == "oracle" 
   node.set['cf10']['java']['home'] = node['java']['java_home']
 end
 unless node['cf10']['java']['home']
