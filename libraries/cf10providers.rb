@@ -69,11 +69,21 @@ COMMAND
     Chef::Log.debug("Making API call to #{api_url}")
 
     # Make API call
-    hr = http_request "post_config" do
-      action :nothing
-      url api_url
-      message (msg.to_json)
-      headers({"AUTHORIZATION" => "Basic #{Base64.encode64("admin:#{admin_pwd}")}","Content-Type" => "application/data"})
+    case 
+    when Gem::Version.new(node.chef_packages.chef.version) < Gem::Version.new('11.8')
+      hr = http_request "post_config" do
+        action :nothing
+        url api_url
+        message msg
+        headers({"AUTHORIZATION" => "Basic #{Base64.encode64("admin:#{admin_pwd}")}"}) 
+      end
+    else
+      hr = http_request "post_config" do
+        action :nothing
+        url api_url
+        message (msg.to_json)
+        headers({"AUTHORIZATION" => "Basic #{Base64.encode64("admin:#{admin_pwd}")}","Content-Type" => "application/data"})
+      end
     end
 
     hr.run_action(:post)
