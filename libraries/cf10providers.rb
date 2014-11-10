@@ -74,6 +74,8 @@ COMMAND
       hr = http_request "post_config" do
         action :nothing
         url api_url
+        retries 10
+        retry_delay 10
         message msg
         headers({"AUTHORIZATION" => "Basic #{Base64.encode64("admin:#{admin_pwd}")}"}) 
       end
@@ -81,6 +83,8 @@ COMMAND
       hr = http_request "post_config" do
         action :nothing
         url api_url
+        retries 10
+        retry_delay 10
         message (msg.to_json)
         headers({"AUTHORIZATION" => "Basic #{Base64.encode64("admin:#{admin_pwd}")}","Content-Type" => "application/data"})
       end
