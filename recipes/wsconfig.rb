@@ -42,7 +42,14 @@ execute "install_wsconfig" do
       sleep 11
       #{node['cf10']['installer']['install_folder']}/cfusion/runtime/bin/wsconfig -ws Apache -dir #{node['apache']['dir']} -bin #{node['apache']['binary']} -script /usr/sbin/apache2ctl -v
       cp -f #{node['apache']['dir']}/httpd.conf.1 #{node['apache']['dir']}/httpd.conf 
-      cp -f #{node['apache']['dir']}/mod_jk.conf #{node['apache']['dir']}/conf.d/mod_jk.conf
+      link #{node['apache']['dir']}/mods-enabled/mod_jk.conf" do
+        to #{node['apache']['dir']}/mod_jk.conf"
+        only_if { ::File.directory?("#{node['apache']['dir']}/mods-enabled") }
+      end
+      link #{node['apache']['dir']}/conf.d/mod_jk.conf" do
+        to #{node['apache']['dir']}/mod_jk.conf"
+        only_if { ::File.directory?("#{node['apache']['dir']}/conf.d") }
+      end
       sleep 11
       COMMAND
     end
