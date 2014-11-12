@@ -52,7 +52,7 @@ execute "install_wsconfig" do
       end
       link node['apache']['dir'] + '/conf.d/mod_jk.conf' do
         to node['apache']['dir'] + '/mod_jk.conf' 
-        only_if { ::File.directory?( node['apache']['dir']} + '/conf.d' ) }
+        only_if { ::File.directory?( node['apache']['dir'] + '/conf.d' ) }
       end
 
     end
