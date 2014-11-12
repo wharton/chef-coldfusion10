@@ -44,14 +44,17 @@ execute "install_wsconfig" do
       cp -f #{node['apache']['dir']}/httpd.conf.1 #{node['apache']['dir']}/httpd.conf 
       sleep 11
       COMMAND
-      link "#{node['apache']['dir']}/mods-enabled/mod_jk.conf" do
-        to "#{node['apache']['dir']}/mod_jk.conf"
-        only_if { ::File.directory?("#{node['apache']['dir']}/mods-enabled") }
+
+      # create symlink to mod_jk but leave it in place in case it gets updated by a later patch
+      link node['apache']['dir'] + '/mods-enabled/mod_jk.conf' do
+        to node['apache']['dir'] + '/mod_jk.conf'
+        only_if { ::File.directory?( node['apache']['dir'] + '/mods-enabled' ) }
       end
-      link "#{node['apache']['dir']}/conf.d/mod_jk.conf" do
-        to "#{node['apache']['dir']}/mod_jk.conf"
-        only_if { ::File.directory?("#{node['apache']['dir']}/conf.d") }
+      link node['apache']['dir']} + '/conf.d/mod_jk.conf' do
+        to node['apache']['dir']} + '/mod_jk.conf' 
+        only_if { ::File.directory?( node['apache']['dir']} + '/conf.d' ) }
       end
+
     end
   action :nothing  
   notifies :restart, "service[apache2]", :immediately
@@ -74,6 +77,7 @@ execute "uninstall_wsconfig" do
       #{node['cf10']['installer']['install_folder']}/cfusion/runtime/bin/wsconfig -uninstall -bin #{node['apache']['binary']} -script /usr/sbin/apache2ctl -v
       rm -f #{node['apache']['dir']}/httpd.conf.1
       rm -f #{node['apache']['dir']}/conf.d/mod_jk.conf
+      rm -f #{node['apache']['dir']}/mods-enabled/mod_jk.conf
       sleep 11
       COMMAND
     end
