@@ -42,7 +42,6 @@ execute "install_wsconfig" do
       sleep 11
       #{node['cf10']['installer']['install_folder']}/cfusion/runtime/bin/wsconfig -ws Apache -dir #{node['apache']['dir']} -bin #{node['apache']['binary']} -script /usr/sbin/apache2ctl -v
       cp -f #{node['apache']['dir']}/apache2.conf.1 #{node['apache']['dir']}/apache2.conf
-      ln -s #{node['apache']['dir']}/mod_jk.conf #{node['apache']['dir']}/conf.d/mod_jk.conf
       ln -s #{node['apache']['dir']}/mod_jk.conf #{node['apache']['dir']}/mods-enabled/mod_jk.conf
       sleep 11
       COMMAND
@@ -67,7 +66,6 @@ execute "uninstall_wsconfig" do
       sleep 11
       #{node['cf10']['installer']['install_folder']}/cfusion/runtime/bin/wsconfig -uninstall -bin #{node['apache']['binary']} -script /usr/sbin/apache2ctl -v
       rm -f #{node['apache']['dir']}/httpd.conf.1
-      rm -f #{node['apache']['dir']}/conf.d/mod_jk.conf
       rm -f #{node['apache']['dir']}/mods-enabled/mod_jk.conf
       sleep 11
       COMMAND
