@@ -102,21 +102,21 @@ default['cf10']['java']['home'] = nil
 
 # CF Updates
 default['cf10']['updates']['urls'] = %w{ 
-  http://download.macromedia.com/pub/coldfusion/10/cf10_mdt_updt.jar 
-  http://download.adobe.com/pub/adobe/coldfusion/hotfix_001.jar
-  http://download.adobe.com/pub/adobe/coldfusion/hotfix_002.jar
-  http://download.adobe.com/pub/adobe/coldfusion/hotfix_004.jar
-  http://download.adobe.com/pub/adobe/coldfusion/hotfix_005.jar
-  http://download.adobe.com/pub/adobe/coldfusion/hotfix_006.jar
-  http://download.adobe.com/pub/adobe/coldfusion/hotfix_007.jar
-  http://download.adobe.com/pub/adobe/coldfusion/hotfix_008.jar
-  http://download.adobe.com/pub/adobe/coldfusion/hotfix_009.jar
-  http://download.adobe.com/pub/adobe/coldfusion/hotfix_010.jar
-  http://download.adobe.com/pub/adobe/coldfusion/hotfix_011.jar
-  http://download.adobe.com/pub/adobe/coldfusion/hotfix_012.jar
-  http://download.adobe.com/pub/adobe/coldfusion/hotfix_013.jar
-  http://download.adobe.com/pub/adobe/coldfusion/hotfix_014.jar
-  http://download.adobe.com/pub/adobe/coldfusion/hotfix_015.jar
+  https://s3.amazonaws.com/coldfusion-installers.invisionapp.com/CF10/cf10_mdt_updt.jar 
+  https://s3.amazonaws.com/coldfusion-installers.invisionapp.com/CF10/hotfix_001.jar
+  https://s3.amazonaws.com/coldfusion-installers.invisionapp.com/CF10/hotfix_002.jar
+  https://s3.amazonaws.com/coldfusion-installers.invisionapp.com/CF10/hotfix_004.jar
+  https://s3.amazonaws.com/coldfusion-installers.invisionapp.com/CF10/hotfix_005.jar
+  https://s3.amazonaws.com/coldfusion-installers.invisionapp.com/CF10/hotfix_006.jar
+  https://s3.amazonaws.com/coldfusion-installers.invisionapp.com/CF10/hotfix_007.jar
+  https://s3.amazonaws.com/coldfusion-installers.invisionapp.com/CF10/hotfix_008.jar
+  https://s3.amazonaws.com/coldfusion-installers.invisionapp.com/CF10/hotfix_009.jar
+  https://s3.amazonaws.com/coldfusion-installers.invisionapp.com/CF10/hotfix_010.jar
+  https://s3.amazonaws.com/coldfusion-installers.invisionapp.com/CF10/hotfix_011.jar
+  https://s3.amazonaws.com/coldfusion-installers.invisionapp.com/CF10/hotfix_012.jar
+  https://s3.amazonaws.com/coldfusion-installers.invisionapp.com/CF10/hotfix_013.jar
+  https://s3.amazonaws.com/coldfusion-installers.invisionapp.com/CF10/hotfix_014.jar
+  https://s3.amazonaws.com/coldfusion-installers.invisionapp.com/CF10/hotfix_015.jar
 }
 default['cf10']['updates']['files'] = %w{ 
   hf1000-3332326.jar
