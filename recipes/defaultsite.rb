@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: coldfusion10
-# Recipe:: apache
+# Recipe:: defaultsite
 #
 # Copyright 2012, Nathan Mische
 #
@@ -17,5 +17,13 @@
 # limitations under the License.
 #
 
-include_recipe "coldfusion10::defaultsite"
-include_recipe "coldfusion10::wsconfig"
+# Disable the default site
+apache_site "000-default" do
+  enable false  
+end
+
+# Add ColdFusion site
+web_app "coldfusion" do
+  cookbook "coldfusion10"
+  template "coldfusion-site.conf.erb"
+end

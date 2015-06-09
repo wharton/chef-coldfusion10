@@ -4,7 +4,7 @@ maintainer_email "nmische@gmail.com"
 license          "Apache 2.0"
 description      "Installs/Configures Adobe ColdFusion 10"
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          "0.4.13"
+version          "0.4.18"
 
 %w{ centos redhat ubuntu }.each do |os|
   supports os
@@ -25,3 +25,5 @@ recipe "coldfusion10::standalone", "Installs ColdFusion 10 in standalone mode"
 recipe "coldfusion10::tomcat", "Enables SSL and changes webroot for built in Tomcat webserver"
 recipe "coldfusion10::trustedcerts", "Imports certificates from a data bag into the JVM truststore"
 recipe "coldfusion10::updates", "Applies ColdFusion updates"
+recipe "coldfusion10::defaultsite", "Creates default ColdFusion site in Apache"
+recipe "coldfusion10::wsconfig", "Connects ColdFusion to Apache using wsconfig"

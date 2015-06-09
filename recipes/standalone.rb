@@ -63,6 +63,8 @@ ruby_block "initialize_coldfusion" do
    update_node_instances(node)
  end
  action :create
+ retries 6
+ retry_delay 10
  only_if { File.exists?("#{node['cf10']['installer']['install_folder']}/cfusion/wwwroot/CFIDE/administrator/cfadmin.wzrd") }
 end
 
