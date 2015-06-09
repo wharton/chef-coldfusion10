@@ -92,6 +92,16 @@ default['cf10']['instances_remote'] = nil
 default['cf10']['cluster_xml'] = nil
 
 # JVM Settings
+default["cf10"]["java"]["class_path"] = [
+  "{application.home}/lib/updates",
+  "{application.home}/lib",
+  "{application.home}/lib/axis2",
+  "{application.home}/gateway/lib/",
+  "{application.home}/wwwroot/WEB-INF/cfform/jars",
+  "{application.home}/wwwroot/WEB-INF/flex/jars",
+  "{application.home}/lib/oosdk/lib",
+  "{application.home}/lib/oosdk/classes"
+]
 default['cf10']['java']['args'] = %w{ 
   -Xms256m  
   -Xmx512m
