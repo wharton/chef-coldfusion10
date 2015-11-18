@@ -116,6 +116,10 @@ default['cf10']['updates']['urls'] = %w{
   http://download.adobe.com/pub/adobe/coldfusion/hotfix_012.jar
   http://download.adobe.com/pub/adobe/coldfusion/hotfix_013.jar
   http://download.adobe.com/pub/adobe/coldfusion/hotfix_014.jar
+  http://download.adobe.com/pub/adobe/coldfusion/hotfix_015.jar
+  http://download.adobe.com/pub/adobe/coldfusion/hotfix_016.jar
+  http://download.adobe.com/pub/adobe/coldfusion/hotfix_017.jar
+  http://download.adobe.com/pub/adobe/coldfusion/hotfix_018.jar
 }
 default['cf10']['updates']['files'] = %w{ 
   hf1000-3332326.jar
@@ -132,6 +136,10 @@ default['cf10']['updates']['files'] = %w{
   chf10000012.jar
   chf10000013.jar
   chf10000014.jar
+  chf10000015.jar
+  chf10000016.jar
+  chf10000017.jar
+  chf10000018.jar
 }
 
 # Tomcat or Apache web root
