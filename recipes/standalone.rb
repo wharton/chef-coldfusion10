@@ -18,12 +18,12 @@
 #
 
 class Chef::Recipe
-  include CF10Entmanager 
+  include CF10Entmanager
   include CF10Passwords
 end
 
 class Chef::Resource::RubyBlock
-  include CF10Entmanager 
+  include CF10Entmanager
   include CF10Passwords
 end
 
@@ -36,11 +36,6 @@ end
 
 # Run the installer
 include_recipe "coldfusion10::install"
-
-# Link the init script
-link "/etc/init.d/coldfusion" do
-  to "#{node['cf10']['installer']['install_folder']}/cfusion/bin/coldfusion"
-end
 
 # Set up ColdFusion as a service
 coldfusion10_service "coldfusion" do
@@ -88,4 +83,3 @@ directory node['cf10']['webroot'] do
   action :create
   not_if { File.directory?(node['cf10']['webroot']) }
 end
-

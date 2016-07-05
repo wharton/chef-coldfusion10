@@ -18,7 +18,7 @@
 #
 
 class Chef::Recipe
-  include CF10Entmanager 
+  include CF10Entmanager
   include CF10Passwords
 end
 
@@ -42,7 +42,7 @@ end
 template "#{Chef::Config['file_cache_path']}/cf10-installer.properties" do
   source "cf10-installer.properties.erb"
   owner node['cf10']['installer']['runtimeuser']
-  mode 00644 
+  mode 00644
   variables(
     :admin_password => pwds['admin_password'],
     :jetty_password => pwds['jetty_password'],
@@ -74,7 +74,7 @@ elsif node['cf10']['installer'] && node['cf10']['installer']['cookbook_file']
   cookbook_file "#{Chef::Config['file_cache_path']}/#{file_name}" do
     source file_name
     owner node['cf10']['installer']['runtimeuser']
-    mode 00744    
+    mode 00744
     not_if { File.exists?("#{node['cf10']['installer']['install_folder']}/license.html") }
   end
 
@@ -121,3 +121,14 @@ template "#{node['cf10']['installer']['install_folder']}/cfusion/jetty/cfjetty" 
   only_if { File.exists?("#{node['cf10']['installer']['install_folder']}/cfusion/jetty/cfjetty") }
 end
 
+template "#{node['cf10']['installer']['install_folder']}/cfusion/bin/coldfusion" do
+  source 'cfinit.erb'
+  owner 'root'
+  group 'bin'
+  mode '0755'
+end
+
+# Link the init script
+link "/etc/init.d/coldfusion" do
+  to "#{node['cf10']['installer']['install_folder']}/cfusion/bin/coldfusion"
+end
