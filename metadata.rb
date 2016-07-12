@@ -6,13 +6,17 @@ description      "Installs/Configures Adobe ColdFusion 10"
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 version          "0.4.16"
 
-%w{ centos redhat ubuntu }.each do |os|
+%w{ centos redhat ubuntu windows }.each do |os|
   supports os
 end
 
 depends "sudo"
 suggests "apt"
 suggests "apache2"
+
+# Not used if not on Windows
+depends "ms-cpp-redistributable"
+depends "iis"
 
 recipe "coldfusion10", "Includes the standalone, jvmconfig, and update recipes if the installer type is standalone (the default), or the j2ee recipe if installer type is ear or war."
 recipe "coldfusion10::apache", "Configures ColdFusion to run behind the Apache httpd web server"
